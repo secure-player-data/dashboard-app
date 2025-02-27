@@ -1,0 +1,204 @@
+import { Session } from '@inrupt/solid-client-authn-browser';
+import { BASE_APP_CONTAINER } from './paths';
+import { Team } from '@/entities/data/team';
+import {
+  buildThing,
+  createSolidDataset,
+  createThing,
+  getSolidDataset,
+  getStringNoLocale,
+  getThing,
+  saveSolidDatasetAt,
+  setThing,
+} from '@inrupt/solid-client';
+import { RDF } from '@inrupt/vocab-common-rdf';
+import { safeCall } from '@/utils';
+import { SessionNotSetException } from '@/exceptions/session-exceptions';
+import { TeamNotFoundException } from '@/exceptions/team-exceptions';
+import { TeamCreationConflictException } from '@/exceptions/team-creation-conflict-exception';
+import { updateAppProfile } from './profile';
+import { updateAgentAccess } from './access-control';
+import { PROFILE_SCHEMA } from '@/schemas/profile';
+import { TEAM_MEMBER_SCHEMA, TEAM_SCHEMA } from '@/schemas/team';
+
+/**
+ * Returns team details from the team specified by the teamUrl
+ * @param session session of the requesting user
+ * @param teamUrl to the team file containing the team details
+ * @throws {SessionNotSetException} if session is not set
+ * @throws {TeamNotFoundException} if team is not found
+ * @returns {Team} team details
+ */
+export async function fetchTeam(
+  session: Session | null,
+  teamUrl: string | undefined
+): Promise<Team> {
+  if (!session) {
+    throw new SessionNotSetException('[Fetch team] No session');
+  }
+  if (!teamUrl) {
+    throw new Error('[Fetch team] No team url');
+  }
+
+  const [datasetError, teamDataset] = await safeCall(
+    getSolidDataset(teamUrl, {
+      fetch: session.fetch,
+    })
+  );
+
+  if (datasetError) {
+    throw new TeamNotFoundException('[Fetch team] Team not found');
+  }
+
+  const teamThing = getThing(teamDataset, `${teamUrl}#team`);
+  if (!teamThing) {
+    throw new TeamNotFoundException('Team thing not found');
+  }
+
+  return {
+    url: teamUrl,
+    name: getStringNoLocale(teamThing, TEAM_SCHEMA.name) ?? '',
+    tag: getStringNoLocale(teamThing, TEAM_SCHEMA.tag) ?? '',
+  };
+}
+
+/**
+ * Returns the team url for a user
+ * @param session of the requesting user
+ * @param pod of the user to get the team url of
+ */
+export async function fetchTeamUrl(
+  session: Session | null,
+  pod: string | null
+): Promise<string> {
+  if (!session || !pod) {
+    throw new Error('Session or pod not found');
+  }
+
+  const profileUrl = `${pod}${BASE_APP_CONTAINER}/Profile`;
+
+  const [datasetError, dataset] = await safeCall(
+    getSolidDataset(profileUrl, {
+      fetch: session.fetch,
+    })
+  );
+
+  if (datasetError) {
+    throw new TeamNotFoundException('Profile dataset not found');
+  }
+
+  const profileThing = getThing(dataset, `${profileUrl}#profile`);
+
+  if (!profileThing) {
+    throw new TeamNotFoundException('Profile thing not found');
+  }
+
+  const teamUrl = getStringNoLocale(profileThing, PROFILE_SCHEMA.teamUrl);
+
+  if (!teamUrl) {
+    throw new TeamNotFoundException('Team url not found');
+  }
+
+  return teamUrl;
+}
+
+/**
+ * Creates a new team at the requesting user's pod
+ * @param name of the team
+ * @param tag of the team (RBK, LSK, etc...)
+ * @param session of the requesting user
+ * @throws {SessionNotSetException} if session is not set
+ */
+export async function createTeam({
+  session,
+  pod,
+  name,
+  tag,
+}: {
+  session: Session | null;
+  pod: string | null;
+  name: string;
+  tag: string;
+}) {
+  if (!session || !session.info.webId || !pod) {
+    throw new SessionNotSetException('No session or pod');
+  }
+
+  const [_, teamUrl] = await safeCall(fetchTeamUrl(session, pod));
+
+  if (teamUrl && teamUrl.length > 0) {
+    throw new TeamCreationConflictException('User is already in a team');
+  }
+
+  // Create and add team details to dataset
+  let dataset = createSolidDataset();
+  const teamDetails = buildThing(createThing({ name: 'team' }))
+    .addStringNoLocale(TEAM_SCHEMA.name, name)
+    .addStringNoLocale(TEAM_SCHEMA.tag, tag)
+    .addUrl(RDF.type, TEAM_SCHEMA.type)
+    .build();
+  dataset = setThing(dataset, teamDetails);
+
+  // Create and add owner as member
+  const owner = buildThing(createThing({ name: 'owner' }))
+    .addStringNoLocale(TEAM_MEMBER_SCHEMA.webId, session.info.webId)
+    .addStringNoLocale(TEAM_MEMBER_SCHEMA.pod, pod)
+    .addStringNoLocale(TEAM_MEMBER_SCHEMA.role, 'owner')
+    .addUrl(RDF.type, TEAM_MEMBER_SCHEMA.type)
+    .build();
+  dataset = setThing(dataset, owner);
+
+  // Upload team file
+  const teamFileUrl = `${pod}${BASE_APP_CONTAINER}/Team`;
+  await saveSolidDatasetAt(teamFileUrl, dataset, {
+    fetch: session.fetch,
+  });
+
+  // Create acl file for team file (owner can read/write/control)
+  await updateAgentAccess({
+    session,
+    containerUrl: teamFileUrl,
+    agentWebId: session.info.webId,
+    modes: ['Read', 'Append', 'Write', 'Control'],
+  });
+
+  // Update profile with team url
+  await updateAppProfile(session, pod, { teamUrl: teamFileUrl });
+}
+
+/**
+ * Add a member to a team
+ * @param session of the user requesting the add
+ * @param pod url of the team owners pod
+ * @param memberWebId id of the member to add
+ * @param memberPod pod url of the member to add
+ * @param role the new member will have in the team
+ */
+export async function addMemberToTeam(
+  session: Session | null,
+  pod: string | null,
+  memberWebId: string,
+  memberPod: string,
+  role: string
+) {
+  if (!session || !pod) {
+    throw new Error('session was not found');
+  }
+
+  const teamUrl = await fetchTeamUrl(session, pod);
+  let teamDataset = await getSolidDataset(teamUrl, { fetch: session.fetch });
+  const id = crypto.randomUUID();
+
+  const member = buildThing(createThing({ name: id }))
+    .addStringNoLocale(TEAM_MEMBER_SCHEMA.webId, memberWebId)
+    .addStringNoLocale(TEAM_MEMBER_SCHEMA.pod, memberPod)
+    .addStringNoLocale(TEAM_MEMBER_SCHEMA.role, role)
+    .addUrl(RDF.type, TEAM_MEMBER_SCHEMA.type)
+    .build();
+
+  const updatedTeamDataset = setThing(teamDataset, member);
+
+  await saveSolidDatasetAt(teamUrl, updatedTeamDataset, {
+    fetch: session.fetch,
+  });
+}

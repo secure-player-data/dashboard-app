@@ -1,0 +1,9 @@
+# Dev
+**/.git
+**/.svn
+**/.hg
+**/node_modules
+
+# Build
+build
+coverage

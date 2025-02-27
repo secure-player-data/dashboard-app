@@ -8,7 +8,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Check, X, Edit, Plus, Trash2 } from 'lucide-react';
 import {
   Dialog,
@@ -22,6 +21,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useGetPermissionDetails } from '@/use-cases/use-get-permission-details';
+import { Loader2 } from 'lucide-react';
+import { useAuth } from '@/context/auth-context';
+import { permissionDetail } from '@/entities/data/access-control';
+import { paths } from '@/api/paths';
 
 interface PermissionDetailsProps {
   resourcePath: string;
@@ -30,40 +34,23 @@ interface PermissionDetailsProps {
 export default function PermissionDetails({
   resourcePath,
 }: PermissionDetailsProps) {
+  const { session, pod } = useAuth();
+  const fullResourcePath = paths.root(pod!) + '/' + resourcePath;
   const [showAddDialog, setShowAddDialog] = useState(false);
 
-  // Mock data for permissions
-  const permissions = [
-    {
-      agent: 'https://alice.example.org/profile/card#me',
-      read: true,
-      write: true,
-      append: true,
-      control: true,
-      type: 'Owner',
-    },
-    {
-      agent: 'https://bob.solidcommunity.net/profile/card#me',
-      read: true,
-      write: false,
-      append: true,
-      control: false,
-      type: 'Friend',
-    },
-    {
-      agent: 'Public',
-      read: true,
-      write: false,
-      append: false,
-      control: false,
-      type: 'Public',
-    },
-  ];
+  const { data: permissions, isPending: permissionsPending } =
+    useGetPermissionDetails(session, fullResourcePath);
+
+  if (permissionsPending) {
+    return <Loader2 className="size-4 animate-spin" />;
+  }
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-medium">{resourcePath}</h3>
+        <h3 className="text-lg font-medium">
+          {resourcePath.replace('-', ' ').replace('/', '')}
+        </h3>
         <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
           <DialogTrigger asChild>
             <Button size="sm">
@@ -75,7 +62,8 @@ export default function PermissionDetails({
             <DialogHeader>
               <DialogTitle>Add Access Permission</DialogTitle>
               <DialogDescription>
-                Grant access permissions to an agent for {resourcePath}
+                Grant access permissions to an agent for{' '}
+                {resourcePath.replace('-', ' ').replace('/', ' ')}
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
@@ -129,16 +117,13 @@ export default function PermissionDetails({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {permissions.map((permission) => (
+          {permissions!.map((permission: permissionDetail) => (
             <TableRow key={permission.agent}>
               <TableCell className="font-medium">
                 <div>
                   <div className="truncate max-w-[250px]">
                     {permission.agent}
                   </div>
-                  <Badge variant="outline" className="mt-1">
-                    {permission.type}
-                  </Badge>
                 </div>
               </TableCell>
               <TableCell className="text-center">

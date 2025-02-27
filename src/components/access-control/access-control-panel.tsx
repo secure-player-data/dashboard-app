@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/card';
 import ResourceList from './resource-list';
 import PermissionDetails from './permission-details';
-import { resource } from '@/entities/data/resource';
+import { resource, permissionDetail } from '@/entities/data/access-control';
 
 interface AccessControlPanelProps {
   resourceList: resource[];
@@ -31,7 +31,8 @@ export default function AccessControlPanel({
           <CardHeader>
             <CardTitle>Access Permissions</CardTitle>
             <CardDescription>
-              Manage who has access to {selectedResource}
+              Manage who has access to{' '}
+              {selectedResource.replace('-', ' ').replace('/', '')}
             </CardDescription>
           </CardHeader>
           <CardContent>

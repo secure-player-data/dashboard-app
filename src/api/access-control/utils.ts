@@ -8,7 +8,8 @@ import { getSolidDataset, getThingAll, Thing } from '@inrupt/solid-client';
 import { paths } from '../paths';
 import { getAgentAccessAll } from '.';
 import { SessionNotSetException } from '@/exceptions/session-exceptions';
-import { resource } from '@/entities/data/resource';
+import { permissionDetail, resource } from '@/entities/data/access-control';
+import PermissionDetails from '@/components/access-control/permission-details';
 
 /**
  * Returns the correct access control service based on the protocol used
@@ -89,4 +90,45 @@ export async function getResourceList(
   );
 
   return resourceList;
+}
+
+/**
+ * Wrapper for getAgentAccessAll
+ * @param session of the logged in user
+ * @param url of the path to get permissions
+ */
+export async function getPermissionDetails(
+  session: Session | null,
+  url: string | null
+) {
+  if (!session || !url) {
+    throw new SessionNotSetException('No session provided');
+  }
+
+  // Fetch the accesses from the API
+  const [error, data] = await safeCall(
+    getAgentAccessAll({
+      session,
+      url,
+    })
+  );
+
+  // Handle the case where data is null or undefined
+  if (!data) {
+    return [];
+  }
+
+  // Transform the data into permissionDetail format
+  const permissionDetails: permissionDetail[] = Object.entries(data).map(
+    ([agent, accessModes]) => ({
+      agent,
+      read: accessModes.read,
+      write: accessModes.write,
+      append: accessModes.append,
+      control: accessModes.controlRead && accessModes.controlWrite, // control is true only if both controlRead and controlWrite are true
+    })
+  );
+  console.log(permissionDetails);
+
+  return permissionDetails;
 }

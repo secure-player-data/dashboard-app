@@ -8,7 +8,7 @@ export function useGetResourceList(
   pod: string | null
 ) {
   return useQuery({
-    queryKey: queryKeys.accessControl(session?.info.webId ?? ''),
+    queryKey: queryKeys.accessControl.resourceList(session?.info.webId ?? ''),
     queryFn: () => getResourceList(session, pod),
     enabled: !!session && !!pod,
   });

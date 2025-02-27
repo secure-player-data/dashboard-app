@@ -95,7 +95,7 @@ export default function ResourceList({
                     <FileText className="h-5 w-5 text-muted-foreground" />
                   )}
                   <span className="font-medium text-sm truncate max-w-[150px]">
-                    {resource.path}
+                    {resource.path.replace('-', ' ').replace('/', ' ')}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -103,9 +103,6 @@ export default function ResourceList({
                   {getAccessBadge(resource.accessLevel)}
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                {resource.description}
-              </p>
             </div>
           ))}
         </div>

@@ -21,12 +21,14 @@ import { Route as AuthSetupImport } from './routes/auth/_setup'
 import { Route as dashboardProfileImport } from './routes/__dashboard/profile'
 import { Route as dashboardPersonalDataImport } from './routes/__dashboard/personal-data'
 import { Route as dashboardInboxImport } from './routes/__dashboard/inbox'
+import { Route as dashboardFootballDataImport } from './routes/__dashboard/football-data'
 import { Route as dashboardAccessHistoryImport } from './routes/__dashboard/access-history'
 import { Route as dashboardAccessControlImport } from './routes/__dashboard/access-control'
 import { Route as AuthSetupTeamImport } from './routes/auth/_setup.team'
 import { Route as AuthSetupProfileImport } from './routes/auth/_setup.profile'
 import { Route as dashboardTeamMembersImport } from './routes/__dashboard/team/members'
 import { Route as dashboardTeamDetailsImport } from './routes/__dashboard/team/details'
+import { Route as dashboardSeasonsSeasonImport } from './routes/__dashboard/seasons.$season'
 
 // Create/Update Routes
 
@@ -88,6 +90,12 @@ const dashboardInboxRoute = dashboardInboxImport.update({
   getParentRoute: () => dashboardRoute,
 } as any)
 
+const dashboardFootballDataRoute = dashboardFootballDataImport.update({
+  id: '/football-data',
+  path: '/football-data',
+  getParentRoute: () => dashboardRoute,
+} as any)
+
 const dashboardAccessHistoryRoute = dashboardAccessHistoryImport.update({
   id: '/access-history',
   path: '/access-history',
@@ -124,6 +132,12 @@ const dashboardTeamDetailsRoute = dashboardTeamDetailsImport.update({
   getParentRoute: () => dashboardRoute,
 } as any)
 
+const dashboardSeasonsSeasonRoute = dashboardSeasonsSeasonImport.update({
+  id: '/seasons/$season',
+  path: '/seasons/$season',
+  getParentRoute: () => dashboardRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -154,6 +168,13 @@ declare module '@tanstack/react-router' {
       path: '/access-history'
       fullPath: '/access-history'
       preLoaderRoute: typeof dashboardAccessHistoryImport
+      parentRoute: typeof dashboardImport
+    }
+    '/__dashboard/football-data': {
+      id: '/__dashboard/football-data'
+      path: '/football-data'
+      fullPath: '/football-data'
+      preLoaderRoute: typeof dashboardFootballDataImport
       parentRoute: typeof dashboardImport
     }
     '/__dashboard/inbox': {
@@ -210,6 +231,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof dashboardIndexImport
+      parentRoute: typeof dashboardImport
+    }
+    '/__dashboard/seasons/$season': {
+      id: '/__dashboard/seasons/$season'
+      path: '/seasons/$season'
+      fullPath: '/seasons/$season'
+      preLoaderRoute: typeof dashboardSeasonsSeasonImport
       parentRoute: typeof dashboardImport
     }
     '/__dashboard/team/details': {
@@ -280,10 +308,12 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 interface dashboardRouteChildren {
   dashboardAccessControlRoute: typeof dashboardAccessControlRoute
   dashboardAccessHistoryRoute: typeof dashboardAccessHistoryRoute
+  dashboardFootballDataRoute: typeof dashboardFootballDataRoute
   dashboardInboxRoute: typeof dashboardInboxRoute
   dashboardPersonalDataRoute: typeof dashboardPersonalDataRoute
   dashboardProfileRoute: typeof dashboardProfileRoute
   dashboardIndexRoute: typeof dashboardIndexRoute
+  dashboardSeasonsSeasonRoute: typeof dashboardSeasonsSeasonRoute
   dashboardTeamDetailsRoute: typeof dashboardTeamDetailsRoute
   dashboardTeamMembersRoute: typeof dashboardTeamMembersRoute
 }
@@ -291,10 +321,12 @@ interface dashboardRouteChildren {
 const dashboardRouteChildren: dashboardRouteChildren = {
   dashboardAccessControlRoute: dashboardAccessControlRoute,
   dashboardAccessHistoryRoute: dashboardAccessHistoryRoute,
+  dashboardFootballDataRoute: dashboardFootballDataRoute,
   dashboardInboxRoute: dashboardInboxRoute,
   dashboardPersonalDataRoute: dashboardPersonalDataRoute,
   dashboardProfileRoute: dashboardProfileRoute,
   dashboardIndexRoute: dashboardIndexRoute,
+  dashboardSeasonsSeasonRoute: dashboardSeasonsSeasonRoute,
   dashboardTeamDetailsRoute: dashboardTeamDetailsRoute,
   dashboardTeamMembersRoute: dashboardTeamMembersRoute,
 }
@@ -308,6 +340,7 @@ export interface FileRoutesByFullPath {
   '': typeof dashboardRouteWithChildren
   '/access-control': typeof dashboardAccessControlRoute
   '/access-history': typeof dashboardAccessHistoryRoute
+  '/football-data': typeof dashboardFootballDataRoute
   '/inbox': typeof dashboardInboxRoute
   '/personal-data': typeof dashboardPersonalDataRoute
   '/profile': typeof dashboardProfileRoute
@@ -315,6 +348,7 @@ export interface FileRoutesByFullPath {
   '/auth/confirmation': typeof AuthConfirmationRoute
   '/auth/login': typeof AuthLoginRoute
   '/': typeof dashboardIndexRoute
+  '/seasons/$season': typeof dashboardSeasonsSeasonRoute
   '/team/details': typeof dashboardTeamDetailsRoute
   '/team/members': typeof dashboardTeamMembersRoute
   '/auth/profile': typeof AuthSetupProfileRoute
@@ -325,6 +359,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthSetupRouteWithChildren
   '/access-control': typeof dashboardAccessControlRoute
   '/access-history': typeof dashboardAccessHistoryRoute
+  '/football-data': typeof dashboardFootballDataRoute
   '/inbox': typeof dashboardInboxRoute
   '/personal-data': typeof dashboardPersonalDataRoute
   '/profile': typeof dashboardProfileRoute
@@ -332,6 +367,7 @@ export interface FileRoutesByTo {
   '/auth/confirmation': typeof AuthConfirmationRoute
   '/auth/login': typeof AuthLoginRoute
   '/': typeof dashboardIndexRoute
+  '/seasons/$season': typeof dashboardSeasonsSeasonRoute
   '/team/details': typeof dashboardTeamDetailsRoute
   '/team/members': typeof dashboardTeamMembersRoute
   '/auth/profile': typeof AuthSetupProfileRoute
@@ -344,6 +380,7 @@ export interface FileRoutesById {
   '/__dashboard': typeof dashboardRouteWithChildren
   '/__dashboard/access-control': typeof dashboardAccessControlRoute
   '/__dashboard/access-history': typeof dashboardAccessHistoryRoute
+  '/__dashboard/football-data': typeof dashboardFootballDataRoute
   '/__dashboard/inbox': typeof dashboardInboxRoute
   '/__dashboard/personal-data': typeof dashboardPersonalDataRoute
   '/__dashboard/profile': typeof dashboardProfileRoute
@@ -352,6 +389,7 @@ export interface FileRoutesById {
   '/auth/confirmation': typeof AuthConfirmationRoute
   '/auth/login': typeof AuthLoginRoute
   '/__dashboard/': typeof dashboardIndexRoute
+  '/__dashboard/seasons/$season': typeof dashboardSeasonsSeasonRoute
   '/__dashboard/team/details': typeof dashboardTeamDetailsRoute
   '/__dashboard/team/members': typeof dashboardTeamMembersRoute
   '/auth/_setup/profile': typeof AuthSetupProfileRoute
@@ -365,6 +403,7 @@ export interface FileRouteTypes {
     | ''
     | '/access-control'
     | '/access-history'
+    | '/football-data'
     | '/inbox'
     | '/personal-data'
     | '/profile'
@@ -372,6 +411,7 @@ export interface FileRouteTypes {
     | '/auth/confirmation'
     | '/auth/login'
     | '/'
+    | '/seasons/$season'
     | '/team/details'
     | '/team/members'
     | '/auth/profile'
@@ -381,6 +421,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/access-control'
     | '/access-history'
+    | '/football-data'
     | '/inbox'
     | '/personal-data'
     | '/profile'
@@ -388,6 +429,7 @@ export interface FileRouteTypes {
     | '/auth/confirmation'
     | '/auth/login'
     | '/'
+    | '/seasons/$season'
     | '/team/details'
     | '/team/members'
     | '/auth/profile'
@@ -398,6 +440,7 @@ export interface FileRouteTypes {
     | '/__dashboard'
     | '/__dashboard/access-control'
     | '/__dashboard/access-history'
+    | '/__dashboard/football-data'
     | '/__dashboard/inbox'
     | '/__dashboard/personal-data'
     | '/__dashboard/profile'
@@ -406,6 +449,7 @@ export interface FileRouteTypes {
     | '/auth/confirmation'
     | '/auth/login'
     | '/__dashboard/'
+    | '/__dashboard/seasons/$season'
     | '/__dashboard/team/details'
     | '/__dashboard/team/members'
     | '/auth/_setup/profile'
@@ -451,10 +495,12 @@ export const routeTree = rootRoute
       "children": [
         "/__dashboard/access-control",
         "/__dashboard/access-history",
+        "/__dashboard/football-data",
         "/__dashboard/inbox",
         "/__dashboard/personal-data",
         "/__dashboard/profile",
         "/__dashboard/",
+        "/__dashboard/seasons/$season",
         "/__dashboard/team/details",
         "/__dashboard/team/members"
       ]
@@ -465,6 +511,10 @@ export const routeTree = rootRoute
     },
     "/__dashboard/access-history": {
       "filePath": "__dashboard/access-history.tsx",
+      "parent": "/__dashboard"
+    },
+    "/__dashboard/football-data": {
+      "filePath": "__dashboard/football-data.tsx",
       "parent": "/__dashboard"
     },
     "/__dashboard/inbox": {
@@ -501,6 +551,10 @@ export const routeTree = rootRoute
     },
     "/__dashboard/": {
       "filePath": "__dashboard/index.tsx",
+      "parent": "/__dashboard"
+    },
+    "/__dashboard/seasons/$season": {
+      "filePath": "__dashboard/seasons.$season.tsx",
       "parent": "/__dashboard"
     },
     "/__dashboard/team/details": {

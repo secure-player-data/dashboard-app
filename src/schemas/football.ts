@@ -1,6 +1,7 @@
 export const FOOTBALL_AGGREGATION_SCHEMA = {
   type: 'https://schema.org/FootballAggregation',
   matches: 'https://schema.org/Matches',
+  minutesPlayed: 'https://schema.org/MinutesPlayed',
 };
 
 export const FOOTBALL_DATA_SCHEMA = {

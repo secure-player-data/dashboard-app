@@ -264,6 +264,14 @@ async function seedAggregationData(session: Session, pod: string, data: TData) {
       FOOTBALL_AGGREGATION_SCHEMA.matches,
       data.seasons.flatMap((season) => season.matches).length
     )
+    .addInteger(
+      FOOTBALL_AGGREGATION_SCHEMA.minutesPlayed,
+      data.seasons
+        .flatMap((season) =>
+          season.matches.reduce((acc, curr) => acc + curr.playTime, 0)
+        )
+        .reduce((acc, curr) => acc + curr, 0)
+    )
     .build();
   clubMatchAggregation = setThing(clubMatchAggregation, clubAggregationThing);
   aggregationDatasets.push({
@@ -278,9 +286,10 @@ async function seedAggregationData(session: Session, pod: string, data: TData) {
       createThing({ name: 'aggregation' })
     )
       .addUrl(RDF.type, FOOTBALL_AGGREGATION_SCHEMA.type)
+      .addInteger(FOOTBALL_AGGREGATION_SCHEMA.matches, season.matches.length)
       .addInteger(
-        FOOTBALL_AGGREGATION_SCHEMA.matches,
-        data.seasons[0].matches.length
+        FOOTBALL_DATA_SCHEMA.playTime,
+        season.matches.reduce((acc, curr) => acc + curr.playTime, 0)
       )
       .build();
     seasonMatchAggregation = setThing(
@@ -304,6 +313,7 @@ async function seedAggregationData(session: Session, pod: string, data: TData) {
   )
     .addUrl(RDF.type, EVENT_DATA_SCHEMA.type)
     .addInteger(EVENT_AGGREGATION_SCHEMA.goals, clubEventTotals.goals)
+    .addInteger(EVENT_AGGREGATION_SCHEMA.assists, clubEventTotals.assists)
     .addInteger(
       EVENT_AGGREGATION_SCHEMA.yellowCards,
       clubEventTotals.yellowCards
@@ -332,6 +342,7 @@ async function seedAggregationData(session: Session, pod: string, data: TData) {
     )
       .addUrl(RDF.type, EVENT_DATA_SCHEMA.type)
       .addInteger(EVENT_AGGREGATION_SCHEMA.goals, seasonEventTotals.goals)
+      .addInteger(EVENT_AGGREGATION_SCHEMA.assists, seasonEventTotals.assists)
       .addInteger(
         EVENT_AGGREGATION_SCHEMA.yellowCards,
         seasonEventTotals.yellowCards
@@ -370,6 +381,7 @@ async function seedAggregationData(session: Session, pod: string, data: TData) {
 function getEventAggregation(matches: TMatch[]) {
   const eventTotals = {
     goals: 0,
+    assists: 0,
     yellowCards: 0,
     redCards: 0,
     corners: 0,
@@ -382,6 +394,9 @@ function getEventAggregation(matches: TMatch[]) {
       switch (event.event) {
         case 'Goal':
           eventTotals.goals++;
+          break;
+        case 'Assist':
+          eventTotals.assists++;
           break;
         case 'Yellow Card':
           eventTotals.yellowCards++;

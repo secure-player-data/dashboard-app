@@ -6,3 +6,15 @@ export type EventData = {
   time: number; // minute of the match
   notes: string;
 };
+
+export type EventAggregation = {
+  goals: number;
+  assists: number;
+  yellowCards: number;
+  redCards: number;
+  corners: number;
+  freeKicks: number;
+  penalties: number;
+  throwIns: number;
+  throphies: number;
+};

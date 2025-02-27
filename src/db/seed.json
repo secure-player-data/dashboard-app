@@ -36,6 +36,11 @@
               "notes": "Foul"
             },
             {
+              "event": "Assist",
+              "time": "56:32",
+              "notes": ""
+            },
+            {
               "event": "Goal",
               "time": "78:23",
               "notes": "Penalty"
@@ -166,6 +171,11 @@
               "event": "Goal",
               "time": "65:59",
               "notes": ""
+            },
+            {
+              "event": "Free Kick",
+              "time": "72:43",
+              "notes": "Right pole and out"
             },
             {
               "event": "Assist",

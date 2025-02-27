@@ -2,6 +2,8 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/context/auth-context';
+import { useGetAggregatedEventData } from '@/use-cases/event-data';
+import { useGetAggregatedFootballData } from '@/use-cases/football-data';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import {
   BarChart3,
@@ -20,6 +22,10 @@ export const Route = createFileRoute('/__dashboard/football-data')({
 });
 
 function RouteComponent() {
+  const { session, pod } = useAuth();
+  const { data: football } = useGetAggregatedFootballData(session, pod, 'club');
+  const { data: event } = useGetAggregatedEventData(session, pod, 'club');
+
   return (
     <Tabs defaultValue="club">
       <TabsList className="grid grid-cols-2 w-full">
@@ -29,14 +35,38 @@ function RouteComponent() {
       <TabsContent value="club" className="@container">
         <h2 className="font-bold mb-4 text-xl">Overall Stats</h2>
         <div className="grid gap-4 mb-8 @md:grid-cols-2 @2xl:grid-cols-4">
-          <StatCard icon={Calendar} label="Matches Played" value="201" />
-          <StatCard icon={Goal} label="Total Goals" value="152" />
-          <StatCard icon={Shirt} label="Assists" value="28" />
-          <StatCard icon={Timer} label="Minutes Playerd" value="11 875" />
-          <StatCard icon={BarChart3} label="Goals per match" value="0.85" />
-          <StatCard icon={ShieldAlert} label="Yellow Cards" value="17" />
-          <StatCard icon={ShieldX} label="Red Cards" value="7" />
-          <StatCard icon={Trophy} label="Trophies" value="3" />
+          <StatCard
+            icon={Calendar}
+            label="Matches Played"
+            value={`${football?.matches}`}
+          />
+          <StatCard icon={Goal} label="Total Goals" value={`${event?.goals}`} />
+          <StatCard icon={Shirt} label="Assists" value={`${event?.assists}`} />
+          <StatCard
+            icon={Timer}
+            label="Minutes Playerd"
+            value={`${football?.minutesPlayed}`}
+          />
+          <StatCard
+            icon={BarChart3}
+            label="Goals per match"
+            value={`${((event?.goals ?? 0) / (football?.matches ?? 1)).toFixed(2)}`}
+          />
+          <StatCard
+            icon={ShieldAlert}
+            label="Yellow Cards"
+            value={`${event?.yellowCards}`}
+          />
+          <StatCard
+            icon={ShieldX}
+            label="Red Cards"
+            value={`${event?.redCards}`}
+          />
+          <StatCard
+            icon={Trophy}
+            label="Trophies"
+            value={`${event?.throphies}`}
+          />
         </div>
         <h2 className="font-bold mb-4 text-xl">Seasons</h2>
         <SeasonCard

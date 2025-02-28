@@ -22,6 +22,7 @@ import { fetchAggregatedEventData } from './event-data';
  * @param type wether to fetch data for players club or nation performance
  * @param season (optional) if provided, fetch aggregated data for the given season,
  * if not fetch aggregated data for player's entire career
+ * @returns aggregated data for the player (matches played, minutes played)
  */
 export async function fetchAggregatedFootballData({
   session,
@@ -68,6 +69,7 @@ export async function fetchAggregatedFootballData({
  * @param pod pod url of the player to fetch the data for
  * @param type wether to fetch data for players club or nation performance
  * @param season season to fetch metadata for
+ * @returns info about the season (team, league)
  */
 export async function fetchSeasonInfo({
   session,
@@ -109,7 +111,7 @@ export async function fetchSeasonInfo({
  * @param session of the user reqiesting the data
  * @param pod pod url of the player to fetch the data for
  * @param type wether to fetch data for players club or nation performance
- * @returns
+ * @returns an object with season info and aggregated season and event data
  */
 export async function fetchAllSeasonInfo({
   session,

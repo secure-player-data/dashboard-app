@@ -16,7 +16,7 @@ import { EVENT_AGGREGATION_SCHEMA } from '@/schemas/event';
  * @param type wether to fetch data for players club or nation performance
  * @param season (optional) if provided, fetch aggregated data for the given season,
  * if not fetch aggregated data for player's entire career
- * @returns
+ * @returns aggregated event data for a player (goals, assists, ...)
  */
 export async function fetchAggregatedEventData({
   session,

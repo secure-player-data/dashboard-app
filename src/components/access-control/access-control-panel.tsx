@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/card';
 import ResourceList from './resource-list';
 import PermissionDetails from './permission-details';
-import { resource, permissionDetail } from '@/entities/data/access-control';
+import { resource } from '@/entities/data/access-control';
 
 interface AccessControlPanelProps {
   resourceList: resource[];

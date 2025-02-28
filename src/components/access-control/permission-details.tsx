@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { act, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -8,7 +8,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Check, X, Edit, Plus, Trash2 } from 'lucide-react';
+import { Check, X, Edit, Plus, Trash2, Trash } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -26,6 +26,10 @@ import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { permissionDetail } from '@/entities/data/access-control';
 import { paths } from '@/api/paths';
+import { useUpdateMembersPermissions } from '@/use-cases/use-update-members-permissions';
+import { MemberWithPermissions } from '@/entities/data/member';
+import { ButtonWithLoader } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 interface PermissionDetailsProps {
   resourcePath: string;
@@ -37,9 +41,78 @@ export default function PermissionDetails({
   const { session, pod } = useAuth();
   const fullResourcePath = paths.root(pod!) + '/' + resourcePath;
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [activeAgent, setActiveAgent] = useState<string>('');
+  const [activePermissions, setActivePermissions] = useState({
+    read: false,
+    write: false,
+    append: false,
+    control: false,
+  });
 
   const { data: permissions, isPending: permissionsPending } =
     useGetPermissionDetails(session, fullResourcePath);
+
+  const { mutate: updateMutation, isPending: deletePending } =
+    useUpdateMembersPermissions(session, fullResourcePath);
+
+  const handleAgentName = (agent: string) => {
+    if (agent === 'http://www.w3.org/ns/solid/acp#PublicAgent') {
+      return 'Public';
+    }
+    return agent;
+  };
+
+  const handleDeletePermissions = () => {
+    const memberWithPermissions: MemberWithPermissions[] = [
+      {
+        webId: activeAgent,
+        pod: '',
+        name: '',
+        role: '',
+        permissions: {
+          read: false,
+          write: false,
+          append: false,
+          control: false,
+        },
+      },
+    ];
+    updateMutation(memberWithPermissions, {
+      onSuccess: () => {
+        setShowDeleteDialog(false), toast('Agent was deleted');
+      },
+      onError: () => {
+        toast('Whoops something went wrong! Please try again');
+      },
+    });
+  };
+
+  const handleEditPermissions = () => {
+    const memberWithPermissions: MemberWithPermissions[] = [
+      {
+        webId: activeAgent,
+        pod: '',
+        name: '',
+        role: '',
+        permissions: {
+          read: activePermissions.read,
+          write: activePermissions.write,
+          append: activePermissions.append,
+          control: activePermissions.control,
+        },
+      },
+    ];
+    updateMutation(memberWithPermissions, {
+      onSuccess: () => {
+        setShowEditDialog(false), toast('Agent access was updated!');
+      },
+      onError: () => {
+        toast('Whoops something went wrong! Please try again');
+      },
+    });
+  };
 
   if (permissionsPending) {
     return <Loader2 className="size-4 animate-spin" />;
@@ -71,6 +144,7 @@ export default function PermissionDetails({
                 <Label htmlFor="agent">Agent WebID or Group</Label>
                 <Input
                   id="agent"
+                  onChange={(event) => setActiveAgent(event.target.value)}
                   placeholder="https://example.org/profile/card#me"
                 />
               </div>
@@ -104,6 +178,132 @@ export default function PermissionDetails({
           </DialogContent>
         </Dialog>
       </div>
+      <div>
+        <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete agent?</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete this agent? This will remove any
+                access they have to{' '}
+                {resourcePath.replace('-', ' ').replace('/', ' ')}
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setShowDeleteDialog(false)}
+              >
+                Cancel
+              </Button>
+              <ButtonWithLoader
+                onClick={() => handleDeletePermissions()}
+                isLoading={deletePending}
+              >
+                Delete Agent
+              </ButtonWithLoader>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+      <div>
+        <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit Permissions For {activeAgent}</DialogTitle>
+              <DialogDescription>
+                Update the permissions for an agent.{' '}
+                {resourcePath.replace('-', ' ').replace('/', ' ')}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="read"
+                    disabled={activeAgent == session?.info.webId!}
+                    checked={activePermissions.read}
+                    onCheckedChange={() => {
+                      setActivePermissions({
+                        read: !activePermissions.read,
+                        write: activePermissions.write,
+                        append: activePermissions.append,
+                        control: activePermissions.control,
+                      });
+                    }}
+                  />
+                  <Label htmlFor="read">Read</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="write"
+                    disabled={activeAgent == session?.info.webId!}
+                    checked={activePermissions.write}
+                    onCheckedChange={() => {
+                      setActivePermissions({
+                        read: activePermissions.read,
+                        write: !activePermissions.write,
+                        append: activePermissions.append,
+                        control: activePermissions.control,
+                      });
+                    }}
+                  />
+                  <Label htmlFor="write">Write</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="append"
+                    disabled={activeAgent == session?.info.webId!}
+                    checked={activePermissions.append}
+                    onCheckedChange={() => {
+                      setActivePermissions({
+                        read: activePermissions.read,
+                        write: activePermissions.write,
+                        append: !activePermissions.append,
+                        control: activePermissions.control,
+                      });
+                    }}
+                  />
+                  <Label htmlFor="append">Append</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="control"
+                    disabled={activeAgent == session?.info.webId!}
+                    checked={activePermissions.control}
+                    onCheckedChange={(old) => {
+                      setActivePermissions({
+                        read: activePermissions.read,
+                        write: activePermissions.write,
+                        append: activePermissions.append,
+                        control: !activePermissions.control,
+                      });
+
+                      return !old;
+                    }}
+                  />
+                  <Label htmlFor="control">Control</Label>
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setShowDeleteDialog(false)}
+              >
+                Cancel
+              </Button>
+              <ButtonWithLoader
+                onClick={() => handleEditPermissions()}
+                isLoading={deletePending}
+              >
+                Update Access
+              </ButtonWithLoader>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
 
       <Table>
         <TableHeader>
@@ -122,7 +322,7 @@ export default function PermissionDetails({
               <TableCell className="font-medium">
                 <div>
                   <div className="truncate max-w-[250px]">
-                    {permission.agent}
+                    {handleAgentName(permission.agent)}
                   </div>
                 </div>
               </TableCell>
@@ -156,11 +356,31 @@ export default function PermissionDetails({
               </TableCell>
               <TableCell className="text-right">
                 <div className="flex justify-end gap-2">
-                  <Button variant="ghost" size="icon">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setShowEditDialog(!showEditDialog);
+                      setActiveAgent(permission.agent);
+                      setActivePermissions({
+                        read: permission.read,
+                        write: permission.write,
+                        append: permission.append,
+                        control: permission.control,
+                      });
+                    }}
+                  >
                     <Edit className="h-4 w-4" />
                     <span className="sr-only">Edit</span>
                   </Button>
-                  <Button variant="ghost" size="icon">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setShowDeleteDialog(!showDeleteDialog);
+                      setActiveAgent(permission.agent);
+                    }}
+                  >
                     <Trash2 className="h-4 w-4" />
                     <span className="sr-only">Delete</span>
                   </Button>

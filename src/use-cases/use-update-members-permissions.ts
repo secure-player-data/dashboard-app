@@ -15,7 +15,10 @@ export function useUpdateMembersPermissions(
       updateMembersPermissions(data, session, pod),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.members.withPermissions(session?.info.webId ?? ''),
+        queryKey: queryKeys.accessControl.permissionDetails(
+          session?.info.webId!,
+          pod!
+        ),
       });
     },
   });

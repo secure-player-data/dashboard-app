@@ -115,6 +115,7 @@ export async function fetchMembersWithPermissions(
  * @param members object containing the members and their new permissions
  * @param session of the requesting user
  * @param pod pod url of the user to update the permissions for
+ * TODO: Update this for new file structure
  */
 export async function updateMembersPermissions(
   members: MemberWithPermissions[],
@@ -149,7 +150,7 @@ export async function updateMembersPermissions(
       await updateAgentAccess({
         session,
         agentWebId: member.webId,
-        containerUrl: `${pod}${BASE_APP_CONTAINER}/${DATA_CONTAINER}/`,
+        containerUrl: pod!,
         modes,
       });
     })

@@ -105,7 +105,6 @@ export async function getPermissionDetails(
     throw new SessionNotSetException('No session provided');
   }
 
-  // Fetch the accesses from the API
   const [error, data] = await safeCall(
     getAgentAccessAll({
       session,
@@ -113,22 +112,19 @@ export async function getPermissionDetails(
     })
   );
 
-  // Handle the case where data is null or undefined
-  if (!data) {
+  if (!data || error) {
     return [];
   }
 
-  // Transform the data into permissionDetail format
   const permissionDetails: permissionDetail[] = Object.entries(data).map(
     ([agent, accessModes]) => ({
       agent,
       read: accessModes.read,
       write: accessModes.write,
       append: accessModes.append,
-      control: accessModes.controlRead && accessModes.controlWrite, // control is true only if both controlRead and controlWrite are true
+      control: accessModes.controlRead && accessModes.controlWrite,
     })
   );
-  console.log(permissionDetails);
 
   return permissionDetails;
 }

@@ -8,6 +8,7 @@ import {
 } from '@inrupt/solid-client';
 import { EventAggregation } from '@/entities/data/event-data';
 import { EVENT_AGGREGATION_SCHEMA } from '@/schemas/event';
+import { safeCall } from '@/utils';
 
 /**
  * Fetch aggregated event data for a player
@@ -39,9 +40,25 @@ export async function fetchAggregatedEventData({
     ? category.season.aggregation(pod, season)
     : category.aggregation(pod);
 
-  const dataset = await getSolidDataset(path, {
-    fetch: session.fetch,
-  });
+  const [error, dataset] = await safeCall(
+    getSolidDataset(path, {
+      fetch: session.fetch,
+    })
+  );
+
+  if (error) {
+    return {
+      goals: 0,
+      assists: 0,
+      yellowCards: 0,
+      redCards: 0,
+      corners: 0,
+      freeKicks: 0,
+      penalties: 0,
+      throwIns: 0,
+      throphies: 0,
+    };
+  }
 
   const thing = getThing(dataset, `${path}#aggregation`);
   if (!thing) {

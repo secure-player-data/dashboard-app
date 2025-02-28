@@ -3,21 +3,21 @@ import { useGetAllSeasonsInfo } from '@/use-cases/football-data';
 import { SeasonsSkeleton } from './seasons-skeleton';
 import { SeasonCard } from './season-card';
 
-export function ClubSeasons() {
+export function NationSeasons() {
   return (
     <>
-      <h2 className="font-bold mb-4 text-xl">Seasons</h2>
-      <ClubSeasonsInner />
+      <h2 className="font-bold text-xl mb-4">Seasons</h2>
+      <NationSeasonsInner />
     </>
   );
 }
 
-function ClubSeasonsInner() {
+function NationSeasonsInner() {
   const { session, pod } = useAuth();
   const { data: seasons, isPending } = useGetAllSeasonsInfo(
     session,
     pod,
-    'club'
+    'nation'
   );
 
   if (isPending) {

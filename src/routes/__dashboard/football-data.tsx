@@ -1,5 +1,7 @@
 import { ClubHeader } from '@/components/pages/football-data/club-header';
 import { ClubSeasons } from '@/components/pages/football-data/club-seasons';
+import { NationHeader } from '@/components/pages/football-data/nation-header';
+import { NationSeasons } from '@/components/pages/football-data/nation-seasons';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { createFileRoute } from '@tanstack/react-router';
 
@@ -17,6 +19,10 @@ function RouteComponent() {
       <TabsContent value="club" className="@container">
         <ClubHeader />
         <ClubSeasons />
+      </TabsContent>
+      <TabsContent value="nation" className="@container">
+        <NationHeader />
+        <NationSeasons />
       </TabsContent>
     </Tabs>
   );

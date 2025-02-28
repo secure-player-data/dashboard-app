@@ -1,6 +1,8 @@
 import { useAuth } from '@/context/auth-context';
 import { useGetAggregatedEventData } from '@/use-cases/event-data';
 import { useGetAggregatedFootballData } from '@/use-cases/football-data';
+import { HeaderSkeleton } from './header-skeleton';
+import { StatCard } from './stat-card';
 import {
   BarChart3,
   Calendar,
@@ -11,30 +13,28 @@ import {
   Timer,
   Trophy,
 } from 'lucide-react';
-import { HeaderSkeleton } from './header-skeleton';
-import { StatCard } from './stat-card';
 
-export function ClubHeader() {
+export function NationHeader() {
   return (
     <>
-      <h2 className="font-bold mb-4 text-xl">Overall Stats</h2>
-      <ClubHeaderInner />
+      <h2 className="font-bold text-xl mb-4">Overall Stats</h2>
+      <NationHeaderInner />
     </>
   );
 }
 
-function ClubHeaderInner() {
+function NationHeaderInner() {
   const { session, pod } = useAuth();
   const {
     data: football,
     isPending: footballPending,
     error: footballError,
-  } = useGetAggregatedFootballData(session, pod, 'club');
+  } = useGetAggregatedFootballData(session, pod, 'nation');
   const {
     data: event,
     isPending: eventPending,
     error: eventError,
-  } = useGetAggregatedEventData(session, pod, 'club');
+  } = useGetAggregatedEventData(session, pod, 'nation');
 
   if (footballPending || eventPending) {
     return <HeaderSkeleton />;

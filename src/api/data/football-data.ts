@@ -14,6 +14,7 @@ import {
 } from '@/schemas/football';
 import { EventAggregation } from '@/entities/data/event-data';
 import { fetchAggregatedEventData } from './event-data';
+import { safeCall } from '@/utils';
 
 /**
  * Fetch aggregated football data for a player
@@ -45,9 +46,15 @@ export async function fetchAggregatedFootballData({
     ? category.season.aggregation(pod, season)
     : category.aggregation(pod);
 
-  const dataset = await getSolidDataset(path, {
-    fetch: session.fetch,
-  });
+  const [error, dataset] = await safeCall(
+    getSolidDataset(path, {
+      fetch: session.fetch,
+    })
+  );
+
+  if (error) {
+    return { matches: 0, minutesPlayed: 0 };
+  }
 
   const thing = getThing(dataset, `${path}#aggregation`);
   if (!thing) {

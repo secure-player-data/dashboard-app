@@ -5,12 +5,15 @@ import {
   getSolidDataset,
   getStringNoLocale,
   getThing,
+  getThingAll,
 } from '@inrupt/solid-client';
 import { FootballAggregation, SeasonInfo } from '@/entities/data/football-data';
 import {
   FOOTBALL_AGGREGATION_SCHEMA,
   SEASON_INFO_SCHEMA,
 } from '@/schemas/football';
+import { EventAggregation } from '@/entities/data/event-data';
+import { fetchAggregatedEventData } from './event-data';
 
 /**
  * Fetch aggregated football data for a player
@@ -99,4 +102,68 @@ export async function fetchSeasonInfo({
     team: getStringNoLocale(thing, SEASON_INFO_SCHEMA.team) ?? '',
     league: getStringNoLocale(thing, SEASON_INFO_SCHEMA.league) ?? '',
   };
+}
+
+/**
+ * Fetches info for all seasons of a player
+ * @param session of the user reqiesting the data
+ * @param pod pod url of the player to fetch the data for
+ * @param type wether to fetch data for players club or nation performance
+ * @returns
+ */
+export async function fetchAllSeasonInfo({
+  session,
+  pod,
+  type,
+}: {
+  session: Session | null;
+  pod: string | null;
+  type: 'club' | 'nation';
+}): Promise<
+  { info: SeasonInfo & FootballAggregation; events: EventAggregation }[]
+> {
+  if (!session || !pod) {
+    throw new Error('Session or pod not found');
+  }
+
+  const category =
+    type === 'club' ? paths.footballData.club : paths.footballData.national;
+  const path = category.root(pod);
+
+  const dataset = await getSolidDataset(path, {
+    fetch: session.fetch,
+  });
+  const things = getThingAll(dataset).filter(
+    (thing) =>
+      thing.url !== `${path}/` && thing.url !== category.aggregation(pod)
+  );
+
+  const seasonsInfo = await Promise.all(
+    things.map(async (thing) => {
+      const season = thing.url.replace(/\/$/, '').split('/').pop();
+      const [info, aggregation, events] = await Promise.all([
+        await fetchSeasonInfo({
+          session,
+          pod,
+          type,
+          season: season!,
+        }),
+        await fetchAggregatedFootballData({
+          session,
+          pod,
+          type,
+          season,
+        }),
+        await fetchAggregatedEventData({
+          session,
+          pod,
+          type,
+          season: season!,
+        }),
+      ]);
+      return { info: { ...info, ...aggregation }, events };
+    })
+  );
+
+  return seasonsInfo;
 }

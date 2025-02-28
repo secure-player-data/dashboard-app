@@ -3,10 +3,16 @@ import { Session } from '@inrupt/solid-client-authn-browser';
 import { useQuery } from '@tanstack/react-query';
 
 const queryKeys = {
-  aggregatedEventData: (pod: string, season?: string) => [
+  aggregatedEventData: (pod: string, type: string, season?: string) => [
     'aggregated-event-data',
     pod,
+    type,
     season,
+  ],
+  allAggregatedData: (pod: string, type: string) => [
+    'all-aggregated-event-data',
+    pod,
+    type,
   ],
 };
 
@@ -17,7 +23,7 @@ export function useGetAggregatedEventData(
   season?: string
 ) {
   return useQuery({
-    queryKey: queryKeys.aggregatedEventData(pod!, season),
+    queryKey: queryKeys.aggregatedEventData(pod!, type, season),
     queryFn: () =>
       fetchAggregatedEventData({
         session,

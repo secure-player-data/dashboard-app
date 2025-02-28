@@ -1,9 +1,23 @@
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { paths } from '../paths';
-import { getInteger, getSolidDataset, getThing } from '@inrupt/solid-client';
+import {
+  getInteger,
+  getSolidDataset,
+  getThing,
+  getThingAll,
+} from '@inrupt/solid-client';
 import { EventAggregation } from '@/entities/data/event-data';
 import { EVENT_AGGREGATION_SCHEMA } from '@/schemas/event';
 
+/**
+ * Fetch aggregated event data for a player
+ * @param session of the user reqiesting the data
+ * @param pod pod url of the player to fetch the data for
+ * @param type wether to fetch data for players club or nation performance
+ * @param season (optional) if provided, fetch aggregated data for the given season,
+ * if not fetch aggregated data for player's entire career
+ * @returns
+ */
 export async function fetchAggregatedEventData({
   session,
   pod,

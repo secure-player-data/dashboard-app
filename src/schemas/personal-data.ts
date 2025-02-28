@@ -10,7 +10,5 @@ export const PERSONAL_DATA_SCHEMA = {
   height: 'https://schema.org/height',
   weight: 'https://schema.org/weight',
   dominantFoot: 'https://schema.org/dominantFoot',
-  team: 'https://schema.org/team',
-  league: 'https://schema.org/league',
   position: 'https://schema.org/position',
 };

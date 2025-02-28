@@ -9,12 +9,12 @@
   "height": 180,
   "weight": 75,
   "dominantFoot": "Right",
-  "team": "Manchester United",
-  "league": "Premier League",
   "position": "Midfielder",
   "seasons": [
     {
       "title": "2025",
+      "team": "Manchester United",
+      "league": "Premier League",
       "matches": [
         {
           "home": "Manchester United",
@@ -34,6 +34,11 @@
               "event": "Yellow Card",
               "time": "44:12",
               "notes": "Foul"
+            },
+            {
+              "event": "Assist",
+              "time": "56:32",
+              "notes": ""
             },
             {
               "event": "Goal",
@@ -166,6 +171,11 @@
               "event": "Goal",
               "time": "65:59",
               "notes": ""
+            },
+            {
+              "event": "Free Kick",
+              "time": "72:43",
+              "notes": "Right pole and out"
             },
             {
               "event": "Assist",

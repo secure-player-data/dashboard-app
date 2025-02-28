@@ -29,6 +29,8 @@ export const paths = {
           `${pod}${BASE_APP_CONTAINER}/${FOOTBALL_DATA}/club-data/${season}`,
         aggregation: (pod: string, season: string) =>
           `${pod}${BASE_APP_CONTAINER}/${FOOTBALL_DATA}/club-data/${season}/aggregation`,
+        info: (pod: string, season: string) =>
+          `${pod}${BASE_APP_CONTAINER}/${FOOTBALL_DATA}/club-data/${season}/info`,
         match: (pod: string, season: string, match: string) =>
           `${pod}${BASE_APP_CONTAINER}/${FOOTBALL_DATA}/club-data/${season}/${match}`,
       },
@@ -43,6 +45,8 @@ export const paths = {
           `${pod}${BASE_APP_CONTAINER}/${FOOTBALL_DATA}/national-data/${season}`,
         aggregation: (pod: string, season: string) =>
           `${pod}${BASE_APP_CONTAINER}/${FOOTBALL_DATA}/national-data/${season}/aggregation`,
+        info: (pod: string, season: string) =>
+          `${pod}${BASE_APP_CONTAINER}/${FOOTBALL_DATA}/national-data/${season}/info`,
         match: (pod: string, season: string, match: string) =>
           `${pod}${BASE_APP_CONTAINER}/${FOOTBALL_DATA}/national-data/${season}/${match}`,
       },

@@ -13,3 +13,9 @@ export type FootballAggregation = {
   matches: number;
   minutesPlayed: number;
 };
+
+export type SeasonInfo = {
+  season: string;
+  team: string;
+  league: string;
+};

@@ -9,12 +9,12 @@
   "height": 180,
   "weight": 75,
   "dominantFoot": "Right",
-  "team": "Manchester United",
-  "league": "Premier League",
   "position": "Midfielder",
   "seasons": [
     {
       "title": "2025",
+      "team": "Manchester United",
+      "league": "Premier League",
       "matches": [
         {
           "home": "Manchester United",

@@ -44,8 +44,6 @@ export async function fetchPersonalData(
     weight: getInteger(thing, PERSONAL_DATA_SCHEMA.weight) ?? 0,
     dominantFoot:
       getStringNoLocale(thing, PERSONAL_DATA_SCHEMA.dominantFoot) ?? '',
-    team: getStringNoLocale(thing, PERSONAL_DATA_SCHEMA.team) ?? '',
-    league: getStringNoLocale(thing, PERSONAL_DATA_SCHEMA.league) ?? '',
     position: getStringNoLocale(thing, PERSONAL_DATA_SCHEMA.position) ?? '',
   };
 }

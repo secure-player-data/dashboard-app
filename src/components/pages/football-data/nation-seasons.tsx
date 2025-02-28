@@ -33,6 +33,7 @@ function NationSeasonsInner() {
       {seasons?.map((season) => (
         <SeasonCard
           key={season.info.season}
+          type="nation"
           team={season.info.team}
           season={season.info.season}
           league={season.info.league}

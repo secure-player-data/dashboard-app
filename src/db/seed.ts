@@ -10,7 +10,7 @@ import {
 } from '@inrupt/solid-client';
 import { RDF } from '@inrupt/vocab-common-rdf';
 import { PERSONAL_DATA_SCHEMA } from '@/schemas/personal-data';
-import { FOOTBALL_DATA, paths } from '@/api/paths';
+import { paths } from '@/api/paths';
 import { safeCall } from '@/utils';
 import {
   FOOTBALL_AGGREGATION_SCHEMA,
@@ -110,6 +110,7 @@ async function seedFootballData(
         .addInteger(FOOTBALL_DATA_SCHEMA.homeScore, match.homeScore)
         .addInteger(FOOTBALL_DATA_SCHEMA.awayScore, match.awayScore)
         .addDate(FOOTBALL_DATA_SCHEMA.date, new Date(match.date))
+        .addStringNoLocale(FOOTBALL_DATA_SCHEMA.location, match.location)
         .addInteger(FOOTBALL_DATA_SCHEMA.playTime, match.playTime)
         .addStringNoLocale(FOOTBALL_DATA_SCHEMA.position, match.position)
         .build();

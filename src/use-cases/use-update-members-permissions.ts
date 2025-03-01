@@ -20,6 +20,9 @@ export function useUpdateMembersPermissions(
           pod!
         ),
       });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.accessControl.resourceList(session?.info.webId!),
+      });
     },
   });
 }

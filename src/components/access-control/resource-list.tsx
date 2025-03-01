@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { FolderOpen, FileText, Lock, Globe, Users } from 'lucide-react';
-import { resource } from '@/entities/data/resource';
+import { resource } from '@/entities/data/access-control';
 
 interface ResourceListProps {
   resourceList: resource[];

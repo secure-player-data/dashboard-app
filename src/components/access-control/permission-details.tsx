@@ -1,4 +1,4 @@
-import { act, useState } from 'react';
+import { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -8,7 +8,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Check, X, Edit, Plus, Trash2, Trash } from 'lucide-react';
+import { Check, X, Edit, Plus, Trash2 } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -35,6 +35,18 @@ interface PermissionDetailsProps {
   resourcePath: string;
 }
 
+type DialogState =
+  | { type: 'add' }
+  | { type: 'edit'; agent: string; permissions: PermissionSet }
+  | { type: 'delete'; agent: string };
+
+type PermissionSet = {
+  read: boolean;
+  write: boolean;
+  append: boolean;
+  control: boolean;
+};
+
 export default function PermissionDetails({
   resourcePath,
 }: PermissionDetailsProps) {
@@ -44,12 +56,10 @@ export default function PermissionDetails({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [activeAgent, setActiveAgent] = useState<string>('');
-  const [activePermissions, setActivePermissions] = useState({
-    read: false,
-    write: false,
-    append: false,
-    control: false,
-  });
+  const [read, setRead] = useState<boolean>(false);
+  const [write, setWrite] = useState<boolean>(false);
+  const [append, setAppend] = useState<boolean>(false);
+  const [control, setControl] = useState<boolean>(false);
 
   const { data: permissions, isPending: permissionsPending } =
     useGetPermissionDetails(session, fullResourcePath);
@@ -62,6 +72,39 @@ export default function PermissionDetails({
       return 'Public';
     }
     return agent;
+  };
+
+  const resetAccesses = () => {
+    setRead(false);
+    setWrite(false);
+    setAppend(false);
+    setControl(false);
+  };
+
+  const handleAddAgent = () => {
+    const memberWithPermissions: MemberWithPermissions[] = [
+      {
+        webId: activeAgent,
+        pod: '',
+        name: '',
+        role: '',
+        permissions: {
+          read: read,
+          write: write,
+          append: append,
+          control: control,
+        },
+      },
+    ];
+    updateMutation(memberWithPermissions, {
+      onSuccess: () => {
+        setShowAddDialog(false), toast('Agent was added!');
+      },
+      onError: () => {
+        toast('Whoops something went wrong! Please try again');
+      },
+    });
+    resetAccesses();
   };
 
   const handleDeletePermissions = () => {
@@ -87,6 +130,7 @@ export default function PermissionDetails({
         toast('Whoops something went wrong! Please try again');
       },
     });
+    resetAccesses();
   };
 
   const handleEditPermissions = () => {
@@ -97,10 +141,10 @@ export default function PermissionDetails({
         name: '',
         role: '',
         permissions: {
-          read: activePermissions.read,
-          write: activePermissions.write,
-          append: activePermissions.append,
-          control: activePermissions.control,
+          read: read,
+          write: write,
+          append: append,
+          control: control,
         },
       },
     ];
@@ -112,6 +156,7 @@ export default function PermissionDetails({
         toast('Whoops something went wrong! Please try again');
       },
     });
+    resetAccesses();
   };
 
   if (permissionsPending) {
@@ -150,30 +195,54 @@ export default function PermissionDetails({
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="read" />
+                  <Checkbox
+                    id="read"
+                    onCheckedChange={() => {
+                      setRead(!read);
+                    }}
+                  />
                   <Label htmlFor="read">Read</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="write" />
+                  <Checkbox
+                    id="write"
+                    onCheckedChange={() => {
+                      setWrite(!write);
+                    }}
+                  />
                   <Label htmlFor="write">Write</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="append" />
+                  <Checkbox
+                    id="append"
+                    onCheckedChange={() => {
+                      setAppend(!append);
+                    }}
+                  />
                   <Label htmlFor="append">Append</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="control" />
+                  <Checkbox
+                    id="control"
+                    onCheckedChange={() => {
+                      setControl(!control);
+                    }}
+                  />
                   <Label htmlFor="control">Control</Label>
                 </div>
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setShowAddDialog(false)}>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowAddDialog(false);
+                  resetAccesses();
+                }}
+              >
                 Cancel
               </Button>
-              <Button onClick={() => setShowAddDialog(false)}>
-                Save Permissions
-              </Button>
+              <Button onClick={() => handleAddAgent()}>Save Permissions</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -192,7 +261,10 @@ export default function PermissionDetails({
             <DialogFooter>
               <Button
                 variant="outline"
-                onClick={() => setShowDeleteDialog(false)}
+                onClick={() => {
+                  setShowDeleteDialog(false);
+                  resetAccesses();
+                }}
               >
                 Cancel
               </Button>
@@ -222,14 +294,9 @@ export default function PermissionDetails({
                   <Checkbox
                     id="read"
                     disabled={activeAgent == session?.info.webId!}
-                    checked={activePermissions.read}
+                    checked={read}
                     onCheckedChange={() => {
-                      setActivePermissions({
-                        read: !activePermissions.read,
-                        write: activePermissions.write,
-                        append: activePermissions.append,
-                        control: activePermissions.control,
-                      });
+                      setRead(!read);
                     }}
                   />
                   <Label htmlFor="read">Read</Label>
@@ -238,14 +305,9 @@ export default function PermissionDetails({
                   <Checkbox
                     id="write"
                     disabled={activeAgent == session?.info.webId!}
-                    checked={activePermissions.write}
+                    checked={write}
                     onCheckedChange={() => {
-                      setActivePermissions({
-                        read: activePermissions.read,
-                        write: !activePermissions.write,
-                        append: activePermissions.append,
-                        control: activePermissions.control,
-                      });
+                      setWrite(!write);
                     }}
                   />
                   <Label htmlFor="write">Write</Label>
@@ -254,14 +316,9 @@ export default function PermissionDetails({
                   <Checkbox
                     id="append"
                     disabled={activeAgent == session?.info.webId!}
-                    checked={activePermissions.append}
+                    checked={append}
                     onCheckedChange={() => {
-                      setActivePermissions({
-                        read: activePermissions.read,
-                        write: activePermissions.write,
-                        append: !activePermissions.append,
-                        control: activePermissions.control,
-                      });
+                      setAppend(!append);
                     }}
                   />
                   <Label htmlFor="append">Append</Label>
@@ -270,16 +327,9 @@ export default function PermissionDetails({
                   <Checkbox
                     id="control"
                     disabled={activeAgent == session?.info.webId!}
-                    checked={activePermissions.control}
-                    onCheckedChange={(old) => {
-                      setActivePermissions({
-                        read: activePermissions.read,
-                        write: activePermissions.write,
-                        append: activePermissions.append,
-                        control: !activePermissions.control,
-                      });
-
-                      return !old;
+                    checked={control}
+                    onCheckedChange={() => {
+                      setControl(!control);
                     }}
                   />
                   <Label htmlFor="control">Control</Label>
@@ -290,7 +340,10 @@ export default function PermissionDetails({
             <DialogFooter>
               <Button
                 variant="outline"
-                onClick={() => setShowDeleteDialog(false)}
+                onClick={() => {
+                  setShowDeleteDialog(false);
+                  resetAccesses();
+                }}
               >
                 Cancel
               </Button>
@@ -362,12 +415,10 @@ export default function PermissionDetails({
                     onClick={() => {
                       setShowEditDialog(!showEditDialog);
                       setActiveAgent(permission.agent);
-                      setActivePermissions({
-                        read: permission.read,
-                        write: permission.write,
-                        append: permission.append,
-                        control: permission.control,
-                      });
+                      setRead(permission.read);
+                      setWrite(permission.write);
+                      setAppend(permission.append);
+                      setControl(permission.control);
                     }}
                   >
                     <Edit className="h-4 w-4" />

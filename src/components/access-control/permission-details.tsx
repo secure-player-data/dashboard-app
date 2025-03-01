@@ -400,6 +400,7 @@ export default function PermissionDetails({
                   <Button
                     variant="ghost"
                     size="icon"
+                    disabled={permission.agent === session?.info.webId!}
                     onClick={() => {
                       setShowDialog('edit');
                       setActiveAgent(permission.agent);
@@ -417,6 +418,7 @@ export default function PermissionDetails({
                   <Button
                     variant="ghost"
                     size="icon"
+                    disabled={permission.agent === session?.info.webId!}
                     onClick={() => {
                       setShowDialog('delete');
                       setActiveAgent(permission.agent);

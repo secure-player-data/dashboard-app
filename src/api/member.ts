@@ -118,7 +118,7 @@ export async function fetchMembersWithPermissions(
  * TODO: Update this for new file structure
  */
 export async function updateMembersPermissions(
-  members: MemberWithPermissions[],
+  member: MemberWithPermissions,
   session: Session | null,
   pod: string | null
 ) {
@@ -126,35 +126,31 @@ export async function updateMembersPermissions(
     throw new SessionNotSetException('No session provided');
   }
 
-  await Promise.all(
-    members.map(async (member) => {
-      if (member.webId === session.info.webId) {
-        console.log('Cannot update own permissions');
-        return;
-      }
+  if (member.webId === session.info.webId) {
+    console.log('Cannot update own permissions');
+    return;
+  }
 
-      const modes = [] as Permission[];
-      if (member.permissions.read) {
-        modes.push('Read');
-      }
-      if (member.permissions.write) {
-        modes.push('Write');
-      }
-      if (member.permissions.append) {
-        modes.push('Append');
-      }
-      if (member.permissions.control) {
-        modes.push('Control');
-      }
+  const modes = [] as Permission[];
+  if (member.permissions.read) {
+    modes.push('Read');
+  }
+  if (member.permissions.write) {
+    modes.push('Write');
+  }
+  if (member.permissions.append) {
+    modes.push('Append');
+  }
+  if (member.permissions.control) {
+    modes.push('Control');
+  }
 
-      await updateAgentAccess({
-        session,
-        agentWebId: member.webId,
-        containerUrl: pod!,
-        modes,
-      });
-    })
-  );
+  await updateAgentAccess({
+    session,
+    agentWebId: member.webId,
+    containerUrl: pod!,
+    modes,
+  });
 }
 
 /**

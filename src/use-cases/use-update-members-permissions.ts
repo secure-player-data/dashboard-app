@@ -11,7 +11,7 @@ export function useUpdateMembersPermissions(
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: MemberWithPermissions[]) =>
+    mutationFn: (data: MemberWithPermissions) =>
       updateMembersPermissions(data, session, pod),
     onSuccess: () => {
       queryClient.invalidateQueries({

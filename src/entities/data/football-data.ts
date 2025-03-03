@@ -5,7 +5,8 @@ export type FootballData = {
   homeScore: number;
   awayScore: number;
   date: Date;
-  playTime: string; // How long the player played
+  location: string;
+  playTime: number; // How long the player played
   playerPosition: string; // Where the player played in the match
 };
 

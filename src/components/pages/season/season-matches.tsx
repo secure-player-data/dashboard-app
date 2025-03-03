@@ -98,7 +98,7 @@ function MatchCard({ match, team }: { match: FootballData; team: string }) {
   }
 
   return (
-    <Link to="/">
+    <Link to="/matches/$match" params={{ match: match.url }}>
       <Card className="p-4 hover:scale-[101%] transition-transform">
         <div className="mb-4 text-sm">
           <p className="font-semibold">

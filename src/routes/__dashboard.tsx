@@ -1,6 +1,5 @@
 import {
   createFileRoute,
-  Link,
   Outlet,
   redirect,
   useNavigate,
@@ -80,7 +79,7 @@ function RouteComponent() {
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumb>
+            {/* <Breadcrumb>
               <BreadcrumbList>
                 {paths.map((path, index) => {
                   return (
@@ -98,7 +97,7 @@ function RouteComponent() {
                   );
                 })}
               </BreadcrumbList>
-            </Breadcrumb>
+            </Breadcrumb> */}
           </div>
         </header>
         <div className="px-4 h-full w-full">

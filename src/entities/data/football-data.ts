@@ -1,5 +1,6 @@
 // Represents the data of a football match for a player
 export type FootballData = {
+  url: string;
   home: string;
   away: string;
   homeScore: number;

@@ -1,4 +1,7 @@
-import { fetchAggregatedEventData } from '@/api/data/event-data';
+import {
+  fetchAggregatedEventData,
+  fetchEventsForMatch,
+} from '@/api/data/event-data';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { useQuery } from '@tanstack/react-query';
 
@@ -13,6 +16,13 @@ const queryKeys = {
     'all-aggregated-event-data',
     pod,
     type,
+  ],
+  matchEvents: (pod: string, type: string, season: string, matchId: string) => [
+    'match-events',
+    pod,
+    type,
+    season,
+    matchId,
   ],
 };
 
@@ -30,6 +40,27 @@ export function useGetAggregatedEventData(
         pod,
         type,
         season,
+      }),
+    enabled: !!session && !!pod,
+  });
+}
+
+export function useGetEventsForMatch(
+  session: Session | null,
+  pod: string | null,
+  type: 'club' | 'nation',
+  season: string,
+  matchId: string
+) {
+  return useQuery({
+    queryKey: queryKeys.matchEvents(pod!, type, season, matchId),
+    queryFn: () =>
+      fetchEventsForMatch({
+        session,
+        pod,
+        season,
+        type,
+        matchId,
       }),
     enabled: !!session && !!pod,
   });

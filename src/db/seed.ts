@@ -302,7 +302,7 @@ async function seedEventsForMatch(
     const eventId = crypto.randomUUID();
     const thing = buildThing(createThing({ name: eventId }))
       .addUrl(RDF.type, EVENT_DATA_SCHEMA.type)
-      .addStringNoLocale(EVENT_DATA_SCHEMA.type, event.event)
+      .addStringNoLocale(EVENT_DATA_SCHEMA.event, event.event)
       .addStringNoLocale(EVENT_DATA_SCHEMA.time, event.time)
       .addStringNoLocale(EVENT_DATA_SCHEMA.notes, event.notes)
       .build();

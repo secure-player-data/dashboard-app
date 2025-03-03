@@ -26,6 +26,7 @@ import { Route as dashboardAccessHistoryImport } from './routes/__dashboard/acce
 import { Route as dashboardAccessControlImport } from './routes/__dashboard/access-control'
 import { Route as AuthSetupTeamImport } from './routes/auth/_setup.team'
 import { Route as AuthSetupProfileImport } from './routes/auth/_setup.profile'
+import { Route as dashboardTeamOutsourcingImport } from './routes/__dashboard/team/outsourcing'
 import { Route as dashboardTeamMembersImport } from './routes/__dashboard/team/members'
 import { Route as dashboardTeamDetailsImport } from './routes/__dashboard/team/details'
 import { Route as dashboardSeasonsSeasonImport } from './routes/__dashboard/seasons.$season'
@@ -118,6 +119,12 @@ const AuthSetupProfileRoute = AuthSetupProfileImport.update({
   id: '/profile',
   path: '/profile',
   getParentRoute: () => AuthSetupRoute,
+} as any)
+
+const dashboardTeamOutsourcingRoute = dashboardTeamOutsourcingImport.update({
+  id: '/team/outsourcing',
+  path: '/team/outsourcing',
+  getParentRoute: () => dashboardRoute,
 } as any)
 
 const dashboardTeamMembersRoute = dashboardTeamMembersImport.update({
@@ -254,6 +261,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboardTeamMembersImport
       parentRoute: typeof dashboardImport
     }
+    '/__dashboard/team/outsourcing': {
+      id: '/__dashboard/team/outsourcing'
+      path: '/team/outsourcing'
+      fullPath: '/team/outsourcing'
+      preLoaderRoute: typeof dashboardTeamOutsourcingImport
+      parentRoute: typeof dashboardImport
+    }
     '/auth/_setup/profile': {
       id: '/auth/_setup/profile'
       path: '/profile'
@@ -316,6 +330,7 @@ interface dashboardRouteChildren {
   dashboardSeasonsSeasonRoute: typeof dashboardSeasonsSeasonRoute
   dashboardTeamDetailsRoute: typeof dashboardTeamDetailsRoute
   dashboardTeamMembersRoute: typeof dashboardTeamMembersRoute
+  dashboardTeamOutsourcingRoute: typeof dashboardTeamOutsourcingRoute
 }
 
 const dashboardRouteChildren: dashboardRouteChildren = {
@@ -329,6 +344,7 @@ const dashboardRouteChildren: dashboardRouteChildren = {
   dashboardSeasonsSeasonRoute: dashboardSeasonsSeasonRoute,
   dashboardTeamDetailsRoute: dashboardTeamDetailsRoute,
   dashboardTeamMembersRoute: dashboardTeamMembersRoute,
+  dashboardTeamOutsourcingRoute: dashboardTeamOutsourcingRoute,
 }
 
 const dashboardRouteWithChildren = dashboardRoute._addFileChildren(
@@ -351,6 +367,7 @@ export interface FileRoutesByFullPath {
   '/seasons/$season': typeof dashboardSeasonsSeasonRoute
   '/team/details': typeof dashboardTeamDetailsRoute
   '/team/members': typeof dashboardTeamMembersRoute
+  '/team/outsourcing': typeof dashboardTeamOutsourcingRoute
   '/auth/profile': typeof AuthSetupProfileRoute
   '/auth/team': typeof AuthSetupTeamRoute
 }
@@ -370,6 +387,7 @@ export interface FileRoutesByTo {
   '/seasons/$season': typeof dashboardSeasonsSeasonRoute
   '/team/details': typeof dashboardTeamDetailsRoute
   '/team/members': typeof dashboardTeamMembersRoute
+  '/team/outsourcing': typeof dashboardTeamOutsourcingRoute
   '/auth/profile': typeof AuthSetupProfileRoute
   '/auth/team': typeof AuthSetupTeamRoute
 }
@@ -392,6 +410,7 @@ export interface FileRoutesById {
   '/__dashboard/seasons/$season': typeof dashboardSeasonsSeasonRoute
   '/__dashboard/team/details': typeof dashboardTeamDetailsRoute
   '/__dashboard/team/members': typeof dashboardTeamMembersRoute
+  '/__dashboard/team/outsourcing': typeof dashboardTeamOutsourcingRoute
   '/auth/_setup/profile': typeof AuthSetupProfileRoute
   '/auth/_setup/team': typeof AuthSetupTeamRoute
 }
@@ -414,6 +433,7 @@ export interface FileRouteTypes {
     | '/seasons/$season'
     | '/team/details'
     | '/team/members'
+    | '/team/outsourcing'
     | '/auth/profile'
     | '/auth/team'
   fileRoutesByTo: FileRoutesByTo
@@ -432,6 +452,7 @@ export interface FileRouteTypes {
     | '/seasons/$season'
     | '/team/details'
     | '/team/members'
+    | '/team/outsourcing'
     | '/auth/profile'
     | '/auth/team'
   id:
@@ -452,6 +473,7 @@ export interface FileRouteTypes {
     | '/__dashboard/seasons/$season'
     | '/__dashboard/team/details'
     | '/__dashboard/team/members'
+    | '/__dashboard/team/outsourcing'
     | '/auth/_setup/profile'
     | '/auth/_setup/team'
   fileRoutesById: FileRoutesById
@@ -502,7 +524,8 @@ export const routeTree = rootRoute
         "/__dashboard/",
         "/__dashboard/seasons/$season",
         "/__dashboard/team/details",
-        "/__dashboard/team/members"
+        "/__dashboard/team/members",
+        "/__dashboard/team/outsourcing"
       ]
     },
     "/__dashboard/access-control": {
@@ -563,6 +586,10 @@ export const routeTree = rootRoute
     },
     "/__dashboard/team/members": {
       "filePath": "__dashboard/team/members.tsx",
+      "parent": "/__dashboard"
+    },
+    "/__dashboard/team/outsourcing": {
+      "filePath": "__dashboard/team/outsourcing.tsx",
       "parent": "/__dashboard"
     },
     "/auth/_setup/profile": {

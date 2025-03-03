@@ -20,7 +20,7 @@ export const columns: ColumnDef<Member>[] = [
 
       return (
         <Button variant="link" asChild className="p-0">
-          <Link to="/team/members/$pod" params={{ pod }}>
+          <Link to="/team/members">
             View <ChevronRight className="size-4" />
           </Link>
         </Button>

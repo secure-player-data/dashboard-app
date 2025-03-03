@@ -9,7 +9,5 @@ export type PersonalData = {
   height: number;
   weight: number;
   dominantFoot: string;
-  team: string;
-  league: string;
   position: string;
 };

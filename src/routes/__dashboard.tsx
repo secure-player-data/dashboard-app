@@ -102,19 +102,6 @@ function RouteComponent() {
           </div>
         </header>
         <div className="px-4 h-full w-full">
-          {profile?.team === null && (
-            <div className="mb-8 border-2 border-blue-400 bg-blue-400/10 p-4 rounded-md">
-              <Info className="mb-2" />
-              <h1 className="text-lg font-semibold">No Team Available</h1>
-              <p className="text-sm">
-                You are currently not assosiated with any team. Go to{' '}
-                <Link to="/team/details" className="underline">
-                  team details
-                </Link>{' '}
-                to either send a request to join a team or create your own.
-              </p>
-            </div>
-          )}
           <Outlet />
         </div>
       </SidebarInset>

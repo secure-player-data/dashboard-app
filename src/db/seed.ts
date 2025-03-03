@@ -10,11 +10,12 @@ import {
 } from '@inrupt/solid-client';
 import { RDF } from '@inrupt/vocab-common-rdf';
 import { PERSONAL_DATA_SCHEMA } from '@/schemas/personal-data';
-import { paths } from '@/api/paths';
+import { FOOTBALL_DATA, paths } from '@/api/paths';
 import { safeCall } from '@/utils';
 import {
   FOOTBALL_AGGREGATION_SCHEMA,
   FOOTBALL_DATA_SCHEMA,
+  SEASON_INFO_SCHEMA,
 } from '@/schemas/football';
 import { EVENT_AGGREGATION_SCHEMA, EVENT_DATA_SCHEMA } from '@/schemas/event';
 import { TRACKING_DATA_SCHEMA } from '@/schemas/tracking-data';
@@ -46,7 +47,7 @@ export async function seedDb(session: Session, pod: string) {
 
   // Seed data
   await seedPersonalData(session, pod, data);
-  await seedMatchData(session, pod, data.seasons[0]);
+  await seedFootballData(session, pod, data.seasons[0]);
   await seedAggregationData(session, pod, data);
 }
 
@@ -80,8 +81,6 @@ async function seedPersonalData(session: Session, pod: string, data: TData) {
     .addInteger(PERSONAL_DATA_SCHEMA.height, data.height)
     .addInteger(PERSONAL_DATA_SCHEMA.weight, data.weight)
     .addStringNoLocale(PERSONAL_DATA_SCHEMA.dominantFoot, data.dominantFoot)
-    .addStringNoLocale(PERSONAL_DATA_SCHEMA.team, data.team)
-    .addStringNoLocale(PERSONAL_DATA_SCHEMA.league, data.league)
     .addStringNoLocale(PERSONAL_DATA_SCHEMA.position, data.position)
     .build();
   dataset = setThing(dataset, thing);
@@ -92,7 +91,11 @@ async function seedPersonalData(session: Session, pod: string, data: TData) {
   );
 }
 
-async function seedMatchData(session: Session, pod: string, season: TSeason) {
+async function seedFootballData(
+  session: Session,
+  pod: string,
+  season: TSeason
+) {
   console.log('Seeding football data...');
 
   await Promise.all(
@@ -135,6 +138,31 @@ async function seedMatchData(session: Session, pod: string, season: TSeason) {
         match.biometric
       );
     })
+  );
+
+  await seedSeasonMetadata(session, pod, season);
+}
+
+async function seedSeasonMetadata(
+  session: Session,
+  pod: string,
+  season: TSeason
+) {
+  console.log('Seeding season metadata...');
+
+  let dataset = createSolidDataset();
+  const thing = buildThing(createThing({ name: 'season-info' }))
+    .addUrl(RDF.type, SEASON_INFO_SCHEMA.type)
+    .addStringNoLocale(SEASON_INFO_SCHEMA.season, season.title)
+    .addStringNoLocale(SEASON_INFO_SCHEMA.team, season.team)
+    .addStringNoLocale(SEASON_INFO_SCHEMA.league, season.league)
+    .build();
+  dataset = setThing(dataset, thing);
+
+  await saveSolidDatasetAt(
+    paths.footballData.club.season.info(pod, season.title),
+    dataset,
+    { fetch: session.fetch }
   );
 }
 
@@ -264,6 +292,14 @@ async function seedAggregationData(session: Session, pod: string, data: TData) {
       FOOTBALL_AGGREGATION_SCHEMA.matches,
       data.seasons.flatMap((season) => season.matches).length
     )
+    .addInteger(
+      FOOTBALL_AGGREGATION_SCHEMA.minutesPlayed,
+      data.seasons
+        .flatMap((season) =>
+          season.matches.reduce((acc, curr) => acc + curr.playTime, 0)
+        )
+        .reduce((acc, curr) => acc + curr, 0)
+    )
     .build();
   clubMatchAggregation = setThing(clubMatchAggregation, clubAggregationThing);
   aggregationDatasets.push({
@@ -278,9 +314,10 @@ async function seedAggregationData(session: Session, pod: string, data: TData) {
       createThing({ name: 'aggregation' })
     )
       .addUrl(RDF.type, FOOTBALL_AGGREGATION_SCHEMA.type)
+      .addInteger(FOOTBALL_AGGREGATION_SCHEMA.matches, season.matches.length)
       .addInteger(
-        FOOTBALL_AGGREGATION_SCHEMA.matches,
-        data.seasons[0].matches.length
+        FOOTBALL_DATA_SCHEMA.playTime,
+        season.matches.reduce((acc, curr) => acc + curr.playTime, 0)
       )
       .build();
     seasonMatchAggregation = setThing(
@@ -304,6 +341,7 @@ async function seedAggregationData(session: Session, pod: string, data: TData) {
   )
     .addUrl(RDF.type, EVENT_DATA_SCHEMA.type)
     .addInteger(EVENT_AGGREGATION_SCHEMA.goals, clubEventTotals.goals)
+    .addInteger(EVENT_AGGREGATION_SCHEMA.assists, clubEventTotals.assists)
     .addInteger(
       EVENT_AGGREGATION_SCHEMA.yellowCards,
       clubEventTotals.yellowCards
@@ -332,6 +370,7 @@ async function seedAggregationData(session: Session, pod: string, data: TData) {
     )
       .addUrl(RDF.type, EVENT_DATA_SCHEMA.type)
       .addInteger(EVENT_AGGREGATION_SCHEMA.goals, seasonEventTotals.goals)
+      .addInteger(EVENT_AGGREGATION_SCHEMA.assists, seasonEventTotals.assists)
       .addInteger(
         EVENT_AGGREGATION_SCHEMA.yellowCards,
         seasonEventTotals.yellowCards
@@ -370,6 +409,7 @@ async function seedAggregationData(session: Session, pod: string, data: TData) {
 function getEventAggregation(matches: TMatch[]) {
   const eventTotals = {
     goals: 0,
+    assists: 0,
     yellowCards: 0,
     redCards: 0,
     corners: 0,
@@ -382,6 +422,9 @@ function getEventAggregation(matches: TMatch[]) {
       switch (event.event) {
         case 'Goal':
           eventTotals.goals++;
+          break;
+        case 'Assist':
+          eventTotals.assists++;
           break;
         case 'Yellow Card':
           eventTotals.yellowCards++;

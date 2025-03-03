@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/context/auth-context';
+import { useGetSeasonInfo } from '@/use-cases/football-data';
 import { useGetPersonalData } from '@/use-cases/personal-data';
 import { birthdateToAge } from '@/utils';
 import { TabsContent } from '@radix-ui/react-tabs';
@@ -29,6 +30,12 @@ export const Route = createFileRoute('/__dashboard/personal-data')({
 function RouteComponent() {
   const { session, pod } = useAuth();
   const { data: player, isPending, error } = useGetPersonalData(session, pod);
+  const { data: season } = useGetSeasonInfo(
+    session,
+    pod,
+    'club',
+    new Date().getFullYear().toString()
+  );
 
   if (isPending) {
     return <Loader2 className="size-4 animate-spin" />;
@@ -75,12 +82,12 @@ function RouteComponent() {
                 <div className="flex items-center gap-2">
                   <Users className="size-4" />
                   <span className="font-medium">Current team:</span>
-                  <span>{player.team}</span>
+                  <span>{season?.team}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Trophy className="size-4" />
                   <span className="font-medium">League:</span>
-                  <span>{player.league}</span>
+                  <span>{season?.league}</span>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -161,12 +168,12 @@ function RouteComponent() {
                   <DetailsValue
                     icon={Shirt}
                     label="Current team"
-                    value={player.team}
+                    value={season?.team ?? '-'}
                   />
                   <DetailsValue
                     icon={Trophy}
                     label="League"
-                    value={player.league}
+                    value={season?.league ?? '-'}
                   />
                   <DetailsValue
                     icon={Footprints}

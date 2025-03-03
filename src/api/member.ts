@@ -122,7 +122,10 @@ export async function fetchMembersWithPermissions(
  * TODO: Update this for new file structure
  */
 export async function updateActorPermissions(
-  member: MemberWithPermissions | ActorWithPermissions,
+  member:
+    | MemberWithPermissions
+    | ActorWithPermissions
+    | MemberWithPermissions[],
   session: Session | null,
   pod: string | null
 ) {
@@ -130,31 +133,63 @@ export async function updateActorPermissions(
     throw new SessionNotSetException('No session provided');
   }
 
-  if (member.webId === session.info.webId) {
-    console.log('Cannot update own permissions');
-    return;
-  }
+  if (Array.isArray(member)) {
+    Promise.all(
+      member.map(async (mem) => {
+        if (mem.webId === session.info.webId) {
+          console.log('Cannot update own permissions');
+          return;
+        }
 
-  const modes = [] as Permission[];
-  if (member.permissions.read) {
-    modes.push('Read');
-  }
-  if (member.permissions.write) {
-    modes.push('Write');
-  }
-  if (member.permissions.append) {
-    modes.push('Append');
-  }
-  if (member.permissions.control) {
-    modes.push('Control');
-  }
+        const modes = [] as Permission[];
+        if (mem.permissions.read) {
+          modes.push('Read');
+        }
+        if (mem.permissions.write) {
+          modes.push('Write');
+        }
+        if (mem.permissions.append) {
+          modes.push('Append');
+        }
+        if (mem.permissions.control) {
+          modes.push('Control');
+        }
 
-  await updateAgentAccess({
-    session,
-    agentWebId: member.webId,
-    containerUrl: pod!,
-    modes,
-  });
+        await updateAgentAccess({
+          session,
+          agentWebId: mem.webId,
+          containerUrl: pod!,
+          modes,
+        });
+      })
+    );
+  } else {
+    if (member.webId === session.info.webId) {
+      console.log('Cannot update own permissions');
+      return;
+    }
+
+    const modes = [] as Permission[];
+    if (member.permissions.read) {
+      modes.push('Read');
+    }
+    if (member.permissions.write) {
+      modes.push('Write');
+    }
+    if (member.permissions.append) {
+      modes.push('Append');
+    }
+    if (member.permissions.control) {
+      modes.push('Control');
+    }
+
+    await updateAgentAccess({
+      session,
+      agentWebId: member.webId,
+      containerUrl: pod!,
+      modes,
+    });
+  }
 }
 
 /**

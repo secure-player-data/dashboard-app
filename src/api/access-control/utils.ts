@@ -4,6 +4,12 @@ import { safeCall } from '@/utils';
 import { isAcpControlled } from '@inrupt/solid-client/acp/acp';
 import { Acp } from './acp';
 import { Acl } from './acl';
+import { getSolidDataset, getThingAll, Thing } from '@inrupt/solid-client';
+import { paths } from '../paths';
+import { getAgentAccessAll } from '.';
+import { SessionNotSetException } from '@/exceptions/session-exceptions';
+import { permissionDetail, resource } from '@/entities/data/access-control';
+import PermissionDetails from '@/components/access-control/permission-details';
 
 /**
  * Returns the correct access control service based on the protocol used
@@ -26,4 +32,99 @@ export async function getAccessControlService(
     return Acp.getInstance();
   }
   return Acl.getInstance();
+}
+
+/**
+ * creates a list of resources including:
+ * * path
+ * * type (folder or file)
+ * * access level (shared, private or public)
+ * @param session of the logged in user
+ * @param pod url of the pod the app is working with
+ * TODO: Create a tanstack use-case for this
+ */
+export async function getResourceList(
+  session: Session | null,
+  pod: string | null
+) {
+  if (!session || !pod) {
+    throw new SessionNotSetException('No session provided');
+  }
+  const container = await getSolidDataset(paths.root(pod), {
+    fetch: session.fetch,
+  });
+
+  let things = getThingAll(container);
+
+  const excludeUrls = new Set(['', 'inbox/', 'access history/']);
+  things = things.reduce<Thing[]>((acc, thing) => {
+    const url = thing.url.split('secure-player-data/')[1]; // Get the last part of the URL
+    if (!excludeUrls.has(url!)) {
+      acc.push(thing as never);
+    }
+    return acc;
+  }, []);
+
+  const resourceList: resource[] = await Promise.all(
+    things.map(async (thing) => {
+      const url = thing.url;
+      const path = thing.url.split('secure-player-data/');
+      const accesses = await getAgentAccessAll({ session, url });
+
+      const accessKeys = Object.keys(accesses || {}); // Ensuring accesses is not undefined
+      let accessLevel = 'private';
+
+      // check access levels
+      if (accessKeys.includes('http://www.w3.org/ns/solid/acp#PublicAgent')) {
+        accessLevel = 'public';
+      } else if (accessKeys.length > 1) {
+        accessLevel = 'shared';
+      }
+
+      return {
+        path: path[1],
+        type: path[1].endsWith('/') ? 'folder' : 'file',
+        accessLevel,
+      };
+    })
+  );
+
+  return resourceList;
+}
+
+/**
+ * Wrapper for getAgentAccessAll
+ * @param session of the logged in user
+ * @param url of the path to get permissions
+ */
+export async function getPermissionDetails(
+  session: Session | null,
+  url: string | null
+) {
+  if (!session || !url) {
+    throw new SessionNotSetException('No session provided');
+  }
+
+  const [error, data] = await safeCall(
+    getAgentAccessAll({
+      session,
+      url,
+    })
+  );
+
+  if (!data || error) {
+    return [];
+  }
+
+  const permissionDetails: permissionDetail[] = Object.entries(data).map(
+    ([agent, accessModes]) => ({
+      agent,
+      read: accessModes.read,
+      write: accessModes.write,
+      append: accessModes.append,
+      control: accessModes.controlRead && accessModes.controlWrite,
+    })
+  );
+
+  return permissionDetails;
 }

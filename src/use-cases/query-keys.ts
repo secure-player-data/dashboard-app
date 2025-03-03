@@ -25,4 +25,12 @@ export const queryKeys = {
   ) => ['accessRequest', sessionId, receiverPod, receiverWebId, accessRequest],
   inbox: (sessionId: string) => ['inbox', sessionId],
   accessHistory: (sessionId: string) => ['accessHistory', sessionId],
+  accessControl: {
+    resourceList: (sessionId: string) => ['resourceList', sessionId],
+    permissionDetails: (sessionId: string, url: string) => [
+      'permissionDetails',
+      sessionId,
+      url,
+    ],
+  },
 };

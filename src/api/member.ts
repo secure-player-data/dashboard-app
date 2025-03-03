@@ -1,4 +1,8 @@
-import { Member, MemberWithPermissions } from '@/entities/data/member';
+import {
+  ActorWithPermissions,
+  Member,
+  MemberWithPermissions,
+} from '@/entities/data/member';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { fetchTeamUrl } from './team';
 import { SessionNotSetException } from '@/exceptions/session-exceptions';
@@ -115,9 +119,10 @@ export async function fetchMembersWithPermissions(
  * @param members object containing the members and their new permissions
  * @param session of the requesting user
  * @param pod pod url of the user to update the permissions for
+ * TODO: Update this for new file structure
  */
-export async function updateMembersPermissions(
-  members: MemberWithPermissions[],
+export async function updateActorPermissions(
+  member: MemberWithPermissions | ActorWithPermissions,
   session: Session | null,
   pod: string | null
 ) {
@@ -125,35 +130,31 @@ export async function updateMembersPermissions(
     throw new SessionNotSetException('No session provided');
   }
 
-  await Promise.all(
-    members.map(async (member) => {
-      if (member.webId === session.info.webId) {
-        console.log('Cannot update own permissions');
-        return;
-      }
+  if (member.webId === session.info.webId) {
+    console.log('Cannot update own permissions');
+    return;
+  }
 
-      const modes = [] as Permission[];
-      if (member.permissions.read) {
-        modes.push('Read');
-      }
-      if (member.permissions.write) {
-        modes.push('Write');
-      }
-      if (member.permissions.append) {
-        modes.push('Append');
-      }
-      if (member.permissions.control) {
-        modes.push('Control');
-      }
+  const modes = [] as Permission[];
+  if (member.permissions.read) {
+    modes.push('Read');
+  }
+  if (member.permissions.write) {
+    modes.push('Write');
+  }
+  if (member.permissions.append) {
+    modes.push('Append');
+  }
+  if (member.permissions.control) {
+    modes.push('Control');
+  }
 
-      await updateAgentAccess({
-        session,
-        agentWebId: member.webId,
-        containerUrl: `${pod}${BASE_APP_CONTAINER}/${DATA_CONTAINER}/`,
-        modes,
-      });
-    })
-  );
+  await updateAgentAccess({
+    session,
+    agentWebId: member.webId,
+    containerUrl: pod!,
+    modes,
+  });
 }
 
 /**

@@ -1,9 +1,10 @@
-import AccessControlProvider from '@/components/tables/access-control/access-control-context';
-import { columns } from '@/components/tables/access-control/columns';
-import { DataTable } from '@/components/tables/access-control/data-table';
+import { getPermissionDetails } from '@/api/access-control/utils';
+import AccessControlPanel from '@/components/access-control/access-control-panel';
 import { useAuth } from '@/context/auth-context';
-import { useGetMembersWithPermissions } from '@/use-cases/use-get-members-with-permissions';
+import { useGetPermissionDetails } from '@/use-cases/use-get-permission-details';
+import { useGetResourceList } from '@/use-cases/use-get-resource-list';
 import { createFileRoute } from '@tanstack/react-router';
+import { Loader2 } from 'lucide-react';
 
 export const Route = createFileRoute('/__dashboard/access-control')({
   component: RouteComponent,
@@ -12,18 +13,11 @@ export const Route = createFileRoute('/__dashboard/access-control')({
 function RouteComponent() {
   const { session, pod } = useAuth();
 
-  const { data, error, isPending } = useGetMembersWithPermissions(session, pod);
+  const { data: resourceList, isPending: resourcesPending } =
+    useGetResourceList(session, pod);
+  if (resourcesPending) {
+    return <Loader2 className="size-4 animate-spin" />;
+  }
 
-  return (
-    <div>
-      <AccessControlProvider>
-        <DataTable
-          columns={columns}
-          data={data ?? []}
-          isLoading={isPending}
-          error={error?.message}
-        />
-      </AccessControlProvider>
-    </div>
-  );
+  return <AccessControlPanel resourceList={resourceList!} />;
 }

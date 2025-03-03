@@ -1,5 +1,6 @@
 import {
   fetchAggregatedFootballData,
+  fetchAllMatchesBySeason,
   fetchAllSeasonInfo,
   fetchSeasonInfo,
 } from '@/api/data/football-data';
@@ -20,6 +21,12 @@ const queryKeys = {
     season,
   ],
   allSeasonInfo: (pod: string, type: string) => ['all-season-info', pod, type],
+  allMatches: (pod: string, type: string, season: string) => [
+    'all-matches',
+    pod,
+    type,
+    season,
+  ],
 };
 
 export function useGetAggregatedFootballData(
@@ -62,6 +69,19 @@ export function useGetAllSeasonsInfo(
   return useQuery({
     queryKey: queryKeys.allSeasonInfo(pod!, type),
     queryFn: () => fetchAllSeasonInfo({ session, pod, type }),
+    enabled: !!session && !!pod,
+  });
+}
+
+export function useGetAllMatchesBySeason(
+  session: Session | null,
+  pod: string | null,
+  type: 'club' | 'nation',
+  season: string
+) {
+  return useQuery({
+    queryKey: queryKeys.allMatches(pod!, type, season),
+    queryFn: () => fetchAllMatchesBySeason({ session, pod, type, season }),
     enabled: !!session && !!pod,
   });
 }

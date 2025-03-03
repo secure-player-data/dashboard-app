@@ -23,7 +23,7 @@ import { Loader2, Save } from 'lucide-react';
 import { useAccessControl } from './access-control-context';
 import { useAuth } from '@/context/auth-context';
 import { MemberWithPermissions } from '@/entities/data/member';
-import { useUpdateMembersPermissions } from '@/use-cases/use-update-members-permissions';
+import { useUpdateActorPermissions } from '@/use-cases/use-update-members-permissions';
 import { toast } from 'sonner';
 
 interface DataTableProps<TData, TValue> {
@@ -46,7 +46,7 @@ export function DataTable<TData, TValue>({
     []
   );
 
-  const updateMembersPermissionsMutation = useUpdateMembersPermissions(
+  const updateMembersPermissionsMutation = useUpdateActorPermissions(
     session,
     pod
   );

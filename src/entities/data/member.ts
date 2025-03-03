@@ -1,8 +1,5 @@
-export type Member = {
+export type Actor = {
   webId: string;
-  pod: string;
-  name: string;
-  role: string;
 };
 
 export type MemberWithPermissions = Member & {
@@ -12,4 +9,19 @@ export type MemberWithPermissions = Member & {
     append: boolean;
     control: boolean;
   };
+};
+
+export type ActorWithPermissions = Actor & {
+  permissions: {
+    read: boolean;
+    write: boolean;
+    append: boolean;
+    control: boolean;
+  };
+};
+
+export type Member = Actor & {
+  pod: string;
+  name: string;
+  role: string;
 };

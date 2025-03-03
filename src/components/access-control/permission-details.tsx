@@ -26,7 +26,7 @@ import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { permissionDetail } from '@/entities/data/access-control';
 import { paths } from '@/api/paths';
-import { useUpdateMembersPermissions } from '@/use-cases/use-update-members-permissions';
+import { useUpdateActorPermissions } from '@/use-cases/use-update-members-permissions';
 import { ButtonWithLoader } from '@/components/ui/button';
 import { toast } from 'sonner';
 
@@ -61,7 +61,7 @@ export default function PermissionDetails({
     useGetPermissionDetails(session, fullResourcePath);
 
   const { mutate: updateMutation, isPending: deletePending } =
-    useUpdateMembersPermissions(session, fullResourcePath);
+    useUpdateActorPermissions(session, fullResourcePath);
 
   const handleAgentName = (agent: string) => {
     if (agent === 'http://www.w3.org/ns/solid/acp#PublicAgent') {
@@ -80,11 +80,8 @@ export default function PermissionDetails({
   };
 
   const handleDialogSubmission = (action: 'add' | 'edit' | 'delete') => {
-    const memberWithPermissions = {
+    const actorWithPermissions = {
       webId: activeAgent,
-      name: '',
-      pod: '',
-      role: '',
       permissions: {
         read: activePermissions.read,
         write: activePermissions.write,
@@ -101,7 +98,7 @@ export default function PermissionDetails({
     if (action === 'edit')
       successMessage = 'Access controls were changed successfully!';
 
-    updateMutation(memberWithPermissions, {
+    updateMutation(actorWithPermissions, {
       onSuccess: () => {
         setShowDialog(null), toast(successMessage);
         resetAccesses();

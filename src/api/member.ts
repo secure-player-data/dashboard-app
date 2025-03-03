@@ -1,4 +1,8 @@
-import { Member, MemberWithPermissions } from '@/entities/data/member';
+import {
+  ActorWithPermissions,
+  Member,
+  MemberWithPermissions,
+} from '@/entities/data/member';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { fetchTeamUrl } from './team';
 import { SessionNotSetException } from '@/exceptions/session-exceptions';
@@ -117,8 +121,8 @@ export async function fetchMembersWithPermissions(
  * @param pod pod url of the user to update the permissions for
  * TODO: Update this for new file structure
  */
-export async function updateMembersPermissions(
-  member: MemberWithPermissions,
+export async function updateActorPermissions(
+  member: MemberWithPermissions | ActorWithPermissions,
   session: Session | null,
   pod: string | null
 ) {

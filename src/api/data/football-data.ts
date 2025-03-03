@@ -180,7 +180,10 @@ export async function fetchAllSeasonInfo({
     })
   );
 
-  return seasonsInfo;
+  // Sort by season
+  return seasonsInfo.sort((a, b) => {
+    return parseInt(b.info.season) - parseInt(a.info.season);
+  });
 }
 
 /**
@@ -243,5 +246,7 @@ export async function fetchAllMatchesBySeason({
     })
   );
 
-  return data;
+  return data.sort((a, b) => {
+    return b.date.getTime() - a.date.getTime();
+  });
 }

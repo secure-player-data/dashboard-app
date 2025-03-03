@@ -243,7 +243,5 @@ export async function fetchAllMatchesBySeason({
     })
   );
 
-  console.log(data);
-
   return data;
 }

@@ -1,497 +1,365 @@
 {
-  "name": "John Doe",
-  "image": "",
-  "birthdate": "1990-01-01",
-  "address": "1234 Main St, New York, NY 10001",
-  "phone": "123-456-7890",
-  "email": "john@doe.com",
-  "nation": "Norway",
-  "height": 180,
-  "weight": 75,
-  "dominantFoot": "Right",
-  "position": "Midfielder",
+  "personal": {
+    "name": "John Doe",
+    "image": "",
+    "birthdate": "1990-01-01",
+    "address": "1234 Elm St",
+    "phone": "123-456-7890",
+    "email": "john@doe.com",
+    "nation": "Norway",
+    "height": 180,
+    "weight": 75,
+    "dominantFoot": "Right",
+    "position": "Forward"
+  },
   "seasons": [
     {
-      "title": "2025",
-      "team": "Manchester United",
-      "league": "Premier League",
-      "matches": [
-        {
-          "home": "Manchester United",
-          "away": "Liverpool",
-          "homeScore": 2,
-          "awayScore": 1,
-          "date": "2025-01-01",
-          "location": "Old Trafford",
-          "playTime": 83,
-          "position": "Midfielder",
-          "events": [
-            {
-              "event": "Goal",
-              "time": "12:05",
-              "notes": "Header"
-            },
-            {
-              "event": "Yellow Card",
-              "time": "44:12",
-              "notes": "Foul"
-            },
-            {
-              "event": "Assist",
-              "time": "56:32",
-              "notes": ""
-            },
-            {
-              "event": "Goal",
-              "time": "78:23",
-              "notes": "Penalty"
-            }
-          ],
-          "tracking": [
-            {
-              "coordinations": {
-                "x": 0,
-                "y": 0,
-                "z": 0
+      "year": "2025",
+      "club": {
+        "team": "Real Madrid",
+        "league": "La Liga",
+        "matches": [
+          {
+            "home": "Real Madrid",
+            "away": "Barcelona",
+            "homeScore": 2,
+            "awayScore": 1,
+            "date": "2025-01-01",
+            "location": "Santiago Bernabeu",
+            "playTime": 83,
+            "position": "Forward",
+            "events": [
+              {
+                "event": "Goal",
+                "time": "12:05",
+                "notes": "Header from corner"
               },
-              "timestamp": "13:29",
-              "speed": 12
-            },
-            {
-              "coordinations": {
-                "x": 1,
-                "y": 1,
-                "z": 0
+              {
+                "event": "Assist",
+                "time": "53:59",
+                "notes": ""
               },
-              "timestamp": "13:30",
-              "speed": 12
-            },
-            {
-              "coordinations": {
-                "x": 2,
-                "y": 2,
-                "z": 0
+              {
+                "event": "Yellow Card",
+                "time": "60:00",
+                "notes": ""
+              }
+            ],
+            "tracking": [
+              {
+                "coordinations": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "timestamp": "13:29",
+                "speed": 12
+              }
+            ],
+            "biometric": [
+              {
+                "type": "Hear Rate",
+                "value": 120,
+                "timestamp": "13:29"
+              }
+            ]
+          },
+          {
+            "home": "Real Madrid",
+            "away": "Atletico Madrid",
+            "homeScore": 1,
+            "awayScore": 1,
+            "date": "2025-01-05",
+            "location": "Santiago",
+            "playTime": 90,
+            "position": "Forward",
+            "events": [
+              {
+                "event": "Goal",
+                "time": "12:05",
+                "notes": "Penalty"
               },
-              "timestamp": "13:31",
-              "speed": 12
-            },
-            {
-              "coordinations": {
-                "x": 3,
-                "y": 3,
-                "z": 0
+              {
+                "event": "Assist",
+                "time": "53:59",
+                "notes": ""
               },
-              "timestamp": "13:32",
-              "speed": 13
-            },
-            {
-              "coordinations": {
-                "x": 5,
-                "y": 5,
-                "z": 0
-              },
-              "timestamp": "13:33",
-              "speed": 13
-            },
-            {
-              "coordinations": {
-                "x": 7,
-                "y": 7,
-                "z": 0
-              },
-              "timestamp": "13:34",
-              "speed": 13
-            },
-            {
-              "coordinations": {
-                "x": 9,
-                "y": 9,
-                "z": 0
-              },
-              "timestamp": "13:35",
-              "speed": 12
-            },
-            {
-              "coordinations": {
-                "x": 10,
-                "y": 10,
-                "z": 0
-              },
-              "timestamp": "13:36",
-              "speed": 12
-            }
-          ],
-          "biometric": [
-            {
-              "type": "Heart Rate",
-              "value": 120,
-              "timestamp": "29:00"
-            },
-            {
-              "type": "Body Temperature",
-              "value": 36.5,
-              "timestamp": "29:00"
-            },
-            {
-              "type": "Blood Pressure",
-              "value": "120/80",
-              "timestamp": "29:00"
-            },
-            {
-              "type": "Heart Rate",
-              "value": 130,
-              "timestamp": "30:00"
-            },
-            {
-              "type": "Body Temperature",
-              "value": 36.6,
-              "timestamp": "30:00"
-            },
-            {
-              "type": "Blood Pressure",
-              "value": "120/80",
-              "timestamp": "30:00"
-            }
-          ]
-        },
-        {
-          "home": "Manchester United",
-          "away": "Chelsea",
-          "homeScore": 1,
-          "awayScore": 1,
-          "date": "2025-01-05",
-          "location": "Old Trafford",
-          "playTime": 95,
-          "position": "Midfielder",
-          "events": [
-            {
-              "event": "Free Kick",
-              "time": "22:05",
-              "notes": ""
-            },
-            {
-              "event": "Goal",
-              "time": "65:59",
-              "notes": ""
-            },
-            {
-              "event": "Free Kick",
-              "time": "72:43",
-              "notes": "Right pole and out"
-            },
-            {
-              "event": "Assist",
-              "time": "92:01",
-              "notes": ""
-            }
-          ],
-          "tracking": [
-            {
-              "coordinations": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-              },
-              "timestamp": "05:23",
-              "speed": 12
-            },
-            {
-              "coordinations": {
-                "x": 1,
-                "y": 1,
-                "z": 0
-              },
-              "timestamp": "05:24",
-              "speed": 12
-            },
-            {
-              "coordinations": {
-                "x": 2,
-                "y": 2,
-                "z": 0
-              },
-              "timestamp": "05:25",
-              "speed": 12
-            },
-            {
-              "coordinations": {
-                "x": 3,
-                "y": 3,
-                "z": 0
-              },
-              "timestamp": "05:26",
-              "speed": 13
-            },
-            {
-              "coordinations": {
-                "x": 5,
-                "y": 5,
-                "z": 0
-              },
-              "timestamp": "05:27",
-              "speed": 13
-            },
-            {
-              "coordinations": {
-                "x": 7,
-                "y": 7,
-                "z": 0
-              },
-              "timestamp": "05:28",
-              "speed": 13
-            },
-            {
-              "coordinations": {
-                "x": 9,
-                "y": 9,
-                "z": 0
-              },
-              "timestamp": "05:29",
-              "speed": 12
-            },
-            {
-              "coordinations": {
-                "x": 10,
-                "y": 10,
-                "z": 0
-              },
-              "timestamp": "05:30",
-              "speed": 12
-            }
-          ],
-          "biometric": [
-            {
-              "type": "Heart Rate",
-              "value": 120,
-              "timestamp": "29:00"
-            },
-            {
-              "type": "Body Temperature",
-              "value": 36.5,
-              "timestamp": "29:00"
-            },
-            {
-              "type": "Blood Pressure",
-              "value": "120/80",
-              "timestamp": "29:00"
-            },
-            {
-              "type": "Heart Rate",
-              "value": 130,
-              "timestamp": "30:00"
-            },
-            {
-              "type": "Body Temperature",
-              "value": 36.6,
-              "timestamp": "30:00"
-            },
-            {
-              "type": "Blood Pressure",
-              "value": "120/80",
-              "timestamp": "30:00"
-            }
-          ]
-        },
-        {
-          "home": "Arsenal",
-          "away": "Manchester United",
-          "homeScore": 3,
-          "awayScore": 0,
-          "date": "2025-01-10",
-          "location": "Emirates Stadium",
-          "playTime": 90,
-          "position": "Midfielder",
-          "events": [
-            {
-              "event": "Goal",
-              "time": "12:05",
-              "notes": "Header"
-            },
-            {
-              "event": "Yellow Card",
-              "time": "44:12",
-              "notes": "Foul"
-            },
-            {
-              "event": "Assist",
-              "time": "56:32",
-              "notes": ""
-            },
-            {
-              "event": "Goal",
-              "time": "78:23",
-              "notes": "Penalty"
-            }
-          ],
-          "tracking": [
-            {
-              "coordinations": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-              },
-              "timestamp": "13:29",
-              "speed": 12
-            },
-            {
-              "coordinations": {
-                "x": 1,
-                "y": 1,
-                "z": 0
-              },
-              "timestamp": "13:30",
-              "speed": 12
-            },
-            {
-              "coordinations": {
-                "x": 2,
-                "y": 2,
-                "z": 0
-              },
-              "timestamp": "13:31",
-              "speed": 12
-            },
-            {
-              "coordinations": {
-                "x": 3,
-                "y": 3,
-                "z": 0
-              },
-              "timestamp": "13:32",
-              "speed": 13
-            },
-            {
-              "coordinations": {
-                "x": 5,
-                "y": 5,
-                "z": 0
-              },
-              "timestamp": "13:33",
-              "speed": 13
-            },
-            {
-              "coordinations": {
-                "x": 7,
-                "y": 7,
-                "z": 0
-              },
-              "timestamp": "13:34",
-              "speed": 13
-            }
-          ],
-          "biometric": []
-        }
-      ],
-      "training": [
-        {
-          "tracking": [
-            {
-              "coordinations": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-              },
-              "timestamp": "13:29",
-              "speed": 12
-            },
-            {
-              "coordinations": {
-                "x": 1,
-                "y": 1,
-                "z": 0
-              },
-              "timestamp": "13:30",
-              "speed": 12
-            },
-            {
-              "coordinations": {
-                "x": 2,
-                "y": 2,
-                "z": 0
-              },
-              "timestamp": "13:31",
-              "speed": 12
-            },
-            {
-              "coordinations": {
-                "x": 3,
-                "y": 3,
-                "z": 0
-              },
-              "timestamp": "13:32",
-              "speed": 13
-            },
-            {
-              "coordinations": {
-                "x": 5,
-                "y": 5,
-                "z": 0
-              },
-              "timestamp": "13:33",
-              "speed": 13
-            },
-            {
-              "coordinations": {
-                "x": 7,
-                "y": 7,
-                "z": 0
-              },
-              "timestamp": "13:34",
-              "speed": 13
-            },
-            {
-              "coordinations": {
-                "x": 9,
-                "y": 9,
-                "z": 0
-              },
-              "timestamp": "13:35",
-              "speed": 12
-            },
-            {
-              "coordinations": {
-                "x": 10,
-                "y": 10,
-                "z": 0
-              },
-              "timestamp": "13:36",
-              "speed": 12
-            }
-          ],
-          "biometric": [
-            {
-              "type": "Heart Rate",
-              "value": 120,
-              "timestamp": "29:00"
-            },
-            {
-              "type": "Body Temperature",
-              "value": 36.5,
-              "timestamp": "29:00"
-            },
-            {
-              "type": "Blood Pressure",
-              "value": "120/80",
-              "timestamp": "29:00"
-            },
-            {
-              "type": "Heart Rate",
-              "value": 130,
-              "timestamp": "30:00"
-            },
-            {
-              "type": "Body Temperature",
-              "value": 36.6,
-              "timestamp": "30:00"
-            },
-            {
-              "type": "Blood Pressure",
-              "value": "120/80",
-              "timestamp": "30:00"
-            }
-          ]
-        }
-      ]
+              {
+                "event": "Free Kick",
+                "time": "60:00",
+                "notes": ""
+              }
+            ],
+            "tracking": [
+              {
+                "coordinations": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "timestamp": "13:29",
+                "speed": 12
+              }
+            ],
+            "biometric": [
+              {
+                "type": "Hear Rate",
+                "value": 120,
+                "timestamp": "13:29"
+              }
+            ]
+          }
+        ],
+        "training": [
+          {
+            "tracking": [
+              {
+                "coordinations": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "timestamp": "13:29",
+                "speed": 12
+              }
+            ],
+            "biometric": [
+              {
+                "type": "Hear Rate",
+                "value": 120,
+                "timestamp": "13:29"
+              }
+            ]
+          }
+        ]
+      },
+      "nation": {
+        "team": "Norway",
+        "league": "World Cup",
+        "matches": [
+          {
+            "home": "Norway",
+            "away": "Brazil",
+            "homeScore": 2,
+            "awayScore": 1,
+            "date": "2025-06-01",
+            "location": "Maracana",
+            "playTime": 90,
+            "position": "Forward",
+            "events": [
+              {
+                "event": "Goal",
+                "time": "12:05",
+                "notes": "Penalty"
+              }
+            ],
+            "tracking": [
+              {
+                "coordinations": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "timestamp": "13:29",
+                "speed": 12
+              }
+            ],
+            "biometric": [
+              {
+                "type": "Hear Rate",
+                "value": 120,
+                "timestamp": "13:29"
+              }
+            ]
+          }
+        ],
+        "training": [
+          {
+            "tracking": [
+              {
+                "coordinations": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "timestamp": "13:29",
+                "speed": 12
+              }
+            ],
+            "biometric": [
+              {
+                "type": "Hear Rate",
+                "value": 120,
+                "timestamp": "13:29"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "year": "2024",
+      "club": {
+        "team": "Manchester United",
+        "league": "Premier League",
+        "matches": [
+          {
+            "home": "Manchester United",
+            "away": "Liverpool",
+            "homeScore": 2,
+            "awayScore": 1,
+            "date": "2024-01-01",
+            "location": "Old Trafford",
+            "playTime": 90,
+            "position": "Forward",
+            "events": [
+              {
+                "event": "Goal",
+                "time": "12:05",
+                "notes": "Penalty"
+              }
+            ],
+            "tracking": [
+              {
+                "coordinations": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "timestamp": "13:29",
+                "speed": 12
+              }
+            ],
+            "biometric": [
+              {
+                "type": "Hear Rate",
+                "value": 120,
+                "timestamp": "13:29"
+              }
+            ]
+          },
+          {
+            "home": "Chealse",
+            "away": "Manchester United",
+            "homeScore": 1,
+            "awayScore": 1,
+            "date": "2024-01-05",
+            "location": "Stamford Bridge",
+            "playTime": 90,
+            "position": "Forward",
+            "events": [
+              {
+                "event": "Goal",
+                "time": "12:05",
+                "notes": "Penalty"
+              }
+            ],
+            "tracking": [
+              {
+                "coordinations": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "timestamp": "13:29",
+                "speed": 12
+              }
+            ],
+            "biometric": [
+              {
+                "type": "Hear Rate",
+                "value": 120,
+                "timestamp": "13:29"
+              }
+            ]
+          }
+        ],
+        "training": [
+          {
+            "tracking": [
+              {
+                "coordinations": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "timestamp": "13:29",
+                "speed": 12
+              }
+            ],
+            "biometric": [
+              {
+                "type": "Hear Rate",
+                "value": 120,
+                "timestamp": "13:29"
+              }
+            ]
+          }
+        ]
+      },
+      "nation": {
+        "team": "Norway",
+        "league": "World Cup",
+        "matches": [
+          {
+            "home": "Norway",
+            "away": "Brazil",
+            "homeScore": 2,
+            "awayScore": 1,
+            "date": "2024-06-01",
+            "location": "Maracana",
+            "playTime": 90,
+            "position": "Forward",
+            "events": [
+              {
+                "event": "Goal",
+                "time": "12:05",
+                "notes": "Penalty"
+              }
+            ],
+            "tracking": [
+              {
+                "coordinations": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "timestamp": "13:29",
+                "speed": 12
+              }
+            ],
+            "biometric": [
+              {
+                "type": "Hear Rate",
+                "value": 120,
+                "timestamp": "13:29"
+              }
+            ]
+          }
+        ],
+        "training": [
+          {
+            "tracking": [
+              {
+                "coordinations": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "timestamp": "13:29",
+                "speed": 12
+              }
+            ],
+            "biometric": [
+              {
+                "type": "Hear Rate",
+                "value": 120,
+                "timestamp": "13:29"
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }

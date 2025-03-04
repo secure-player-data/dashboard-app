@@ -180,7 +180,10 @@ export async function fetchAllSeasonInfo({
     })
   );
 
-  return seasonsInfo;
+  // Sort by season
+  return seasonsInfo.sort((a, b) => {
+    return parseInt(b.info.season) - parseInt(a.info.season);
+  });
 }
 
 /**
@@ -226,22 +229,50 @@ export async function fetchAllMatchesBySeason({
         fetch: session.fetch,
       });
       const matchThing = getThingAll(matchDataset)[0];
-      return {
-        home:
-          getStringNoLocale(matchThing, FOOTBALL_DATA_SCHEMA.homeTeam) ?? '',
-        away:
-          getStringNoLocale(matchThing, FOOTBALL_DATA_SCHEMA.awayTeam) ?? '',
-        homeScore: getInteger(matchThing, FOOTBALL_DATA_SCHEMA.homeScore) ?? 0,
-        awayScore: getInteger(matchThing, FOOTBALL_DATA_SCHEMA.awayScore) ?? 0,
-        date: getDate(matchThing, FOOTBALL_DATA_SCHEMA.date) ?? new Date(),
-        location:
-          getStringNoLocale(matchThing, FOOTBALL_DATA_SCHEMA.location) ?? '',
-        playTime: getInteger(matchThing, FOOTBALL_DATA_SCHEMA.playTime) ?? 0,
-        playerPosition:
-          getStringNoLocale(matchThing, FOOTBALL_DATA_SCHEMA.position) ?? '',
-      };
+      return mapThingToFootballData(matchThing);
     })
   );
 
-  return data;
+  return data.sort((a, b) => {
+    return b.date.getTime() - a.date.getTime();
+  });
+}
+
+export async function fetchMatchData({
+  session,
+  url,
+}: {
+  session: Session | null;
+  url: string;
+}): Promise<FootballData> {
+  if (!session) {
+    throw new Error('Session not found');
+  }
+
+  const dataset = await getSolidDataset(url, {
+    fetch: session.fetch,
+  });
+  const thing = getThingAll(dataset)[0];
+
+  return mapThingToFootballData(thing);
+}
+
+/**
+ * Maps a 'footbal' thing form a solid dataset to a FootballData object
+ * @param thing to map
+ * @returns
+ */
+function mapThingToFootballData(thing: any): FootballData {
+  return {
+    url: thing.url,
+    home: getStringNoLocale(thing, FOOTBALL_DATA_SCHEMA.homeTeam) ?? '',
+    away: getStringNoLocale(thing, FOOTBALL_DATA_SCHEMA.awayTeam) ?? '',
+    homeScore: getInteger(thing, FOOTBALL_DATA_SCHEMA.homeScore) ?? 0,
+    awayScore: getInteger(thing, FOOTBALL_DATA_SCHEMA.awayScore) ?? 0,
+    date: getDate(thing, FOOTBALL_DATA_SCHEMA.date) ?? new Date(),
+    location: getStringNoLocale(thing, FOOTBALL_DATA_SCHEMA.location) ?? '',
+    playTime: getInteger(thing, FOOTBALL_DATA_SCHEMA.playTime) ?? 0,
+    playerPosition:
+      getStringNoLocale(thing, FOOTBALL_DATA_SCHEMA.position) ?? '',
+  };
 }

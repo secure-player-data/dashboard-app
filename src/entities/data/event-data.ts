@@ -3,7 +3,7 @@
 // stored in their pod
 export type EventData = {
   event: string; // e.g. goal, assist, yellow card, red card, etc.
-  time: number; // minute of the match
+  time: string; // minute of the match
   notes: string;
 };
 

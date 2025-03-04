@@ -32,7 +32,7 @@ function NationSeasonsInner() {
     <div className="grid gap-2">
       {seasons?.map((season) => (
         <SeasonCard
-          key={season.info.season}
+          key={`${season.info.season}-${season.info.team}`}
           type="nation"
           team={season.info.team}
           season={season.info.season}

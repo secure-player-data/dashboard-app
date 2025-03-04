@@ -29,6 +29,7 @@ import { Route as AuthSetupProfileImport } from './routes/auth/_setup.profile'
 import { Route as dashboardTeamMembersImport } from './routes/__dashboard/team/members'
 import { Route as dashboardTeamDetailsImport } from './routes/__dashboard/team/details'
 import { Route as dashboardSeasonsSeasonImport } from './routes/__dashboard/seasons.$season'
+import { Route as dashboardMatchesMatchImport } from './routes/__dashboard/matches.$match'
 
 // Create/Update Routes
 
@@ -138,6 +139,12 @@ const dashboardSeasonsSeasonRoute = dashboardSeasonsSeasonImport.update({
   getParentRoute: () => dashboardRoute,
 } as any)
 
+const dashboardMatchesMatchRoute = dashboardMatchesMatchImport.update({
+  id: '/matches/$match',
+  path: '/matches/$match',
+  getParentRoute: () => dashboardRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -233,6 +240,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboardIndexImport
       parentRoute: typeof dashboardImport
     }
+    '/__dashboard/matches/$match': {
+      id: '/__dashboard/matches/$match'
+      path: '/matches/$match'
+      fullPath: '/matches/$match'
+      preLoaderRoute: typeof dashboardMatchesMatchImport
+      parentRoute: typeof dashboardImport
+    }
     '/__dashboard/seasons/$season': {
       id: '/__dashboard/seasons/$season'
       path: '/seasons/$season'
@@ -313,6 +327,7 @@ interface dashboardRouteChildren {
   dashboardPersonalDataRoute: typeof dashboardPersonalDataRoute
   dashboardProfileRoute: typeof dashboardProfileRoute
   dashboardIndexRoute: typeof dashboardIndexRoute
+  dashboardMatchesMatchRoute: typeof dashboardMatchesMatchRoute
   dashboardSeasonsSeasonRoute: typeof dashboardSeasonsSeasonRoute
   dashboardTeamDetailsRoute: typeof dashboardTeamDetailsRoute
   dashboardTeamMembersRoute: typeof dashboardTeamMembersRoute
@@ -326,6 +341,7 @@ const dashboardRouteChildren: dashboardRouteChildren = {
   dashboardPersonalDataRoute: dashboardPersonalDataRoute,
   dashboardProfileRoute: dashboardProfileRoute,
   dashboardIndexRoute: dashboardIndexRoute,
+  dashboardMatchesMatchRoute: dashboardMatchesMatchRoute,
   dashboardSeasonsSeasonRoute: dashboardSeasonsSeasonRoute,
   dashboardTeamDetailsRoute: dashboardTeamDetailsRoute,
   dashboardTeamMembersRoute: dashboardTeamMembersRoute,
@@ -348,6 +364,7 @@ export interface FileRoutesByFullPath {
   '/auth/confirmation': typeof AuthConfirmationRoute
   '/auth/login': typeof AuthLoginRoute
   '/': typeof dashboardIndexRoute
+  '/matches/$match': typeof dashboardMatchesMatchRoute
   '/seasons/$season': typeof dashboardSeasonsSeasonRoute
   '/team/details': typeof dashboardTeamDetailsRoute
   '/team/members': typeof dashboardTeamMembersRoute
@@ -367,6 +384,7 @@ export interface FileRoutesByTo {
   '/auth/confirmation': typeof AuthConfirmationRoute
   '/auth/login': typeof AuthLoginRoute
   '/': typeof dashboardIndexRoute
+  '/matches/$match': typeof dashboardMatchesMatchRoute
   '/seasons/$season': typeof dashboardSeasonsSeasonRoute
   '/team/details': typeof dashboardTeamDetailsRoute
   '/team/members': typeof dashboardTeamMembersRoute
@@ -389,6 +407,7 @@ export interface FileRoutesById {
   '/auth/confirmation': typeof AuthConfirmationRoute
   '/auth/login': typeof AuthLoginRoute
   '/__dashboard/': typeof dashboardIndexRoute
+  '/__dashboard/matches/$match': typeof dashboardMatchesMatchRoute
   '/__dashboard/seasons/$season': typeof dashboardSeasonsSeasonRoute
   '/__dashboard/team/details': typeof dashboardTeamDetailsRoute
   '/__dashboard/team/members': typeof dashboardTeamMembersRoute
@@ -411,6 +430,7 @@ export interface FileRouteTypes {
     | '/auth/confirmation'
     | '/auth/login'
     | '/'
+    | '/matches/$match'
     | '/seasons/$season'
     | '/team/details'
     | '/team/members'
@@ -429,6 +449,7 @@ export interface FileRouteTypes {
     | '/auth/confirmation'
     | '/auth/login'
     | '/'
+    | '/matches/$match'
     | '/seasons/$season'
     | '/team/details'
     | '/team/members'
@@ -449,6 +470,7 @@ export interface FileRouteTypes {
     | '/auth/confirmation'
     | '/auth/login'
     | '/__dashboard/'
+    | '/__dashboard/matches/$match'
     | '/__dashboard/seasons/$season'
     | '/__dashboard/team/details'
     | '/__dashboard/team/members'
@@ -500,6 +522,7 @@ export const routeTree = rootRoute
         "/__dashboard/personal-data",
         "/__dashboard/profile",
         "/__dashboard/",
+        "/__dashboard/matches/$match",
         "/__dashboard/seasons/$season",
         "/__dashboard/team/details",
         "/__dashboard/team/members"
@@ -551,6 +574,10 @@ export const routeTree = rootRoute
     },
     "/__dashboard/": {
       "filePath": "__dashboard/index.tsx",
+      "parent": "/__dashboard"
+    },
+    "/__dashboard/matches/$match": {
+      "filePath": "__dashboard/matches.$match.tsx",
       "parent": "/__dashboard"
     },
     "/__dashboard/seasons/$season": {

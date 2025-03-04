@@ -15,16 +15,18 @@ import { useEffect, useRef } from 'react';
 import { addCoordinateTransforms, addProjection, Projection } from 'ol/proj';
 
 function generateDummyCoordinates(numPoints = 1000) {
-  let x = Math.floor(Math.random() * 4600) - 2300;
-  let y = Math.floor(Math.random() * 2600) - 1300;
+  const xBound = 2300;
+  const yBound = 1300;
+  let x = Math.floor(Math.random() * (xBound * 2)) - xBound;
+  let y = Math.floor(Math.random() * (yBound * 2)) - yBound;
   let coords = [];
 
   for (let i = 0; i < numPoints; i++) {
     x += Math.floor(Math.random() * 100) - 50;
     y += Math.floor(Math.random() * 60) - 30;
 
-    x = Math.max(-2300, Math.min(2300, x));
-    y = Math.max(-1300, Math.min(1300, y));
+    x = Math.max(-xBound, Math.min(xBound, x));
+    y = Math.max(-yBound, Math.min(yBound, y));
 
     const z = Math.random() * 1.5;
 

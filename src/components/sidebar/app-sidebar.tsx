@@ -3,9 +3,7 @@ import { useAuth } from '@/context/auth-context';
 import {
   Database,
   EyeOff,
-  FileDown,
   FileStack,
-  House,
   LifeBuoy,
   Send,
   InboxIcon,
@@ -34,98 +32,101 @@ import { NavGroup } from './nav-group';
 import { NavFooter } from './nav-footer';
 import { NavMain } from './nav-main';
 
-const data = {
-  user: {
-    name: 'shadcn',
-    email: 'm@example.com',
-    avatar: '/avatars/shadcn.jpg',
-  },
-  navMain: [
-    {
-      title: 'Your data',
-      url: '/',
-      icon: Database,
-      isActive: true,
-      items: [
-        {
-          title: 'Personal Data',
-          url: '/personal-data',
-          icon: User,
-        },
-        {
-          title: 'Football Data',
-          url: '/football-data',
-          icon: Volleyball,
-        },
-        {
-          title: 'Event Data',
-          url: '/event-data',
-          icon: Calendar,
-        },
-        {
-          title: 'Tracking Data',
-          url: '/tracking-data',
-          icon: Locate,
-        },
-        {
-          title: 'Biometric Data',
-          url: '/biometric-data',
-          icon: Fingerprint,
-        },
-        {
-          title: 'Health Data',
-          url: '/health-data',
-          icon: Activity,
-        },
-      ],
-    },
-    {
-      title: 'Inbox',
-      url: '/inbox',
-      icon: InboxIcon,
-    },
-    {
-      title: 'Access Control',
-      url: '/access-control',
-      icon: EyeOff,
-    },
-    {
-      title: 'Access History',
-      url: '/access-history',
-      icon: FileStack,
-    },
-  ],
-  team: {
-    title: 'Team',
-    items: [
-      {
-        name: 'Team Details',
-        url: '/team/details',
-        icon: ReceiptText,
-      },
-      {
-        name: 'Members',
-        url: '/team/members',
-        icon: Users,
-      },
-    ],
-  },
-  footer: [
-    {
-      title: 'Support',
-      url: '#',
-      icon: LifeBuoy,
-    },
-    {
-      title: 'Feedback',
-      url: '#',
-      icon: Send,
-    },
-  ],
-};
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { session, pod } = useAuth();
+  const data = React.useMemo(
+    () => ({
+      user: {
+        name: 'shadcn',
+        email: 'm@example.com',
+        avatar: '/avatars/shadcn.jpg',
+      },
+      navMain: [
+        {
+          title: 'Your data',
+          url: '/',
+          icon: Database,
+          isActive: true,
+          items: [
+            {
+              title: 'Personal Data',
+              url: '/personal-data',
+              icon: User,
+            },
+            {
+              title: 'Football Data',
+              url: '/football-data',
+              search: { player: pod ?? 'unknown' },
+              icon: Volleyball,
+            },
+            {
+              title: 'Event Data',
+              url: '/event-data',
+              icon: Calendar,
+            },
+            {
+              title: 'Tracking Data',
+              url: '/tracking-data',
+              icon: Locate,
+            },
+            {
+              title: 'Biometric Data',
+              url: '/biometric-data',
+              icon: Fingerprint,
+            },
+            {
+              title: 'Health Data',
+              url: '/health-data',
+              icon: Activity,
+            },
+          ],
+        },
+        {
+          title: 'Inbox',
+          url: '/inbox',
+          icon: InboxIcon,
+        },
+        {
+          title: 'Access Control',
+          url: '/access-control',
+          icon: EyeOff,
+        },
+        {
+          title: 'Access History',
+          url: '/access-history',
+          icon: FileStack,
+        },
+      ],
+      team: {
+        title: 'Team',
+        items: [
+          {
+            name: 'Team Details',
+            url: '/team/details',
+            icon: ReceiptText,
+          },
+          {
+            name: 'Members',
+            url: '/team/members',
+            icon: Users,
+          },
+        ],
+      },
+      footer: [
+        {
+          title: 'Support',
+          url: '#',
+          icon: LifeBuoy,
+        },
+        {
+          title: 'Feedback',
+          url: '#',
+          icon: Send,
+        },
+      ],
+    }),
+    [pod]
+  );
 
   const { data: user } = useGetProfile(session, pod);
 

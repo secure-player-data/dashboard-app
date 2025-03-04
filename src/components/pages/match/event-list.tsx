@@ -125,5 +125,14 @@ export function EventList({
 }
 
 function EventListSkeleton() {
-  return <div></div>;
+  return (
+    <div className="grid gap-4">
+      {Array.from({ length: 5 }).map((_, index) => (
+        <div
+          key={index}
+          className="h-[78px] bg-muted rounded-md animate-pulse"
+        />
+      ))}
+    </div>
+  );
 }

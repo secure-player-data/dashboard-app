@@ -11,7 +11,7 @@ export function MatchHeader({ matchUrl }: { matchUrl: string }) {
   }
 
   if (error) {
-    return <p>{error.message}</p>;
+    return <p>Error: {error.message}</p>;
   }
 
   return (

@@ -10,30 +10,23 @@ import View from 'ol/View';
 import { Feature } from 'ol';
 import { Heatmap as HeatmapLayer, Vector as VectorLayer } from 'ol/layer';
 import { Vector as VectorSource } from 'ol/source';
-import { Stroke, Style } from 'ol/style';
-import { LineString, Point } from 'ol/geom';
-import { defaults as defaultControls } from 'ol/control';
+import { Point } from 'ol/geom';
 import { useEffect, useRef } from 'react';
 import { addCoordinateTransforms, addProjection, Projection } from 'ol/proj';
 
-const coords = generateDummyCoordinates();
-
 function generateDummyCoordinates(numPoints = 1000) {
-  let x = Math.floor(Math.random() * 4600) - 2300; // Start at random x
-  let y = Math.floor(Math.random() * 2600) - 1300; // Start at random y
+  let x = Math.floor(Math.random() * 4600) - 2300;
+  let y = Math.floor(Math.random() * 2600) - 1300;
   let coords = [];
 
   for (let i = 0; i < numPoints; i++) {
-    // Move slightly in a random direction (like real player movement)
     x += Math.floor(Math.random() * 100) - 50;
     y += Math.floor(Math.random() * 60) - 30;
 
-    // Keep within the pitch boundaries
     x = Math.max(-2300, Math.min(2300, x));
     y = Math.max(-1300, Math.min(1300, y));
 
-    // z represents intensity (higher in commonly visited areas)
-    const z = Math.random() * 1.5; // Heatmap intensity
+    const z = Math.random() * 1.5;
 
     coords.push({ x, y, z });
   }
@@ -43,6 +36,7 @@ function generateDummyCoordinates(numPoints = 1000) {
 
 export default function Heatmap() {
   const mapRef = useRef<HTMLDivElement>(null);
+  const coords = generateDummyCoordinates();
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -50,7 +44,6 @@ export default function Heatmap() {
     const pitchWidth = mapRef.current.offsetWidth;
     const pitchHeight = mapRef.current.offsetHeight;
 
-    // Define our custom projection
     const pitchProjection = new Projection({
       code: 'PITCH',
       units: 'pixels',

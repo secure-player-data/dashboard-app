@@ -45,7 +45,7 @@ function SeasonMatchesInner({
   );
 
   if (isPending) {
-    return <p>TODO: Skeleton</p>;
+    return <SeasonMatchesSkeleton />;
   }
 
   if (error) {
@@ -141,5 +141,18 @@ function MatchCard({ match, team }: { match: FootballData; team: string }) {
         </div>
       </Card>
     </Link>
+  );
+}
+
+function SeasonMatchesSkeleton() {
+  return (
+    <div
+      className="grid gap-4"
+      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))' }}
+    >
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div className="h-[255px] bg-muted rounded-md animate-pulse"></div>
+      ))}
+    </div>
   );
 }

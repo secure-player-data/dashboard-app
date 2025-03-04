@@ -1,4 +1,5 @@
 import DistanceChart from '@/components/pages/tracking-data/distance-chart';
+import Heatmap from '@/components/pages/tracking-data/heatmap';
 import SpeedChart from '@/components/pages/tracking-data/speed-chart';
 import {
   Card,
@@ -45,7 +46,7 @@ function RouteComponent() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 @container">
       <div className="flex gap-4">
         <div className="min-w-[200px]">
           <Label>Season</Label>
@@ -81,7 +82,7 @@ function RouteComponent() {
             Key metrics from the selected session
           </CardDescription>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-4">
+        <CardContent className="grid @lg:grid-cols-2 gap-4">
           <div className="flex flex-col items-center bg-muted rounded-md p-4">
             <Timer className="mb-2" />
             <p className="text-muted-foreground text-sm">Top Speed</p>
@@ -94,20 +95,13 @@ function RouteComponent() {
           </div>
         </CardContent>
       </Card>
-      <Tabs defaultValue="speed" className="w-full pb-4">
-        <TabsList className="grid grid-cols-3">
-          <TabsTrigger value="speed">Speed</TabsTrigger>
-          <TabsTrigger value="distance">Distance</TabsTrigger>
-          <TabsTrigger value="heatmap">Heatmap</TabsTrigger>
-        </TabsList>
-        <TabsContent value="speed">
-          <SpeedChart />
-        </TabsContent>
-        <TabsContent value="distance">
-          <DistanceChart />
-        </TabsContent>
-        <TabsContent value="heatmap"></TabsContent>
-      </Tabs>
+      <div className="grid @lg:grid-cols-2 gap-4">
+        <SpeedChart />
+        <DistanceChart />
+        <div className="@lg:col-span-2">
+          <Heatmap />
+        </div>
+      </div>
     </div>
   );
 }

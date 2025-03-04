@@ -12,6 +12,8 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import {
+  Area,
+  AreaChart,
   CartesianGrid,
   LabelList,
   Line,
@@ -43,9 +45,9 @@ export default function SpeedChart() {
     { speed: 15, time: 90 },
   ];
   const chartConfig = {
-    desktop: {
-      label: 'Desktop',
-      color: 'hsl(var(--chart-3))',
+    speed: {
+      label: 'speed',
+      color: 'hsl(var(--chart-2))',
     },
   } satisfies ChartConfig;
 
@@ -57,7 +59,7 @@ export default function SpeedChart() {
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <LineChart
+          <AreaChart
             accessibilityLayer
             data={chartData}
             margin={{
@@ -82,23 +84,16 @@ export default function SpeedChart() {
             />
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+              content={<ChartTooltipContent indicator="line" />}
             />
-            <Line
+            <Area
               dataKey="speed"
               type="natural"
-              stroke="var(--color-desktop)"
-              strokeWidth={2}
-              dot={false}
-            >
-              <LabelList
-                position="top"
-                offset={20}
-                className="fill-foreground"
-                fontSize={12}
-              />
-            </Line>
-          </LineChart>
+              fill="var(--color-speed)"
+              fillOpacity={0.4}
+              stroke="var(--color-speed)"
+            />
+          </AreaChart>
         </ChartContainer>
       </CardContent>
     </Card>

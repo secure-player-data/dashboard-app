@@ -47,6 +47,7 @@ function RouteComponent() {
         description: 'Data related to tracking',
         icon: Locate,
         link: '/tracking-data',
+        search: { player: pod ?? 'unknown' },
       },
       {
         title: 'Biometric Data',

@@ -8,7 +8,7 @@ import {
 import Map from 'ol/Map';
 import View from 'ol/View';
 import { Feature } from 'ol';
-import { Heatmap as HeatmapLayer, Vector as VectorLayer } from 'ol/layer';
+import { Heatmap as HeatmapLayer } from 'ol/layer';
 import { Vector as VectorSource } from 'ol/source';
 import { Point } from 'ol/geom';
 import { useEffect, useRef } from 'react';
@@ -47,7 +47,7 @@ export default function Heatmap() {
     const pitchProjection = new Projection({
       code: 'PITCH',
       units: 'pixels',
-      extent: [0, 0, pitchWidth, pitchHeight], // Set explicit bounding box
+      extent: [0, 0, pitchWidth, pitchHeight],
     });
 
     addProjection(pitchProjection);

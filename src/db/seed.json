@@ -32,17 +32,42 @@
               {
                 "event": "Goal",
                 "time": "12:05",
-                "notes": "Header from corner"
+                "notes": "Powerful header from a well-placed corner kick."
+              },
+              {
+                "event": "Free Kick",
+                "time": "44:45",
+                "notes": "Curling free kick just outside the penalty area, narrowly missed the top corner."
+              },
+              {
+                "event": "Corner",
+                "time": "53:32",
+                "notes": "Quick short corner taken to catch the defense off guard, led to a scoring opportunity."
               },
               {
                 "event": "Assist",
-                "time": "53:59",
-                "notes": ""
+                "time": "59:20",
+                "notes": "Perfectly weighted cross into the box, met with a clinical finish."
               },
               {
                 "event": "Yellow Card",
                 "time": "60:00",
-                "notes": ""
+                "notes": "Late tackle in midfield, deemed reckless by the referee."
+              },
+              {
+                "event": "Throw In",
+                "time": "65:59",
+                "notes": "Long throw-in into the box, caused confusion in the defense."
+              },
+              {
+                "event": "Penalty",
+                "time": "73:23",
+                "notes": "Penalty awarded for a handball inside the penalty area."
+              },
+              {
+                "event": "Red Card",
+                "time": "89:00",
+                "notes": "Violent conduct, player sent off for a dangerous challenge."
               }
             ],
             "tracking": [

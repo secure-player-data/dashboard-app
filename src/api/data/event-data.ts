@@ -105,8 +105,6 @@ export async function fetchEventsForMatch({
     throw new Error('Session or pod not found');
   }
 
-  console.log('Fetching events...');
-
   const category =
     type === 'club' ? paths.eventData.club : paths.eventData.national;
   const [error, dataset] = await safeCall(
@@ -129,9 +127,9 @@ export async function fetchEventsForMatch({
     (thing) => !thing.url.includes('#metadata')
   );
 
-  console.log(things);
-
-  return things.map(mapThingToEvent);
+  return things
+    .map(mapThingToEvent)
+    .sort((a, b) => a.time.localeCompare(b.time));
 }
 
 function mapThingToEvent(thing: any): EventData {

@@ -15,6 +15,7 @@
     "@inrupt/solid-client-access-grants": "^3.2.1",
     "@inrupt/solid-client-authn-browser": "^2.3.0",
     "@inrupt/vocab-common-rdf": "^1.0.5",
+    "@radix-ui/react-accordion": "^1.2.3",
     "@radix-ui/react-alert-dialog": "^1.1.6",
     "@radix-ui/react-avatar": "^1.1.2",
     "@radix-ui/react-checkbox": "^1.1.3",

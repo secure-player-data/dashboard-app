@@ -78,6 +78,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             {
               title: 'Health Data',
               url: '/health-data',
+              search: { player: pod ?? 'unknown' },
               icon: Activity,
             },
           ],

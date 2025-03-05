@@ -22,6 +22,7 @@ import { Route as dashboardTrackingDataImport } from './routes/__dashboard/track
 import { Route as dashboardProfileImport } from './routes/__dashboard/profile'
 import { Route as dashboardPersonalDataImport } from './routes/__dashboard/personal-data'
 import { Route as dashboardInboxImport } from './routes/__dashboard/inbox'
+import { Route as dashboardHealthDataImport } from './routes/__dashboard/health-data'
 import { Route as dashboardFootballDataImport } from './routes/__dashboard/football-data'
 import { Route as dashboardAccessHistoryImport } from './routes/__dashboard/access-history'
 import { Route as dashboardAccessControlImport } from './routes/__dashboard/access-control'
@@ -95,6 +96,12 @@ const dashboardPersonalDataRoute = dashboardPersonalDataImport.update({
 const dashboardInboxRoute = dashboardInboxImport.update({
   id: '/inbox',
   path: '/inbox',
+  getParentRoute: () => dashboardRoute,
+} as any)
+
+const dashboardHealthDataRoute = dashboardHealthDataImport.update({
+  id: '/health-data',
+  path: '/health-data',
   getParentRoute: () => dashboardRoute,
 } as any)
 
@@ -189,6 +196,13 @@ declare module '@tanstack/react-router' {
       path: '/football-data'
       fullPath: '/football-data'
       preLoaderRoute: typeof dashboardFootballDataImport
+      parentRoute: typeof dashboardImport
+    }
+    '/__dashboard/health-data': {
+      id: '/__dashboard/health-data'
+      path: '/health-data'
+      fullPath: '/health-data'
+      preLoaderRoute: typeof dashboardHealthDataImport
       parentRoute: typeof dashboardImport
     }
     '/__dashboard/inbox': {
@@ -337,6 +351,7 @@ interface dashboardRouteChildren {
   dashboardAccessControlRoute: typeof dashboardAccessControlRoute
   dashboardAccessHistoryRoute: typeof dashboardAccessHistoryRoute
   dashboardFootballDataRoute: typeof dashboardFootballDataRoute
+  dashboardHealthDataRoute: typeof dashboardHealthDataRoute
   dashboardInboxRoute: typeof dashboardInboxRoute
   dashboardPersonalDataRoute: typeof dashboardPersonalDataRoute
   dashboardProfileRoute: typeof dashboardProfileRoute
@@ -352,6 +367,7 @@ const dashboardRouteChildren: dashboardRouteChildren = {
   dashboardAccessControlRoute: dashboardAccessControlRoute,
   dashboardAccessHistoryRoute: dashboardAccessHistoryRoute,
   dashboardFootballDataRoute: dashboardFootballDataRoute,
+  dashboardHealthDataRoute: dashboardHealthDataRoute,
   dashboardInboxRoute: dashboardInboxRoute,
   dashboardPersonalDataRoute: dashboardPersonalDataRoute,
   dashboardProfileRoute: dashboardProfileRoute,
@@ -373,6 +389,7 @@ export interface FileRoutesByFullPath {
   '/access-control': typeof dashboardAccessControlRoute
   '/access-history': typeof dashboardAccessHistoryRoute
   '/football-data': typeof dashboardFootballDataRoute
+  '/health-data': typeof dashboardHealthDataRoute
   '/inbox': typeof dashboardInboxRoute
   '/personal-data': typeof dashboardPersonalDataRoute
   '/profile': typeof dashboardProfileRoute
@@ -394,6 +411,7 @@ export interface FileRoutesByTo {
   '/access-control': typeof dashboardAccessControlRoute
   '/access-history': typeof dashboardAccessHistoryRoute
   '/football-data': typeof dashboardFootballDataRoute
+  '/health-data': typeof dashboardHealthDataRoute
   '/inbox': typeof dashboardInboxRoute
   '/personal-data': typeof dashboardPersonalDataRoute
   '/profile': typeof dashboardProfileRoute
@@ -417,6 +435,7 @@ export interface FileRoutesById {
   '/__dashboard/access-control': typeof dashboardAccessControlRoute
   '/__dashboard/access-history': typeof dashboardAccessHistoryRoute
   '/__dashboard/football-data': typeof dashboardFootballDataRoute
+  '/__dashboard/health-data': typeof dashboardHealthDataRoute
   '/__dashboard/inbox': typeof dashboardInboxRoute
   '/__dashboard/personal-data': typeof dashboardPersonalDataRoute
   '/__dashboard/profile': typeof dashboardProfileRoute
@@ -442,6 +461,7 @@ export interface FileRouteTypes {
     | '/access-control'
     | '/access-history'
     | '/football-data'
+    | '/health-data'
     | '/inbox'
     | '/personal-data'
     | '/profile'
@@ -462,6 +482,7 @@ export interface FileRouteTypes {
     | '/access-control'
     | '/access-history'
     | '/football-data'
+    | '/health-data'
     | '/inbox'
     | '/personal-data'
     | '/profile'
@@ -483,6 +504,7 @@ export interface FileRouteTypes {
     | '/__dashboard/access-control'
     | '/__dashboard/access-history'
     | '/__dashboard/football-data'
+    | '/__dashboard/health-data'
     | '/__dashboard/inbox'
     | '/__dashboard/personal-data'
     | '/__dashboard/profile'
@@ -540,6 +562,7 @@ export const routeTree = rootRoute
         "/__dashboard/access-control",
         "/__dashboard/access-history",
         "/__dashboard/football-data",
+        "/__dashboard/health-data",
         "/__dashboard/inbox",
         "/__dashboard/personal-data",
         "/__dashboard/profile",
@@ -561,6 +584,10 @@ export const routeTree = rootRoute
     },
     "/__dashboard/football-data": {
       "filePath": "__dashboard/football-data.tsx",
+      "parent": "/__dashboard"
+    },
+    "/__dashboard/health-data": {
+      "filePath": "__dashboard/health-data.tsx",
       "parent": "/__dashboard"
     },
     "/__dashboard/inbox": {

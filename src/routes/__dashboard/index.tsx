@@ -60,6 +60,7 @@ function RouteComponent() {
         description: 'Data related to health',
         icon: Activity,
         link: '/health-data',
+        search: { player: pod ?? 'uknown' },
       },
     ],
     [pod]

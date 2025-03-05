@@ -346,6 +346,7 @@ async function seedTrackingForMatch(
         `${tracking.coordinations.x}, ${tracking.coordinations.y}, ${tracking.coordinations.z}`
       )
       .addInteger(TRACKING_DATA_SCHEMA.speed, tracking.speed)
+      .addInteger(TRACKING_DATA_SCHEMA.distance, tracking.distance)
       .addStringNoLocale(TRACKING_DATA_SCHEMA.time, tracking.timestamp)
       .build();
     dataset = setThing(dataset, thing);

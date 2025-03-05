@@ -67,6 +67,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             {
               title: 'Tracking Data',
               url: '/tracking-data',
+              search: { player: pod ?? 'unknown' },
               icon: Locate,
             },
             {

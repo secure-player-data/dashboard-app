@@ -18,6 +18,7 @@ import { Route as AuthLoginImport } from './routes/auth/login'
 import { Route as AuthConfirmationImport } from './routes/auth/confirmation'
 import { Route as AuthCallbackImport } from './routes/auth/callback'
 import { Route as AuthSetupImport } from './routes/auth/_setup'
+import { Route as dashboardTrackingDataImport } from './routes/__dashboard/tracking-data'
 import { Route as dashboardProfileImport } from './routes/__dashboard/profile'
 import { Route as dashboardPersonalDataImport } from './routes/__dashboard/personal-data'
 import { Route as dashboardInboxImport } from './routes/__dashboard/inbox'
@@ -71,6 +72,12 @@ const AuthCallbackRoute = AuthCallbackImport.update({
 const AuthSetupRoute = AuthSetupImport.update({
   id: '/_setup',
   getParentRoute: () => AuthRouteRoute,
+} as any)
+
+const dashboardTrackingDataRoute = dashboardTrackingDataImport.update({
+  id: '/tracking-data',
+  path: '/tracking-data',
+  getParentRoute: () => dashboardRoute,
 } as any)
 
 const dashboardProfileRoute = dashboardProfileImport.update({
@@ -205,6 +212,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboardProfileImport
       parentRoute: typeof dashboardImport
     }
+    '/__dashboard/tracking-data': {
+      id: '/__dashboard/tracking-data'
+      path: '/tracking-data'
+      fullPath: '/tracking-data'
+      preLoaderRoute: typeof dashboardTrackingDataImport
+      parentRoute: typeof dashboardImport
+    }
     '/auth/_setup': {
       id: '/auth/_setup'
       path: ''
@@ -326,6 +340,7 @@ interface dashboardRouteChildren {
   dashboardInboxRoute: typeof dashboardInboxRoute
   dashboardPersonalDataRoute: typeof dashboardPersonalDataRoute
   dashboardProfileRoute: typeof dashboardProfileRoute
+  dashboardTrackingDataRoute: typeof dashboardTrackingDataRoute
   dashboardIndexRoute: typeof dashboardIndexRoute
   dashboardMatchesMatchRoute: typeof dashboardMatchesMatchRoute
   dashboardSeasonsSeasonRoute: typeof dashboardSeasonsSeasonRoute
@@ -340,6 +355,7 @@ const dashboardRouteChildren: dashboardRouteChildren = {
   dashboardInboxRoute: dashboardInboxRoute,
   dashboardPersonalDataRoute: dashboardPersonalDataRoute,
   dashboardProfileRoute: dashboardProfileRoute,
+  dashboardTrackingDataRoute: dashboardTrackingDataRoute,
   dashboardIndexRoute: dashboardIndexRoute,
   dashboardMatchesMatchRoute: dashboardMatchesMatchRoute,
   dashboardSeasonsSeasonRoute: dashboardSeasonsSeasonRoute,
@@ -360,6 +376,7 @@ export interface FileRoutesByFullPath {
   '/inbox': typeof dashboardInboxRoute
   '/personal-data': typeof dashboardPersonalDataRoute
   '/profile': typeof dashboardProfileRoute
+  '/tracking-data': typeof dashboardTrackingDataRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/confirmation': typeof AuthConfirmationRoute
   '/auth/login': typeof AuthLoginRoute
@@ -380,6 +397,7 @@ export interface FileRoutesByTo {
   '/inbox': typeof dashboardInboxRoute
   '/personal-data': typeof dashboardPersonalDataRoute
   '/profile': typeof dashboardProfileRoute
+  '/tracking-data': typeof dashboardTrackingDataRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/confirmation': typeof AuthConfirmationRoute
   '/auth/login': typeof AuthLoginRoute
@@ -402,6 +420,7 @@ export interface FileRoutesById {
   '/__dashboard/inbox': typeof dashboardInboxRoute
   '/__dashboard/personal-data': typeof dashboardPersonalDataRoute
   '/__dashboard/profile': typeof dashboardProfileRoute
+  '/__dashboard/tracking-data': typeof dashboardTrackingDataRoute
   '/auth/_setup': typeof AuthSetupRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/confirmation': typeof AuthConfirmationRoute
@@ -426,6 +445,7 @@ export interface FileRouteTypes {
     | '/inbox'
     | '/personal-data'
     | '/profile'
+    | '/tracking-data'
     | '/auth/callback'
     | '/auth/confirmation'
     | '/auth/login'
@@ -445,6 +465,7 @@ export interface FileRouteTypes {
     | '/inbox'
     | '/personal-data'
     | '/profile'
+    | '/tracking-data'
     | '/auth/callback'
     | '/auth/confirmation'
     | '/auth/login'
@@ -465,6 +486,7 @@ export interface FileRouteTypes {
     | '/__dashboard/inbox'
     | '/__dashboard/personal-data'
     | '/__dashboard/profile'
+    | '/__dashboard/tracking-data'
     | '/auth/_setup'
     | '/auth/callback'
     | '/auth/confirmation'
@@ -521,6 +543,7 @@ export const routeTree = rootRoute
         "/__dashboard/inbox",
         "/__dashboard/personal-data",
         "/__dashboard/profile",
+        "/__dashboard/tracking-data",
         "/__dashboard/",
         "/__dashboard/matches/$match",
         "/__dashboard/seasons/$season",
@@ -550,6 +573,10 @@ export const routeTree = rootRoute
     },
     "/__dashboard/profile": {
       "filePath": "__dashboard/profile.tsx",
+      "parent": "/__dashboard"
+    },
+    "/__dashboard/tracking-data": {
+      "filePath": "__dashboard/tracking-data.tsx",
       "parent": "/__dashboard"
     },
     "/auth/_setup": {

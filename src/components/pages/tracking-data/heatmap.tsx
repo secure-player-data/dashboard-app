@@ -13,32 +13,10 @@ import { Vector as VectorSource } from 'ol/source';
 import { Point } from 'ol/geom';
 import { useEffect, useRef } from 'react';
 import { addCoordinateTransforms, addProjection, Projection } from 'ol/proj';
+import { TrackingData } from '@/entities/data/tracking-data';
 
-function generateDummyCoordinates(numPoints = 1000) {
-  const xBound = 2300;
-  const yBound = 1300;
-  let x = Math.floor(Math.random() * (xBound * 2)) - xBound;
-  let y = Math.floor(Math.random() * (yBound * 2)) - yBound;
-  let coords = [];
-
-  for (let i = 0; i < numPoints; i++) {
-    x += Math.floor(Math.random() * 100) - 50;
-    y += Math.floor(Math.random() * 60) - 30;
-
-    x = Math.max(-xBound, Math.min(xBound, x));
-    y = Math.max(-yBound, Math.min(yBound, y));
-
-    const z = Math.random() * 1.5;
-
-    coords.push({ x, y, z });
-  }
-
-  return coords;
-}
-
-export default function Heatmap() {
+export default function Heatmap({ data }: { data: TrackingData[] }) {
   const mapRef = useRef<HTMLDivElement>(null);
-  const coords = generateDummyCoordinates();
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -70,6 +48,11 @@ export default function Heatmap() {
       enableRotation: false,
     });
 
+    const coords = data.map((entry) => ({
+      x: entry.coordinates.x,
+      y: entry.coordinates.y,
+      z: entry.coordinates.z,
+    }));
     const features = coords.map(({ x, y, z }) => {
       const point = new Point([x, y]);
       const feature = new Feature(point);
@@ -95,7 +78,33 @@ export default function Heatmap() {
     });
 
     return () => map.dispose();
-  }, [coords]);
+  }, [data]);
+
+  function generateDummyCoordinates(
+    numPoints = 1000,
+    pitchWidth: number,
+    pitchHeight: number
+  ) {
+    const xBound = pitchWidth;
+    const yBound = pitchHeight;
+    let x = Math.floor(Math.random() * (xBound * 2)) - xBound;
+    let y = Math.floor(Math.random() * (yBound * 2)) - yBound;
+    let coords = [];
+
+    for (let i = 0; i < numPoints; i++) {
+      x += Math.floor(Math.random() * 100) - 50;
+      y += Math.floor(Math.random() * 60) - 30;
+
+      x = Math.max(-xBound, Math.min(xBound, x));
+      y = Math.max(-yBound, Math.min(yBound, y));
+
+      const z = Math.random() * 1.5;
+
+      coords.push({ x, y, z });
+    }
+
+    return coords;
+  }
 
   return (
     <Card>

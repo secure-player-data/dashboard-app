@@ -11,39 +11,20 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  LabelList,
-  Line,
-  LineChart,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import { TrackingData } from '@/entities/data/tracking-data';
+import { useMemo } from 'react';
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 
-export default function SpeedChart() {
-  const chartData = [
-    { speed: 0, time: 0 },
-    { speed: 12, time: 5 },
-    { speed: 9, time: 10 },
-    { speed: 15, time: 15 },
-    { speed: 20, time: 20 },
-    { speed: 18, time: 25 },
-    { speed: 22, time: 30 },
-    { speed: 10, time: 35 },
-    { speed: 18, time: 40 },
-    { speed: 15, time: 45 },
-    { speed: 10, time: 50 },
-    { speed: 18, time: 55 },
-    { speed: 15, time: 60 },
-    { speed: 10, time: 65 },
-    { speed: 18, time: 70 },
-    { speed: 15, time: 75 },
-    { speed: 10, time: 80 },
-    { speed: 18, time: 85 },
-    { speed: 15, time: 90 },
-  ];
+export default function SpeedChart({ data }: { data: TrackingData[] }) {
+  const chartData = useMemo(
+    () =>
+      data.map((entry) => ({
+        time: entry.time,
+        speed: entry.speed,
+      })),
+    [data]
+  );
+
   const chartConfig = {
     speed: {
       label: 'speed',

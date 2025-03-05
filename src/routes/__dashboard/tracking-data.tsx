@@ -1,5 +1,6 @@
 import DistanceChart from '@/components/pages/tracking-data/distance-chart';
 import Heatmap from '@/components/pages/tracking-data/heatmap';
+import PerformanceSummary from '@/components/pages/tracking-data/performance-summary';
 import SpeedChart from '@/components/pages/tracking-data/speed-chart';
 import {
   Card,
@@ -12,11 +13,18 @@ import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAuth } from '@/context/auth-context';
+import {
+  useGetAllMatchesForSeasonWithTracking,
+  useGetAllSeasonsWithTracking,
+  useGetTrackingData,
+} from '@/use-cases/tracking-data';
 import { createFileRoute } from '@tanstack/react-router';
 import { zodValidator } from '@tanstack/zod-adapter';
 import { Ruler, Timer } from 'lucide-react';
@@ -33,75 +41,150 @@ export const Route = createFileRoute('/__dashboard/tracking-data')({
 });
 
 function RouteComponent() {
-  const [selectedSeason, setSelectedSeason] = useState<string | undefined>(
-    undefined
+  const [selectedType, setSelectedType] = useState<string>('');
+  const [selectedSeason, setSelectedSeason] = useState<string>('');
+  const [selectedSession, setSelectedSession] = useState<string>('');
+
+  const { session } = useAuth();
+  const { player } = Route.useSearch();
+  const { data: seasons } = useGetAllSeasonsWithTracking(
+    session,
+    player,
+    selectedType
   );
-  const [selectedMatch, setSelectedMatch] = useState<string | undefined>(
-    undefined
+  const { data: matches } = useGetAllMatchesForSeasonWithTracking(
+    session,
+    selectedSeason
   );
+
+  function handleTypeChange(type: string) {
+    setSelectedType(type);
+    setSelectedSeason('');
+    setSelectedSession('');
+  }
 
   function handleSeasonChange(season: string) {
     setSelectedSeason(season);
-    setSelectedMatch(undefined);
+    setSelectedSession('');
   }
 
   return (
-    <div className="flex flex-col gap-4 @container">
+    <div className="flex flex-col gap-4 h-full @container">
       <div className="flex gap-4">
         <div className="min-w-[200px]">
-          <Label>Season</Label>
-          <Select value={selectedSeason} onValueChange={handleSeasonChange}>
+          <Label>Session type</Label>
+          <Select value={selectedType} onValueChange={handleTypeChange}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select a season" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="2025">2025</SelectItem>
-              <SelectItem value="2024">2024</SelectItem>
+              <SelectItem value="matches">Matches</SelectItem>
+              <SelectItem value="training">Training</SelectItem>
             </SelectContent>
           </Select>
         </div>
+        {selectedType && (
+          <div className="min-w-[200px]">
+            <Label>Season</Label>
+            <Select value={selectedSeason} onValueChange={handleSeasonChange}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a season" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {seasons?.length === 0 ? (
+                    <SelectLabel>No available seasons</SelectLabel>
+                  ) : (
+                    seasons?.map((season) => (
+                      <SelectItem key={season} value={season}>
+                        {season
+                          .split('/')
+                          .filter((p) => p !== '')
+                          .pop()}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
         {selectedSeason && (
           <div className="min-w-[200px]">
-            <Label>Match</Label>
-            <Select value={selectedMatch} onValueChange={setSelectedMatch}>
+            <Label>Session</Label>
+            <Select value={selectedSession} onValueChange={setSelectedSession}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a session" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Match 1">Match 1</SelectItem>
-                <SelectItem value="Match 2">Match 2</SelectItem>
+                <SelectGroup>
+                  {matches?.length === 0 ? (
+                    <SelectLabel>No available matches</SelectLabel>
+                  ) : (
+                    matches?.map((match) => (
+                      <SelectItem key={match.url} value={match.url}>
+                        {match.date.toLocaleDateString('en-UK', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        })}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectGroup>
               </SelectContent>
             </Select>
           </div>
         )}
       </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>Performance Summary</CardTitle>
-          <CardDescription>
-            Key metrics from the selected session
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid @lg:grid-cols-2 gap-4">
-          <div className="flex flex-col items-center bg-muted rounded-md p-4">
-            <Timer className="mb-2" />
-            <p className="text-muted-foreground text-sm">Top Speed</p>
-            <p className="font-bold text-xl">32 km/h</p>
-          </div>
-          <div className="flex flex-col items-center bg-muted rounde-md p-4">
-            <Ruler className="mb-2" />
-            <p className="text-muted-foreground text-sm">Distance</p>
-            <p className="font-bold text-xl">11.2 km</p>
-          </div>
-        </CardContent>
-      </Card>
-      <div className="grid @lg:grid-cols-2 gap-4">
-        <SpeedChart />
-        <DistanceChart />
-        <div className="@lg:col-span-2">
-          <Heatmap />
-        </div>
-      </div>
+      <PageBody selectedSession={selectedSession} />
     </div>
   );
+}
+
+function PageBody({ selectedSession }: { selectedSession: string }) {
+  const { session } = useAuth();
+  const { data, isFetching, error } = useGetTrackingData(
+    session,
+    selectedSession
+  );
+
+  if (selectedSession === '') {
+    return (
+      <div className="flex-grow flex items-center justify-center bg-muted rounded-md">
+        <p className="text-sm text-muted-foreground">
+          Please select a specific session to view its data
+        </p>
+      </div>
+    );
+  }
+
+  if (isFetching) {
+    <div className="flex-grow flex items-center justify-center bg-muted rounded-md">
+      <p className="text-sm text-muted-foreground">Crunching the numbers...</p>
+    </div>;
+  }
+
+  if (error) {
+    <div className="flex-grow flex items-center justify-center bg-muted rounded-md">
+      <p className="text-sm text-muted-foreground">
+        Something went wrong: {error.message}
+      </p>
+    </div>;
+  }
+
+  if (data) {
+    return (
+      <>
+        <PerformanceSummary data={data} />
+        <div className="grid @lg:grid-cols-2 gap-4">
+          <SpeedChart data={data} />
+          <DistanceChart data={data} />
+          <div className="@lg:col-span-2">
+            <Heatmap data={data} />
+          </div>
+        </div>
+      </>
+    );
+  }
 }

@@ -486,5 +486,28 @@
         ]
       }
     }
+  ],
+  "injuries": [
+    {
+      "type": "Hamstring Strain",
+      "location": "Left Hamstring",
+      "date": "2024-08-28",
+      "recoveryTime": 14,
+      "severity": "Moderate",
+      "description": "Grade 1 hamstring strain sustained during match against City FC",
+      "treatment": "Rest, ice, compression, and elevation (RICE protocol). Physical therapy 3x weekly.",
+      "rehabilitationPlan": "Progressive strengthening exercises, gradual return to running program, monitored training load"
+    }
+  ],
+  "illness": [
+    {
+      "type": "Soar throat",
+      "date": "2024-12-04",
+      "recoveryTime": 3,
+      "severity": "Minor",
+      "description": "Mild soar throat and cough, no fever or other symptoms",
+      "treatment": "Rest, hydration, throat lozenges, warm tea with honey",
+      "rehabilitationPlan": "Avoid strenuous activities, maintain hydration, monitor symptoms"
+    }
   ]
 }

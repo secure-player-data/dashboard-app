@@ -23,11 +23,13 @@ import { EVENT_AGGREGATION_SCHEMA, EVENT_DATA_SCHEMA } from '@/schemas/event';
 import { EventAggregation } from '@/entities/data/event-data';
 import { TRACKING_DATA_SCHEMA } from '@/schemas/tracking-data';
 import { BIOMETRIC_DATA_SCHEMA } from '@/schemas/biometric-data';
+import { INJURY_SCHEMA } from '@/schemas/health-data';
 
 type TData = typeof data;
 type TPersonal = TData['personal'];
 type TSeason = TData['seasons'][0];
 type TMatch = TSeason['club']['matches'][0];
+type TInjury = TData['injuries'][0];
 
 let session: Session;
 let pod: string;
@@ -39,6 +41,7 @@ export async function seedDb(_session: Session, _pod: string) {
   await Promise.all([
     await seedPersonalData(data.personal),
     data.seasons.map(seedSeason),
+    await seedInjuries(data.injuries),
   ]);
 
   // Club aggregatinos
@@ -398,6 +401,38 @@ async function seedBiometricDataForMatch(
       { fetch: session.fetch }
     )
   );
+}
+
+async function seedInjuries(injuries: TInjury[]) {
+  console.log('Seeding injuries...');
+
+  await Promise.all([
+    injuries.map(async (injury) => {
+      const id = crypto.randomUUID();
+      let dataset = createSolidDataset();
+      const thing = buildThing(createThing({ name: id }))
+        .addUrl(RDF.type, INJURY_SCHEMA.type)
+        .addStringNoLocale(INJURY_SCHEMA.injuryType, injury.type)
+        .addStringNoLocale(INJURY_SCHEMA.description, injury.description)
+        .addStringNoLocale(INJURY_SCHEMA.location, injury.location)
+        .addDate(INJURY_SCHEMA.date, new Date(injury.date))
+        .addStringNoLocale(INJURY_SCHEMA.severity, injury.severity)
+        .addStringNoLocale(INJURY_SCHEMA.recoveryTime, `${injury.recoveryTime}`)
+        .addStringNoLocale(INJURY_SCHEMA.treatment, injury.treatment)
+        .addStringNoLocale(
+          INJURY_SCHEMA.rehabilitationPlan,
+          injury.rehabilitationPlan
+        )
+        .build();
+      dataset = setThing(dataset, thing);
+
+      await safeCall(
+        saveSolidDatasetAt(paths.healthData.injuries.injury(pod, id), dataset, {
+          fetch: session.fetch,
+        })
+      );
+    }),
+  ]);
 }
 
 function getEventAggregation(matches: TMatch[]) {

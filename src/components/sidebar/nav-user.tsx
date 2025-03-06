@@ -1,4 +1,4 @@
-import { ChevronsUpDown, LogOut, User } from 'lucide-react';
+import { ChevronsUpDown, Cog, LogOut, User } from 'lucide-react';
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
@@ -74,6 +74,14 @@ export function NavUser({ user }: { user: Profile | null | undefined }) {
             >
               <User />
               Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                navigate({ to: '/settings' });
+              }}
+            >
+              <Cog />
+              Settings
             </DropdownMenuItem>
             <DropdownMenuItem onClick={signOut}>
               <LogOut />

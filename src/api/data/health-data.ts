@@ -1,4 +1,8 @@
-import { Injury, MedicalReport } from '@/entities/data/health-data';
+import {
+  Injury,
+  MedicalReport,
+  Vaccination,
+} from '@/entities/data/health-data';
 import {
   getDate,
   getSolidDataset,
@@ -14,6 +18,8 @@ import {
   INJURY_SCHEMA,
   MEDICAL_REPORT_CONTENT_SCHEMA,
   MEDICAL_REPORT_METADATA_SCHEMA,
+  VACCINATION_METADATA_SCHEMA,
+  VACCINATION_SCHEMA,
 } from '@/schemas/health-data';
 
 /**
@@ -108,6 +114,48 @@ export async function fetchMedicalReports(
   return reports.filter((report) => report !== undefined);
 }
 
+export async function fetchVaccinations(
+  session: Session | null,
+  playerPod: string
+) {
+  if (!session) {
+    throw new Error('Session not found');
+  }
+
+  const vaccinationsUrl = paths.healthData.vaccinations.root(playerPod);
+  const dataset = await getSolidDataset(vaccinationsUrl, {
+    fetch: session.fetch,
+  });
+  const things = getThingAll(dataset).filter(
+    (thing) => thing.url !== `${vaccinationsUrl}/`
+  );
+
+  const vaccinations = await Promise.all(
+    things.map(async (thing) => {
+      const [error, reportDataset] = await safeCall(
+        getSolidDataset(thing.url, {
+          fetch: session.fetch,
+        })
+      );
+      if (error) {
+        log({
+          type: 'error',
+          label: 'Fetch Medical Reports',
+          message: `Failed to fetch report dataset: ${thing.url}`,
+        });
+        return;
+      }
+      const metadata = getThing(reportDataset, `${thing.url}#metadata`);
+      const history = getThingAll(reportDataset).filter(
+        (historyThing) => historyThing.url !== `${thing.url}#metadata`
+      );
+      return mapThingToVaccination(metadata, history);
+    })
+  );
+
+  return vaccinations.filter((vaccination) => vaccination !== undefined);
+}
+
 function mapThingToInjury(thing: any): Injury {
   return {
     type: getStringNoLocale(thing, INJURY_SCHEMA.injuryType) ?? '',
@@ -137,6 +185,24 @@ function mapThingToMedicalReport(metadata: any, content: any): MedicalReport {
         getStringNoLocale(thing, MEDICAL_REPORT_CONTENT_SCHEMA.title) ?? '',
       text:
         getStringNoLocale(thing, MEDICAL_REPORT_CONTENT_SCHEMA.content) ?? '',
+    })),
+  };
+}
+
+function mapThingToVaccination(metadata: any, history: any): Vaccination {
+  return {
+    name: getStringNoLocale(metadata, VACCINATION_METADATA_SCHEMA.name) ?? '',
+    description:
+      getStringNoLocale(metadata, VACCINATION_METADATA_SCHEMA.description) ??
+      '',
+    history: history.map((thing: any) => ({
+      date: getDate(thing, VACCINATION_SCHEMA.date) ?? new Date(),
+      expirationDate:
+        getDate(thing, VACCINATION_SCHEMA.expirationDate) ?? new Date(),
+      provider: getStringNoLocale(thing, VACCINATION_SCHEMA.provider) ?? '',
+      batchNumber:
+        getStringNoLocale(thing, VACCINATION_SCHEMA.batchNumber) ?? '',
+      notes: getStringNoLocale(thing, VACCINATION_SCHEMA.notes) ?? '',
     })),
   };
 }

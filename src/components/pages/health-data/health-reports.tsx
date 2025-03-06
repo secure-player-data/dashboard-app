@@ -95,7 +95,10 @@ function Skeleton() {
   return (
     <div className="grid gap-4">
       {Array.from({ length: 3 }).map((_, index) => (
-        <div className="h-[150px] bg-muted rounded-md animate-pulse" />
+        <div
+          key={index}
+          className="h-[150px] bg-muted rounded-md animate-pulse"
+        />
       ))}
     </div>
   );

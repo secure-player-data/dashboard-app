@@ -19,3 +19,15 @@ export type MedicalReport = {
     text: string;
   }[];
 };
+
+export type Vaccination = {
+  name: string;
+  description: string;
+  history: {
+    date: Date;
+    expirationDate: Date;
+    provider: string;
+    batchNumber: string;
+    notes: string;
+  }[];
+};

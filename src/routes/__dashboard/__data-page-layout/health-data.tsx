@@ -39,7 +39,7 @@ function RouteComponent() {
           <HealthReports playerPod={player} />
         </TabsContent>
         <TabsContent value="vaccinations">
-          <Vaccinations />
+          <Vaccinations playerPod={player} />
         </TabsContent>
       </Tabs>
     </div>

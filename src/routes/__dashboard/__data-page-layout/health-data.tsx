@@ -1,5 +1,6 @@
 import HealthReports from '@/components/pages/health-data/health-reports';
 import Injuries from '@/components/pages/health-data/injuries';
+import Vaccinations from '@/components/pages/health-data/vaccinations';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TabsContent } from '@radix-ui/react-tabs';
 import { createFileRoute } from '@tanstack/react-router';
@@ -36,6 +37,9 @@ function RouteComponent() {
         </TabsContent>
         <TabsContent value="reports" className="@container">
           <HealthReports playerPod={player} />
+        </TabsContent>
+        <TabsContent value="vaccinations">
+          <Vaccinations />
         </TabsContent>
       </Tabs>
     </div>

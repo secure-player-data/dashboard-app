@@ -51,6 +51,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             {
               title: 'Personal Data',
               url: '/personal-data',
+              search: { player: pod ?? 'unknown' },
               icon: User,
             },
             {

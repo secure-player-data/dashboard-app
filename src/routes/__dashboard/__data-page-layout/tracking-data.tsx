@@ -2,13 +2,6 @@ import DistanceChart from '@/components/pages/tracking-data/distance-chart';
 import Heatmap from '@/components/pages/tracking-data/heatmap';
 import PerformanceSummary from '@/components/pages/tracking-data/performance-summary';
 import SpeedChart from '@/components/pages/tracking-data/speed-chart';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -26,18 +19,12 @@ import {
   useGetTrackingData,
 } from '@/use-cases/tracking-data';
 import { createFileRoute } from '@tanstack/react-router';
-import { zodValidator } from '@tanstack/zod-adapter';
-import { Ruler, Timer } from 'lucide-react';
 import { useState } from 'react';
-import { z } from 'zod';
 
-const searchSchema = z.object({
-  player: z.string(),
-});
-
-export const Route = createFileRoute('/__dashboard/tracking-data')({
+export const Route = createFileRoute(
+  '/__dashboard/__data-page-layout/tracking-data'
+)({
   component: RouteComponent,
-  validateSearch: zodValidator(searchSchema),
 });
 
 function RouteComponent() {
@@ -70,7 +57,7 @@ function RouteComponent() {
 
   return (
     <div className="flex flex-col gap-4 h-full @container">
-      <div className="flex gap-4">
+      <div className="flex flex-wrap gap-x-4 gap-y-2">
         <div className="min-w-[200px]">
           <Label>Session type</Label>
           <Select value={selectedType} onValueChange={handleTypeChange}>

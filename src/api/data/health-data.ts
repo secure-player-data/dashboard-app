@@ -11,15 +11,21 @@ import { safeCall } from '@/utils';
 import { log } from '@/lib/log';
 import { INJURY_SCHEMA } from '@/schemas/health-data';
 
+/**
+ * Returns a list of injuries for a player
+ * @param session of the user requesting the data
+ * @param playerPod of the player to fetch the injuries for
+ * @returns
+ */
 export async function fetchInjuries(
   session: Session | null,
-  player: string
+  playerPod: string
 ): Promise<Injury[]> {
   if (!session) {
     throw new Error('Session not found');
   }
 
-  const injuryUrl = paths.healthData.injuries.root(player);
+  const injuryUrl = paths.healthData.injuries.root(playerPod);
   const dataset = await getSolidDataset(injuryUrl, {
     fetch: session.fetch,
   });

@@ -112,6 +112,12 @@ function VaccinationHeader({ data }: { data: Vaccination[] }) {
 }
 
 function VaccinationTable({ data }: { data: Vaccination[] }) {
+  if (data.length === 0) {
+    return (
+      <p className="text-sm text-muted-foreground">No vaccinations on record</p>
+    );
+  }
+
   return (
     <Table>
       <TableHeader>

@@ -38,55 +38,59 @@ export default function HealthReports({ playerPod }: { playerPod: string }) {
 
   return (
     <div className="grid gap-4">
-      {data.map((report) => (
-        <Dialog key={report.date.toISOString()}>
-          <DialogTrigger asChild className="cursor-pointer">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+      {data.length === 0 ? (
+        <p className="text-sm text-muted-foreground">No reports on record</p>
+      ) : (
+        data.map((report) => (
+          <Dialog key={report.date.toISOString()}>
+            <DialogTrigger asChild className="cursor-pointer">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText />
+                    {report.title}
+                  </CardTitle>
+                  <CardDescription>{report.category}</CardDescription>
+                </CardHeader>
+                <CardFooter>
+                  <Badge variant="outline">
+                    {report.date.toLocaleDateString('en-UK', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
+                      weekday: 'long',
+                    })}
+                  </Badge>
+                </CardFooter>
+              </Card>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
                   <FileText />
                   {report.title}
-                </CardTitle>
-                <CardDescription>{report.category}</CardDescription>
-              </CardHeader>
-              <CardFooter>
-                <Badge variant="outline">
-                  {report.date.toLocaleDateString('en-UK', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                    weekday: 'long',
-                  })}
-                </Badge>
-              </CardFooter>
-            </Card>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <FileText />
-                {report.title}
-              </DialogTitle>
-              <DialogDescription>{report.category}</DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4">
-              {report.content.map((content) => (
-                <div key={content.title}>
-                  <Label className="font-semibold">{content.title}</Label>
-                  <Textarea readOnly value={content.text} />
-                </div>
-              ))}
-            </div>
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="outline" className="w-full">
-                  Close
-                </Button>
-              </DialogClose>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      ))}
+                </DialogTitle>
+                <DialogDescription>{report.category}</DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4">
+                {report.content.map((content) => (
+                  <div key={content.title}>
+                    <Label className="font-semibold">{content.title}</Label>
+                    <Textarea readOnly value={content.text} />
+                  </div>
+                ))}
+              </div>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline" className="w-full">
+                    Close
+                  </Button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        ))
+      )}
     </div>
   );
 }

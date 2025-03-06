@@ -19,6 +19,7 @@ import dayjs from 'dayjs';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar, Clock } from 'lucide-react';
+import { Injury } from '@/entities/data/health-data';
 
 const severityColors: Record<string, { bg: string; text: string }> = {
   Minor: {
@@ -87,16 +88,26 @@ export default function Injuries({ player }: { player: string }) {
           </div>
         </CardContent>
       </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>Injury History</CardTitle>
-          <CardDescription>
-            History over all injuries for the player
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+      <InjuryList injuries={data} />
+    </div>
+  );
+}
+
+function InjuryList({ injuries }: { injuries: Injury[] }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Injury History</CardTitle>
+        <CardDescription>
+          History over all injuries for the player
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {injuries.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No injuries on record</p>
+        ) : (
           <Accordion type="single" collapsible>
-            {data.map((injury) => (
+            {injuries.map((injury) => (
               <AccordionItem
                 key={injury.date.toISOString()}
                 value={injury.date.toISOString()}
@@ -161,9 +172,9 @@ export default function Injuries({ player }: { player: string }) {
               </AccordionItem>
             ))}
           </Accordion>
-        </CardContent>
-      </Card>
-    </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 

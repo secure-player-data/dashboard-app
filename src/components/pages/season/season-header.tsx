@@ -1,4 +1,4 @@
-import { StatHeader } from '@/components/headers/stat-header';
+import { StatHeader } from '@/components/pages/football-data/stat-header';
 import { useAuth } from '@/context/auth-context';
 import { useGetAggregatedEventData } from '@/use-cases/event-data';
 import { useGetAggregatedFootballData } from '@/use-cases/football-data';

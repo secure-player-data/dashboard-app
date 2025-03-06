@@ -1,10 +1,13 @@
 import { BASE_APP_CONTAINER } from '@/api/paths';
+import PlayerHeader from '@/components/headers/player-header';
 import { EventList } from '@/components/pages/match/event-list';
 import { MatchHeader } from '@/components/pages/match/header';
 import { createFileRoute } from '@tanstack/react-router';
 import { useMemo } from 'react';
 
-export const Route = createFileRoute('/__dashboard/matches/$match')({
+export const Route = createFileRoute(
+  '/__dashboard/matches/$match'
+)({
   component: RouteComponent,
 });
 
@@ -25,9 +28,12 @@ function RouteComponent() {
   }, [matchUrl]);
 
   return (
-    <div className="flex flex-col gap-8">
-      <MatchHeader matchUrl={matchUrl} />
-      <EventList pod={pod} type={type} season={season} matchId={matchId} />
+    <div className="flex flex-col gap-4">
+      <PlayerHeader playerPod={pod} />
+      <div className="flex flex-col gap-8">
+        <MatchHeader matchUrl={matchUrl} />
+        <EventList pod={pod} type={type} season={season} matchId={matchId} />
+      </div>
     </div>
   );
 }

@@ -1,7 +1,5 @@
-import { getPermissionDetails } from '@/api/access-control/utils';
 import AccessControlPanel from '@/components/access-control/access-control-panel';
 import { useAuth } from '@/context/auth-context';
-import { useGetPermissionDetails } from '@/use-cases/use-get-permission-details';
 import { useGetResourceList } from '@/use-cases/use-get-resource-list';
 import { createFileRoute } from '@tanstack/react-router';
 import { Loader2 } from 'lucide-react';

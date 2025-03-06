@@ -5,13 +5,16 @@ import { SeasonHeader } from '@/components/pages/season/season-header';
 import { SeasonMatches } from '@/components/pages/season/season-matches';
 import { useGetSeasonInfo } from '@/use-cases/football-data';
 import { useAuth } from '@/context/auth-context';
+import PlayerHeader from '@/components/headers/player-header';
 
 const searchSchema = z.object({
   player: z.string(),
   type: z.enum(['club', 'nation']),
 });
 
-export const Route = createFileRoute('/__dashboard/seasons/$season')({
+export const Route = createFileRoute(
+  '/__dashboard/seasons/$season'
+)({
   component: RouteComponent,
   validateSearch: zodValidator(searchSchema),
 });
@@ -25,6 +28,7 @@ function RouteComponent() {
 
   return (
     <div className="@container">
+      <PlayerHeader playerPod={player} />
       <SeasonHeader pod={player} season={season} type={type} />
       <SeasonMatches
         pod={player}

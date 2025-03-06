@@ -486,5 +486,76 @@
         ]
       }
     }
+  ],
+  "injuries": [
+    {
+      "type": "Hamstring Strain",
+      "location": "Left Hamstring",
+      "date": "2024-08-28",
+      "recoveryTime": 14,
+      "severity": "Moderate",
+      "description": "Grade 1 hamstring strain sustained during match against City FC",
+      "treatment": "Rest, ice, compression, and elevation (RICE protocol). Physical therapy 3x weekly.",
+      "rehabilitationPlan": "Progressive strengthening exercises, gradual return to running program, monitored training load"
+    }
+  ],
+  "illness": [
+    {
+      "type": "Soar throat",
+      "date": "2024-12-04",
+      "recoveryTime": 3,
+      "severity": "Minor",
+      "description": "Mild soar throat and cough, no fever or other symptoms",
+      "treatment": "Rest, hydration, throat lozenges, warm tea with honey",
+      "rehabilitationPlan": "Avoid strenuous activities, maintain hydration, monitor symptoms"
+    }
+  ],
+  "medicalReports": [
+    {
+      "title": "Annual Physical Examinations",
+      "date": "2024-09-10",
+      "doctor": "Dr. Sarah Williams",
+      "category": "Physical Examination",
+      "content": [
+        {
+          "title": "General Health",
+          "text": "Player is in excellent general health. No significant changes from previous examination."
+        },
+        {
+          "title": "Cardiovascular Assessment",
+          "text": "Resting heart rate: 52 bpm\nBlood pressure: 118/72 mmHg\nECG: Normal sinus rhythm, no abnormalities detected\nCardiovascular fitness test results indicate excellent aerobic capacity."
+        },
+        {
+          "title": "Muculoskeletal Examination",
+          "text": "Full range of motion in all joints. Previous right ankle injury shows good stability. Mild tightness noted in left hamstring group, recommend continued flexibility work."
+        },
+        {
+          "title": "Recommendations",
+          "text": "Continue current training regimen\nMaintain focus on hamstring flexibility\nFollow up on vitamin D levels in 3 months"
+        }
+      ]
+    }
+  ],
+  "vaccinations": [
+    {
+      "name": "Influenza (Seasonal Flu)",
+      "description": "Annual influenza vaccination",
+      "history": [
+        {
+          "date": "2024-10-15",
+          "expirationDate": "2025-10-15",
+          "provider": "Team Medical Staff",
+          "batchNumber": "FL24-78932",
+          "notes": "No adverse reactions"
+        },
+        {
+          "date": "2023-10-15",
+          "expirationDate": "2024-10-15",
+          "provider": "Team Medical Staff",
+          "batchNumber": "FL23-65421",
+          "notes": "No adverse reactions"
+        }
+      ]
+    }
   ]
 }

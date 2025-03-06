@@ -24,7 +24,7 @@ import {
   Weight,
 } from 'lucide-react';
 
-export const Route = createFileRoute('/__dashboard/personal-data')({
+export const Route = createFileRoute('/__dashboard/__data-page-layout/personal-data')({
   component: RouteComponent,
 });
 

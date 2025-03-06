@@ -23,11 +23,21 @@ import { EVENT_AGGREGATION_SCHEMA, EVENT_DATA_SCHEMA } from '@/schemas/event';
 import { EventAggregation } from '@/entities/data/event-data';
 import { TRACKING_DATA_SCHEMA } from '@/schemas/tracking-data';
 import { BIOMETRIC_DATA_SCHEMA } from '@/schemas/biometric-data';
+import {
+  INJURY_SCHEMA,
+  MEDICAL_REPORT_CONTENT_SCHEMA,
+  MEDICAL_REPORT_METADATA_SCHEMA,
+  VACCINATION_METADATA_SCHEMA,
+  VACCINATION_SCHEMA,
+} from '@/schemas/health-data';
 
 type TData = typeof data;
 type TPersonal = TData['personal'];
 type TSeason = TData['seasons'][0];
 type TMatch = TSeason['club']['matches'][0];
+type TInjury = TData['injuries'][0];
+type TReport = TData['medicalReports'][0];
+type TVaccination = TData['vaccinations'][0];
 
 let session: Session;
 let pod: string;
@@ -37,7 +47,10 @@ export async function seedDb(_session: Session, _pod: string) {
   pod = _pod;
 
   await Promise.all([
-    await seedPersonalData(data.personal),
+    seedPersonalData(data.personal),
+    seedInjuries(data.injuries),
+    seedMedicalReports(data.medicalReports),
+    seedVaccinations(data.vaccinations),
     data.seasons.map(seedSeason),
   ]);
 
@@ -397,6 +410,130 @@ async function seedBiometricDataForMatch(
       dataset,
       { fetch: session.fetch }
     )
+  );
+}
+
+async function seedInjuries(injuries: TInjury[]) {
+  console.log('Seeding injuries...');
+
+  await Promise.all([
+    injuries.map(async (injury) => {
+      const id = crypto.randomUUID();
+      let dataset = createSolidDataset();
+      const thing = buildThing(createThing({ name: id }))
+        .addUrl(RDF.type, INJURY_SCHEMA.type)
+        .addStringNoLocale(INJURY_SCHEMA.injuryType, injury.type)
+        .addStringNoLocale(INJURY_SCHEMA.description, injury.description)
+        .addStringNoLocale(INJURY_SCHEMA.location, injury.location)
+        .addDate(INJURY_SCHEMA.date, new Date(injury.date))
+        .addStringNoLocale(INJURY_SCHEMA.severity, injury.severity)
+        .addStringNoLocale(INJURY_SCHEMA.recoveryTime, `${injury.recoveryTime}`)
+        .addStringNoLocale(INJURY_SCHEMA.treatment, injury.treatment)
+        .addStringNoLocale(
+          INJURY_SCHEMA.rehabilitationPlan,
+          injury.rehabilitationPlan
+        )
+        .build();
+      dataset = setThing(dataset, thing);
+
+      await safeCall(
+        saveSolidDatasetAt(paths.healthData.injuries.injury(pod, id), dataset, {
+          fetch: session.fetch,
+        })
+      );
+    }),
+  ]);
+}
+
+async function seedMedicalReports(reports: TReport[]) {
+  console.log('Seeding medical reports...');
+
+  await Promise.all(
+    reports.map(async (report) => {
+      const reportId = crypto.randomUUID();
+      let dataset = createSolidDataset();
+      const metadata = buildThing(createThing({ name: 'metadata' }))
+        .addUrl(RDF.type, MEDICAL_REPORT_METADATA_SCHEMA.type)
+        .addStringNoLocale(MEDICAL_REPORT_METADATA_SCHEMA.title, report.title)
+        .addDate(MEDICAL_REPORT_METADATA_SCHEMA.date, new Date(report.date))
+        .addStringNoLocale(MEDICAL_REPORT_METADATA_SCHEMA.doctor, report.doctor)
+        .addStringNoLocale(
+          MEDICAL_REPORT_METADATA_SCHEMA.category,
+          report.category
+        )
+        .build();
+      dataset = setThing(dataset, metadata);
+
+      report.content.forEach((content) => {
+        const thingId = crypto.randomUUID();
+        const thing = buildThing(createThing({ name: thingId }))
+          .addUrl(RDF.type, MEDICAL_REPORT_CONTENT_SCHEMA.type)
+          .addStringNoLocale(MEDICAL_REPORT_CONTENT_SCHEMA.title, content.title)
+          .addStringNoLocale(
+            MEDICAL_REPORT_CONTENT_SCHEMA.content,
+            content.text
+          )
+          .build();
+        dataset = setThing(dataset, thing);
+      });
+
+      await safeCall(
+        saveSolidDatasetAt(
+          paths.healthData.medicalReports.report(pod, reportId),
+          dataset,
+          {
+            fetch: session.fetch,
+          }
+        )
+      );
+    })
+  );
+}
+
+async function seedVaccinations(vaccinations: TVaccination[]) {
+  console.log('Seeding vaccinations...');
+
+  await Promise.all(
+    vaccinations.map(async (vaccination) => {
+      const vaccinationId = crypto.randomUUID();
+      let dataset = createSolidDataset();
+      const metadata = buildThing(createThing({ name: 'metadata' }))
+        .addUrl(RDF.type, VACCINATION_METADATA_SCHEMA.type)
+        .addStringNoLocale(VACCINATION_METADATA_SCHEMA.name, vaccination.name)
+        .addStringNoLocale(
+          VACCINATION_METADATA_SCHEMA.description,
+          vaccination.description
+        )
+        .build();
+      dataset = setThing(dataset, metadata);
+
+      vaccination.history.forEach((history) => {
+        const historyId = crypto.randomUUID();
+        const thing = buildThing(createThing({ name: historyId }))
+          .addUrl(RDF.type, VACCINATION_SCHEMA.type)
+          .addDate(VACCINATION_SCHEMA.date, new Date(history.date))
+          .addDate(
+            VACCINATION_SCHEMA.expirationDate,
+            new Date(history.expirationDate)
+          )
+          .addStringNoLocale(VACCINATION_SCHEMA.provider, history.provider)
+          .addStringNoLocale(
+            VACCINATION_SCHEMA.batchNumber,
+            history.batchNumber
+          )
+          .addStringNoLocale(VACCINATION_SCHEMA.notes, history.notes)
+          .build();
+        dataset = setThing(dataset, thing);
+      });
+
+      await safeCall(
+        saveSolidDatasetAt(
+          paths.healthData.vaccinations.vaccination(pod, vaccinationId),
+          dataset,
+          { fetch: session.fetch }
+        )
+      );
+    })
   );
 }
 

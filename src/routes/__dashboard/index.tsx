@@ -1,8 +1,6 @@
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useAuth } from '@/context/auth-context';
 import { useGetProfile } from '@/use-cases/use-get-profile';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { link } from 'fs';
 import {
   Activity,
   Calendar,
@@ -28,6 +26,7 @@ function RouteComponent() {
         description: 'Data related to you and your persona',
         icon: User,
         link: '/personal-data',
+        search: { player: pod ?? 'unknown' },
       },
       {
         title: 'Football Data',
@@ -41,6 +40,7 @@ function RouteComponent() {
         description: 'Data related to events',
         icon: Calendar,
         link: '/event-data',
+        search: { player: pod ?? 'unknown' },
       },
       {
         title: 'Tracking Data',
@@ -54,12 +54,14 @@ function RouteComponent() {
         description: 'Data related to biometrics',
         icon: Fingerprint,
         link: '/biometric-data',
+        search: { player: pod ?? 'unknown' },
       },
       {
         title: 'Health Data',
         description: 'Data related to health',
         icon: Activity,
         link: '/health-data',
+        search: { player: pod ?? 'uknown' },
       },
     ],
     [pod]

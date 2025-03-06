@@ -1,7 +1,7 @@
 import { useAuth } from '@/context/auth-context';
 import { useGetAggregatedEventData } from '@/use-cases/event-data';
 import { useGetAggregatedFootballData } from '@/use-cases/football-data';
-import { StatHeader } from '../../headers/stat-header';
+import { StatHeader } from './stat-header';
 
 export function ClubHeader() {
   return (

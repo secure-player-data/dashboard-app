@@ -51,6 +51,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             {
               title: 'Personal Data',
               url: '/personal-data',
+              search: { player: pod ?? 'unknown' },
               icon: User,
             },
             {
@@ -78,6 +79,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             {
               title: 'Health Data',
               url: '/health-data',
+              search: { player: pod ?? 'unknown' },
               icon: Activity,
             },
           ],

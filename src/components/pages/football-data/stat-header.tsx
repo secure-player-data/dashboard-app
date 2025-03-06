@@ -1,7 +1,7 @@
 import { EventAggregation } from '@/entities/data/event-data';
 import { FootballAggregation } from '@/entities/data/football-data';
-import { HeaderSkeleton } from './header-skeleton';
-import { StatCard } from '../cards/stat-card';
+import { HeaderSkeleton } from '../../headers/header-skeleton';
+import { StatCard } from '../../cards/stat-card';
 import {
   BarChart3,
   Calendar,
@@ -12,6 +12,7 @@ import {
   Timer,
   Trophy,
 } from 'lucide-react';
+import { useMemo } from 'react';
 
 export function StatHeader({
   footballData,
@@ -28,6 +29,12 @@ export function StatHeader({
   eventPending: boolean;
   eventError: Error | null;
 }) {
+  const goalsPerMatch = useMemo(() => {
+    if (!eventData?.goals || !footballData?.matches) return 0;
+
+    return (eventData.goals / footballData.matches).toFixed(2);
+  }, [eventData, footballData]);
+
   if (footballPending || eventPending) {
     return <HeaderSkeleton />;
   }
@@ -62,7 +69,7 @@ export function StatHeader({
         <StatCard
           icon={BarChart3}
           label="Goals per match"
-          value={`${((eventData?.goals ?? 0) / (footballData?.matches ?? 1)).toFixed(2)}`}
+          value={`${goalsPerMatch}`}
         />
         <StatCard
           icon={ShieldAlert}

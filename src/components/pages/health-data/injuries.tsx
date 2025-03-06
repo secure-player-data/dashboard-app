@@ -147,15 +147,15 @@ export default function Injuries({ player }: { player: string }) {
                   </div>
                   <div>
                     <Label>Description:</Label>
-                    <Textarea readOnly>{injury.description}</Textarea>
+                    <Textarea readOnly value={injury.description} />
                   </div>
                   <div>
                     <Label>Treatment:</Label>
-                    <Textarea readOnly>{injury.treatment}</Textarea>
+                    <Textarea readOnly value={injury.treatment} />
                   </div>
                   <div>
                     <Label>Rehabilitation Plan:</Label>
-                    <Textarea readOnly>{injury.rehabilitationPlan}</Textarea>
+                    <Textarea readOnly value={injury.rehabilitationPlan} />
                   </div>
                 </AccordionContent>
               </AccordionItem>

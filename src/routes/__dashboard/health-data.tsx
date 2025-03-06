@@ -1,3 +1,4 @@
+import Injuries from '@/components/pages/health-data/injuries';
 import {
   Accordion,
   AccordionItem,
@@ -69,103 +70,7 @@ function RouteComponent() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="injuries">
-          <div className="grid gap-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Injury Summary</CardTitle>
-                <CardDescription>Overview of injury history</CardDescription>
-              </CardHeader>
-              <CardContent className="grid grid-cols-3 gap-4">
-                <div className="bg-muted rounded-md flex flex-col items-center justify-center p-4">
-                  <p className="font-bold text-xl">1</p>
-                  <p className="text-sm text-muted-foreground">Minor</p>
-                </div>
-                <div className="bg-muted rounded-md flex flex-col items-center justify-center p-4">
-                  <p className="font-bold text-xl">2</p>
-                  <p className="text-sm text-muted-foreground">Moderate</p>
-                </div>
-                <div className="bg-muted rounded-md flex flex-col items-center justify-center p-4">
-                  <p className="font-bold text-xl">0</p>
-                  <p className="text-sm text-muted-foreground">Severe</p>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Injury History</CardTitle>
-                <CardDescription>
-                  History over all injuries for the player
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Accordion type="single" collapsible>
-                  <AccordionItem value="item-1">
-                    <AccordionTrigger>
-                      <div className="flex items-center justify-between w-full text-left pr-4">
-                        <div className="flex flex-col">
-                          <h3 className="font-medium">Hamstring Strain</h3>
-                          <p className="text-sm text-muted-foreground">
-                            Left Hamstring
-                          </p>
-                        </div>
-                        <div className="flex gap-2">
-                          <Badge className="bg-yellow-200 text-yellow-800">
-                            Moderate
-                          </Badge>
-                          <Badge className="bg-red-200 text-red-800">
-                            Active
-                          </Badge>
-                        </div>
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent>More info</AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="item-2">
-                    <AccordionTrigger>
-                      <div className="flex items-center justify-between w-full text-left pr-4">
-                        <div className="flex flex-col">
-                          <h3 className="font-medium">Ankle Sprain</h3>
-                          <p className="text-sm text-muted-foreground">
-                            Right Ankle
-                          </p>
-                        </div>
-                        <div className="flex gap-2">
-                          <Badge className="bg-yellow-200 text-yellow-800">
-                            Moderate
-                          </Badge>
-                          <Badge className="bg-green-200 text-green-800">
-                            Recovered
-                          </Badge>
-                        </div>
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent>More info</AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="item-3">
-                    <AccordionTrigger>
-                      <div className="flex items-center justify-between w-full text-left pr-4">
-                        <div className="flex flex-col">
-                          <h3 className="font-medium">Knee Contusion</h3>
-                          <p className="text-sm text-muted-foreground">
-                            Left Knee
-                          </p>
-                        </div>
-                        <div className="flex gap-2">
-                          <Badge className="bg-green-200 text-green-800">
-                            Minor
-                          </Badge>
-                          <Badge className="bg-green-200 text-green-800">
-                            Recovered
-                          </Badge>
-                        </div>
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent>More info</AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-              </CardContent>
-            </Card>
-          </div>
+          <Injuries player={player} />
         </TabsContent>
       </Tabs>
     </div>

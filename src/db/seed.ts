@@ -27,6 +27,8 @@ import {
   INJURY_SCHEMA,
   MEDICAL_REPORT_CONTENT_SCHEMA,
   MEDICAL_REPORT_METADATA_SCHEMA,
+  VACCINATION_METADATA_SCHEMA,
+  VACCINATION_SCHEMA,
 } from '@/schemas/health-data';
 
 type TData = typeof data;
@@ -35,6 +37,7 @@ type TSeason = TData['seasons'][0];
 type TMatch = TSeason['club']['matches'][0];
 type TInjury = TData['injuries'][0];
 type TReport = TData['medicalReports'][0];
+type TVaccination = TData['vaccinations'][0];
 
 let session: Session;
 let pod: string;
@@ -47,6 +50,7 @@ export async function seedDb(_session: Session, _pod: string) {
     seedPersonalData(data.personal),
     seedInjuries(data.injuries),
     seedMedicalReports(data.medicalReports),
+    seedVaccinations(data.vaccinations),
     data.seasons.map(seedSeason),
   ]);
 
@@ -480,6 +484,53 @@ async function seedMedicalReports(reports: TReport[]) {
           {
             fetch: session.fetch,
           }
+        )
+      );
+    })
+  );
+}
+
+async function seedVaccinations(vaccinations: TVaccination[]) {
+  console.log('Seeding vaccinations...');
+
+  await Promise.all(
+    vaccinations.map(async (vaccination) => {
+      const vaccinationId = crypto.randomUUID();
+      let dataset = createSolidDataset();
+      const metadata = buildThing(createThing({ name: 'metadata' }))
+        .addUrl(RDF.type, VACCINATION_METADATA_SCHEMA.type)
+        .addStringNoLocale(VACCINATION_METADATA_SCHEMA.name, vaccination.name)
+        .addStringNoLocale(
+          VACCINATION_METADATA_SCHEMA.description,
+          vaccination.description
+        )
+        .build();
+      dataset = setThing(dataset, metadata);
+
+      vaccination.history.forEach((history) => {
+        const historyId = crypto.randomUUID();
+        const thing = buildThing(createThing({ name: historyId }))
+          .addUrl(RDF.type, VACCINATION_SCHEMA.type)
+          .addDate(VACCINATION_SCHEMA.date, new Date(history.date))
+          .addDate(
+            VACCINATION_SCHEMA.expirationDate,
+            new Date(history.expirationDate)
+          )
+          .addStringNoLocale(VACCINATION_SCHEMA.provider, history.provider)
+          .addStringNoLocale(
+            VACCINATION_SCHEMA.batchNumber,
+            history.batchNumber
+          )
+          .addStringNoLocale(VACCINATION_SCHEMA.notes, history.notes)
+          .build();
+        dataset = setThing(dataset, thing);
+      });
+
+      await safeCall(
+        saveSolidDatasetAt(
+          paths.healthData.vaccinations.vaccination(pod, vaccinationId),
+          dataset,
+          { fetch: session.fetch }
         )
       );
     })

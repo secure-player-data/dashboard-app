@@ -23,3 +23,18 @@ export const MEDICAL_REPORT_CONTENT_SCHEMA = {
   title: 'https://schema.org/title',
   content: 'https://schema.org/content',
 };
+
+export const VACCINATION_METADATA_SCHEMA = {
+  type: 'https://schema.org/Vaccination',
+  name: 'https://schema.org/name',
+  description: 'https://schema.org/description',
+};
+
+export const VACCINATION_SCHEMA = {
+  type: 'https://schema.org/VaccinationRecord',
+  date: 'https://schema.org/date',
+  expirationDate: 'https://schema.org/expirationDate',
+  provider: 'https://schema.org/provider',
+  batchNumber: 'https://schema.org/batchNumber',
+  notes: 'https://schema.org/notes',
+};

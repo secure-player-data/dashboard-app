@@ -1,15 +1,20 @@
-import { Injury } from '@/entities/data/health-data';
+import { Injury, MedicalReport } from '@/entities/data/health-data';
 import {
   getDate,
   getSolidDataset,
   getStringNoLocale,
+  getThing,
   getThingAll,
 } from '@inrupt/solid-client';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { paths } from '../paths';
 import { safeCall } from '@/utils';
 import { log } from '@/lib/log';
-import { INJURY_SCHEMA } from '@/schemas/health-data';
+import {
+  INJURY_SCHEMA,
+  MEDICAL_REPORT_CONTENT_SCHEMA,
+  MEDICAL_REPORT_METADATA_SCHEMA,
+} from '@/schemas/health-data';
 
 /**
  * Returns a list of injuries for a player
@@ -56,6 +61,53 @@ export async function fetchInjuries(
   return injuries.filter((injury) => injury !== undefined);
 }
 
+/**
+ * Returns a list of medical reports for a player
+ * @param session of the user requesting the data
+ * @param playerPod pod of the player to fetch the reports for
+ */
+export async function fetchMedicalReports(
+  session: Session | null,
+  playerPod: string
+): Promise<MedicalReport[]> {
+  if (!session) {
+    throw new Error('Session not found');
+  }
+
+  const reportsUrl = paths.healthData.medicalReports.root(playerPod);
+  const dataset = await getSolidDataset(reportsUrl, {
+    fetch: session.fetch,
+  });
+  const things = getThingAll(dataset).filter(
+    (thing) => thing.url !== `${reportsUrl}/`
+  );
+
+  const reports = await Promise.all(
+    things.map(async (thing) => {
+      const [error, reportDataset] = await safeCall(
+        getSolidDataset(thing.url, {
+          fetch: session.fetch,
+        })
+      );
+      if (error) {
+        log({
+          type: 'error',
+          label: 'Fetch Medical Reports',
+          message: `Failed to fetch report dataset: ${thing.url}`,
+        });
+        return;
+      }
+      const metadata = getThing(reportDataset, `${thing.url}#metadata`);
+      const content = getThingAll(reportDataset).filter(
+        (contentThing) => contentThing.url !== `${thing.url}#metadata`
+      );
+      return mapThingToMedicalReport(metadata, content);
+    })
+  );
+
+  return reports.filter((report) => report !== undefined);
+}
+
 function mapThingToInjury(thing: any): Injury {
   return {
     type: getStringNoLocale(thing, INJURY_SCHEMA.injuryType) ?? '',
@@ -67,5 +119,24 @@ function mapThingToInjury(thing: any): Injury {
     treatment: getStringNoLocale(thing, INJURY_SCHEMA.treatment) ?? '',
     rehabilitationPlan:
       getStringNoLocale(thing, INJURY_SCHEMA.rehabilitationPlan) ?? '',
+  };
+}
+
+function mapThingToMedicalReport(metadata: any, content: any): MedicalReport {
+  return {
+    title:
+      getStringNoLocale(metadata, MEDICAL_REPORT_METADATA_SCHEMA.title) ?? '',
+    date: getDate(metadata, MEDICAL_REPORT_METADATA_SCHEMA.date) ?? new Date(),
+    doctor:
+      getStringNoLocale(metadata, MEDICAL_REPORT_METADATA_SCHEMA.doctor) ?? '',
+    category:
+      getStringNoLocale(metadata, MEDICAL_REPORT_METADATA_SCHEMA.category) ??
+      '',
+    content: content.map((thing: any) => ({
+      title:
+        getStringNoLocale(thing, MEDICAL_REPORT_CONTENT_SCHEMA.title) ?? '',
+      text:
+        getStringNoLocale(thing, MEDICAL_REPORT_CONTENT_SCHEMA.content) ?? '',
+    })),
   };
 }

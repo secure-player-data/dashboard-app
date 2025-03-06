@@ -1,3 +1,4 @@
+import HealthReports from '@/components/pages/health-data/health-reports';
 import Injuries from '@/components/pages/health-data/injuries';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TabsContent } from '@radix-ui/react-tabs';
@@ -32,6 +33,9 @@ function RouteComponent() {
         </TabsList>
         <TabsContent value="injuries">
           <Injuries player={player} />
+        </TabsContent>
+        <TabsContent value="reports" className="@container">
+          <HealthReports playerPod={player} />
         </TabsContent>
       </Tabs>
     </div>

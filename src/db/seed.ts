@@ -23,13 +23,18 @@ import { EVENT_AGGREGATION_SCHEMA, EVENT_DATA_SCHEMA } from '@/schemas/event';
 import { EventAggregation } from '@/entities/data/event-data';
 import { TRACKING_DATA_SCHEMA } from '@/schemas/tracking-data';
 import { BIOMETRIC_DATA_SCHEMA } from '@/schemas/biometric-data';
-import { INJURY_SCHEMA } from '@/schemas/health-data';
+import {
+  INJURY_SCHEMA,
+  MEDICAL_REPORT_CONTENT_SCHEMA,
+  MEDICAL_REPORT_METADATA_SCHEMA,
+} from '@/schemas/health-data';
 
 type TData = typeof data;
 type TPersonal = TData['personal'];
 type TSeason = TData['seasons'][0];
 type TMatch = TSeason['club']['matches'][0];
 type TInjury = TData['injuries'][0];
+type TReport = TData['medicalReports'][0];
 
 let session: Session;
 let pod: string;
@@ -39,9 +44,10 @@ export async function seedDb(_session: Session, _pod: string) {
   pod = _pod;
 
   await Promise.all([
-    await seedPersonalData(data.personal),
+    seedPersonalData(data.personal),
+    seedInjuries(data.injuries),
+    seedMedicalReports(data.medicalReports),
     data.seasons.map(seedSeason),
-    await seedInjuries(data.injuries),
   ]);
 
   // Club aggregatinos
@@ -433,6 +439,51 @@ async function seedInjuries(injuries: TInjury[]) {
       );
     }),
   ]);
+}
+
+async function seedMedicalReports(reports: TReport[]) {
+  console.log('Seeding medical reports...');
+
+  await Promise.all(
+    reports.map(async (report) => {
+      const reportId = crypto.randomUUID();
+      let dataset = createSolidDataset();
+      const metadata = buildThing(createThing({ name: 'metadata' }))
+        .addUrl(RDF.type, MEDICAL_REPORT_METADATA_SCHEMA.type)
+        .addStringNoLocale(MEDICAL_REPORT_METADATA_SCHEMA.title, report.title)
+        .addDate(MEDICAL_REPORT_METADATA_SCHEMA.date, new Date(report.date))
+        .addStringNoLocale(MEDICAL_REPORT_METADATA_SCHEMA.doctor, report.doctor)
+        .addStringNoLocale(
+          MEDICAL_REPORT_METADATA_SCHEMA.category,
+          report.category
+        )
+        .build();
+      dataset = setThing(dataset, metadata);
+
+      report.content.forEach((content) => {
+        const thingId = crypto.randomUUID();
+        const thing = buildThing(createThing({ name: thingId }))
+          .addUrl(RDF.type, MEDICAL_REPORT_CONTENT_SCHEMA.type)
+          .addStringNoLocale(MEDICAL_REPORT_CONTENT_SCHEMA.title, content.title)
+          .addStringNoLocale(
+            MEDICAL_REPORT_CONTENT_SCHEMA.content,
+            content.text
+          )
+          .build();
+        dataset = setThing(dataset, thing);
+      });
+
+      await safeCall(
+        saveSolidDatasetAt(
+          paths.healthData.medicalReports.report(pod, reportId),
+          dataset,
+          {
+            fetch: session.fetch,
+          }
+        )
+      );
+    })
+  );
 }
 
 function getEventAggregation(matches: TMatch[]) {

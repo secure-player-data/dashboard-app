@@ -509,5 +509,31 @@
       "treatment": "Rest, hydration, throat lozenges, warm tea with honey",
       "rehabilitationPlan": "Avoid strenuous activities, maintain hydration, monitor symptoms"
     }
+  ],
+  "medicalReports": [
+    {
+      "title": "Annual Physical Examinations",
+      "date": "2024-09-10",
+      "doctor": "Dr. Sarah Williams",
+      "category": "Physical Examination",
+      "content": [
+        {
+          "title": "General Health",
+          "text": "Player is in excellent general health. No significant changes from previous examination."
+        },
+        {
+          "title": "Cardiovascular Assessment",
+          "text": "Resting heart rate: 52 bpm\nBlood pressure: 118/72 mmHg\nECG: Normal sinus rhythm, no abnormalities detected\nCardiovascular fitness test results indicate excellent aerobic capacity."
+        },
+        {
+          "title": "Muculoskeletal Examination",
+          "text": "Full range of motion in all joints. Previous right ankle injury shows good stability. Mild tightness noted in left hamstring group, recommend continued flexibility work."
+        },
+        {
+          "title": "Recommendations",
+          "text": "Continue current training regimen\nMaintain focus on hamstring flexibility\nFollow up on vitamin D levels in 3 months"
+        }
+      ]
+    }
   ]
 }

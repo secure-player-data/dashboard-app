@@ -36,7 +36,7 @@ export default function Vaccinations({ playerPod }: { playerPod: string }) {
   const { data, error, isPending } = useGetVaccinations(session, playerPod);
 
   if (isPending) {
-    return <p>TODO: Skeleton</p>;
+    return <Skeleton />;
   }
 
   if (error) {
@@ -293,5 +293,26 @@ function VaccinationDialog({ vaccination }: { vaccination: Vaccination }) {
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function Skeleton() {
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-2 gap-4">
+        {Array.from({ length: 2 }).map((_, i) => (
+          <div
+            key={i}
+            className="h-[150px] bg-muted rounded-md animate-pulse"
+          ></div>
+        ))}
+      </div>
+      {Array.from({ length: 3 }).map((_, i) => (
+        <div
+          key={i}
+          className="h-[150px] bg-muted rounded-md animate-pulse"
+        ></div>
+      ))}
+    </div>
   );
 }

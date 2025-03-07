@@ -31,8 +31,8 @@ import { Route as dashboardTeamDetailsImport } from './routes/__dashboard/team/d
 import { Route as dashboardSeasonsSeasonImport } from './routes/__dashboard/seasons.$season'
 import { Route as dashboardPlayerPodImport } from './routes/__dashboard/player/$pod'
 import { Route as dashboardMatchesMatchImport } from './routes/__dashboard/matches.$match'
-import { Route as dashboarddataPageLayoutTrackingDataImport } from './routes/__dashboard/__data-page-layout/tracking-data'
 import { Route as dashboarddataPageLayoutHealthDataImport } from './routes/__dashboard/__data-page-layout/health-data'
+import { Route as dashboardPlayerPodTrackingDataImport } from './routes/__dashboard/player/$pod/tracking-data'
 import { Route as dashboardPlayerPodPersonalDataImport } from './routes/__dashboard/player/$pod/personal-data'
 import { Route as dashboardPlayerPodFootballDataImport } from './routes/__dashboard/player/$pod/football-data'
 
@@ -155,18 +155,18 @@ const dashboardMatchesMatchRoute = dashboardMatchesMatchImport.update({
   getParentRoute: () => dashboardRoute,
 } as any)
 
-const dashboarddataPageLayoutTrackingDataRoute =
-  dashboarddataPageLayoutTrackingDataImport.update({
-    id: '/tracking-data',
-    path: '/tracking-data',
-    getParentRoute: () => dashboarddataPageLayoutRoute,
-  } as any)
-
 const dashboarddataPageLayoutHealthDataRoute =
   dashboarddataPageLayoutHealthDataImport.update({
     id: '/health-data',
     path: '/health-data',
     getParentRoute: () => dashboarddataPageLayoutRoute,
+  } as any)
+
+const dashboardPlayerPodTrackingDataRoute =
+  dashboardPlayerPodTrackingDataImport.update({
+    id: '/tracking-data',
+    path: '/tracking-data',
+    getParentRoute: () => dashboardPlayerPodRoute,
   } as any)
 
 const dashboardPlayerPodPersonalDataRoute =
@@ -285,13 +285,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboarddataPageLayoutHealthDataImport
       parentRoute: typeof dashboarddataPageLayoutImport
     }
-    '/__dashboard/__data-page-layout/tracking-data': {
-      id: '/__dashboard/__data-page-layout/tracking-data'
-      path: '/tracking-data'
-      fullPath: '/tracking-data'
-      preLoaderRoute: typeof dashboarddataPageLayoutTrackingDataImport
-      parentRoute: typeof dashboarddataPageLayoutImport
-    }
     '/__dashboard/matches/$match': {
       id: '/__dashboard/matches/$match'
       path: '/matches/$match'
@@ -355,6 +348,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboardPlayerPodPersonalDataImport
       parentRoute: typeof dashboardPlayerPodImport
     }
+    '/__dashboard/player/$pod/tracking-data': {
+      id: '/__dashboard/player/$pod/tracking-data'
+      path: '/tracking-data'
+      fullPath: '/player/$pod/tracking-data'
+      preLoaderRoute: typeof dashboardPlayerPodTrackingDataImport
+      parentRoute: typeof dashboardPlayerPodImport
+    }
   }
 }
 
@@ -394,15 +394,12 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 
 interface dashboarddataPageLayoutRouteChildren {
   dashboarddataPageLayoutHealthDataRoute: typeof dashboarddataPageLayoutHealthDataRoute
-  dashboarddataPageLayoutTrackingDataRoute: typeof dashboarddataPageLayoutTrackingDataRoute
 }
 
 const dashboarddataPageLayoutRouteChildren: dashboarddataPageLayoutRouteChildren =
   {
     dashboarddataPageLayoutHealthDataRoute:
       dashboarddataPageLayoutHealthDataRoute,
-    dashboarddataPageLayoutTrackingDataRoute:
-      dashboarddataPageLayoutTrackingDataRoute,
   }
 
 const dashboarddataPageLayoutRouteWithChildren =
@@ -413,11 +410,13 @@ const dashboarddataPageLayoutRouteWithChildren =
 interface dashboardPlayerPodRouteChildren {
   dashboardPlayerPodFootballDataRoute: typeof dashboardPlayerPodFootballDataRoute
   dashboardPlayerPodPersonalDataRoute: typeof dashboardPlayerPodPersonalDataRoute
+  dashboardPlayerPodTrackingDataRoute: typeof dashboardPlayerPodTrackingDataRoute
 }
 
 const dashboardPlayerPodRouteChildren: dashboardPlayerPodRouteChildren = {
   dashboardPlayerPodFootballDataRoute: dashboardPlayerPodFootballDataRoute,
   dashboardPlayerPodPersonalDataRoute: dashboardPlayerPodPersonalDataRoute,
+  dashboardPlayerPodTrackingDataRoute: dashboardPlayerPodTrackingDataRoute,
 }
 
 const dashboardPlayerPodRouteWithChildren =
@@ -470,7 +469,6 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/': typeof dashboardIndexRoute
   '/health-data': typeof dashboarddataPageLayoutHealthDataRoute
-  '/tracking-data': typeof dashboarddataPageLayoutTrackingDataRoute
   '/matches/$match': typeof dashboardMatchesMatchRoute
   '/player/$pod': typeof dashboardPlayerPodRouteWithChildren
   '/seasons/$season': typeof dashboardSeasonsSeasonRoute
@@ -480,6 +478,7 @@ export interface FileRoutesByFullPath {
   '/auth/team': typeof AuthSetupTeamRoute
   '/player/$pod/football-data': typeof dashboardPlayerPodFootballDataRoute
   '/player/$pod/personal-data': typeof dashboardPlayerPodPersonalDataRoute
+  '/player/$pod/tracking-data': typeof dashboardPlayerPodTrackingDataRoute
 }
 
 export interface FileRoutesByTo {
@@ -495,7 +494,6 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/': typeof dashboardIndexRoute
   '/health-data': typeof dashboarddataPageLayoutHealthDataRoute
-  '/tracking-data': typeof dashboarddataPageLayoutTrackingDataRoute
   '/matches/$match': typeof dashboardMatchesMatchRoute
   '/player/$pod': typeof dashboardPlayerPodRouteWithChildren
   '/seasons/$season': typeof dashboardSeasonsSeasonRoute
@@ -505,6 +503,7 @@ export interface FileRoutesByTo {
   '/auth/team': typeof AuthSetupTeamRoute
   '/player/$pod/football-data': typeof dashboardPlayerPodFootballDataRoute
   '/player/$pod/personal-data': typeof dashboardPlayerPodPersonalDataRoute
+  '/player/$pod/tracking-data': typeof dashboardPlayerPodTrackingDataRoute
 }
 
 export interface FileRoutesById {
@@ -523,7 +522,6 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/__dashboard/': typeof dashboardIndexRoute
   '/__dashboard/__data-page-layout/health-data': typeof dashboarddataPageLayoutHealthDataRoute
-  '/__dashboard/__data-page-layout/tracking-data': typeof dashboarddataPageLayoutTrackingDataRoute
   '/__dashboard/matches/$match': typeof dashboardMatchesMatchRoute
   '/__dashboard/player/$pod': typeof dashboardPlayerPodRouteWithChildren
   '/__dashboard/seasons/$season': typeof dashboardSeasonsSeasonRoute
@@ -533,6 +531,7 @@ export interface FileRoutesById {
   '/auth/_setup/team': typeof AuthSetupTeamRoute
   '/__dashboard/player/$pod/football-data': typeof dashboardPlayerPodFootballDataRoute
   '/__dashboard/player/$pod/personal-data': typeof dashboardPlayerPodPersonalDataRoute
+  '/__dashboard/player/$pod/tracking-data': typeof dashboardPlayerPodTrackingDataRoute
 }
 
 export interface FileRouteTypes {
@@ -550,7 +549,6 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/'
     | '/health-data'
-    | '/tracking-data'
     | '/matches/$match'
     | '/player/$pod'
     | '/seasons/$season'
@@ -560,6 +558,7 @@ export interface FileRouteTypes {
     | '/auth/team'
     | '/player/$pod/football-data'
     | '/player/$pod/personal-data'
+    | '/player/$pod/tracking-data'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
@@ -574,7 +573,6 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/'
     | '/health-data'
-    | '/tracking-data'
     | '/matches/$match'
     | '/player/$pod'
     | '/seasons/$season'
@@ -584,6 +582,7 @@ export interface FileRouteTypes {
     | '/auth/team'
     | '/player/$pod/football-data'
     | '/player/$pod/personal-data'
+    | '/player/$pod/tracking-data'
   id:
     | '__root__'
     | '/auth'
@@ -600,7 +599,6 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/__dashboard/'
     | '/__dashboard/__data-page-layout/health-data'
-    | '/__dashboard/__data-page-layout/tracking-data'
     | '/__dashboard/matches/$match'
     | '/__dashboard/player/$pod'
     | '/__dashboard/seasons/$season'
@@ -610,6 +608,7 @@ export interface FileRouteTypes {
     | '/auth/_setup/team'
     | '/__dashboard/player/$pod/football-data'
     | '/__dashboard/player/$pod/personal-data'
+    | '/__dashboard/player/$pod/tracking-data'
   fileRoutesById: FileRoutesById
 }
 
@@ -667,8 +666,7 @@ export const routeTree = rootRoute
       "filePath": "__dashboard/__data-page-layout.tsx",
       "parent": "/__dashboard",
       "children": [
-        "/__dashboard/__data-page-layout/health-data",
-        "/__dashboard/__data-page-layout/tracking-data"
+        "/__dashboard/__data-page-layout/health-data"
       ]
     },
     "/__dashboard/access-control": {
@@ -719,10 +717,6 @@ export const routeTree = rootRoute
       "filePath": "__dashboard/__data-page-layout/health-data.tsx",
       "parent": "/__dashboard/__data-page-layout"
     },
-    "/__dashboard/__data-page-layout/tracking-data": {
-      "filePath": "__dashboard/__data-page-layout/tracking-data.tsx",
-      "parent": "/__dashboard/__data-page-layout"
-    },
     "/__dashboard/matches/$match": {
       "filePath": "__dashboard/matches.$match.tsx",
       "parent": "/__dashboard"
@@ -732,7 +726,8 @@ export const routeTree = rootRoute
       "parent": "/__dashboard",
       "children": [
         "/__dashboard/player/$pod/football-data",
-        "/__dashboard/player/$pod/personal-data"
+        "/__dashboard/player/$pod/personal-data",
+        "/__dashboard/player/$pod/tracking-data"
       ]
     },
     "/__dashboard/seasons/$season": {
@@ -761,6 +756,10 @@ export const routeTree = rootRoute
     },
     "/__dashboard/player/$pod/personal-data": {
       "filePath": "__dashboard/player/$pod/personal-data.tsx",
+      "parent": "/__dashboard/player/$pod"
+    },
+    "/__dashboard/player/$pod/tracking-data": {
+      "filePath": "__dashboard/player/$pod/tracking-data.tsx",
       "parent": "/__dashboard/player/$pod"
     }
   }

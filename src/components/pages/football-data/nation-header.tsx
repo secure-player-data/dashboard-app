@@ -3,17 +3,17 @@ import { useGetAggregatedEventData } from '@/use-cases/event-data';
 import { useGetAggregatedFootballData } from '@/use-cases/football-data';
 import { StatHeader } from './stat-header';
 
-export function NationHeader() {
+export function NationHeader({ pod }: { pod: string }) {
   return (
     <>
       <h2 className="font-bold text-xl mb-4">Overall Stats</h2>
-      <NationHeaderInner />
+      <NationHeaderInner pod={pod} />
     </>
   );
 }
 
-function NationHeaderInner() {
-  const { session, pod } = useAuth();
+function NationHeaderInner({ pod }: { pod: string }) {
+  const { session } = useAuth();
   const {
     data: football,
     isPending: footballPending,

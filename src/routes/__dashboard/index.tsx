@@ -19,6 +19,8 @@ export const Route = createFileRoute('/__dashboard/')({
 function RouteComponent() {
   const { session, pod } = useAuth();
 
+  const { data: profile } = useGetProfile(session, pod);
+
   const categories = useMemo(
     () => [
       {
@@ -67,8 +69,6 @@ function RouteComponent() {
     [pod]
   );
 
-  const { data: profile } = useGetProfile(session, pod);
-
   return (
     <div className="h-full flex flex-col">
       {profile?.team === null && (
@@ -84,24 +84,28 @@ function RouteComponent() {
           </p>
         </div>
       )}
-      <div className="flex-grow grid content-center @container">
-        <h1 className="text-2xl font-semibold mb-4">Your Data</h1>
-        <div className="grid grid-cols-1 @lg:grid-cols-2 @xl:grid-cols-3 gap-4 h-full">
-          {categories.map((category) => (
-            <Link
-              to={category.link}
-              search={category.search}
-              key={category.title}
-            >
-              <section className="border rounded-md p-4 hover:scale-105 transition-transform">
-                <category.icon className="mb-4" />
-                <h2 className="font-bold">{category.title}</h2>
-                <p className="text-sm">{category.description}</p>
-              </section>
-            </Link>
-          ))}
+      {pod ? (
+        <div className="flex-grow grid content-center @container">
+          <h1 className="text-2xl font-semibold mb-4">Your Data</h1>
+          <div className="grid grid-cols-1 @lg:grid-cols-2 @xl:grid-cols-3 gap-4 h-full">
+            {categories.map((category) => (
+              <Link
+                to={category.link}
+                search={category.search}
+                key={category.title}
+              >
+                <section className="border rounded-md p-4 hover:scale-105 transition-transform">
+                  <category.icon className="mb-4" />
+                  <h2 className="font-bold">{category.title}</h2>
+                  <p className="text-sm">{category.description}</p>
+                </section>
+              </Link>
+            ))}
+          </div>
         </div>
-      </div>
+      ) : (
+        <p>Something went wrong, please try again</p>
+      )}
     </div>
   );
 }

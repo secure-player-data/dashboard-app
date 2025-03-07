@@ -27,15 +27,15 @@ function RouteComponent() {
         title: 'Personal Data',
         description: 'Data related to you and your persona',
         icon: User,
-        link: '/personal-data',
-        search: { player: pod ?? 'unknown' },
+        link: '/player/$pod/personal-data',
+        params: { pod: pod ?? 'unknown' },
       },
       {
         title: 'Football Data',
         description: 'Data related to football',
         icon: Volleyball,
-        link: '/football-data',
-        search: { player: pod ?? 'unknown' },
+        link: '/player/$pod/football-data',
+        params: { pod: pod ?? 'unknown' },
       },
       {
         title: 'Event Data',
@@ -91,7 +91,7 @@ function RouteComponent() {
             {categories.map((category) => (
               <Link
                 to={category.link}
-                search={category.search}
+                params={category.params}
                 key={category.title}
               >
                 <section className="border rounded-md p-4 hover:scale-105 transition-transform">

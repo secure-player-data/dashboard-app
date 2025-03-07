@@ -1,24 +1,35 @@
 import { useAuth } from '@/context/auth-context';
 import { useGetAllSeasonsInfo } from '@/use-cases/football-data';
-import { SeasonsSkeleton } from './seasons-skeleton';
 import { SeasonCard } from './season-card';
 
-export function ClubSeasons({ pod }: { pod: string }) {
+export function SeasonsList({
+  pod,
+  type,
+}: {
+  pod: string;
+  type: 'club' | 'nation';
+}) {
   return (
     <>
       <h2 className="font-bold mb-4 text-xl">Seasons</h2>
-      <ClubSeasonsInner pod={pod} />
+      <SeasonsListInner pod={pod} type={type} />
     </>
   );
 }
 
-function ClubSeasonsInner({ pod }: { pod: string }) {
+function SeasonsListInner({
+  pod,
+  type,
+}: {
+  pod: string;
+  type: 'club' | 'nation';
+}) {
   const { session } = useAuth();
   const {
     data: seasons,
     error,
     isPending,
-  } = useGetAllSeasonsInfo(session, pod, 'club');
+  } = useGetAllSeasonsInfo(session, pod, type);
 
   if (isPending) {
     return <SeasonsSkeleton />;
@@ -37,7 +48,7 @@ function ClubSeasonsInner({ pod }: { pod: string }) {
       {seasons?.map((season) => (
         <SeasonCard
           key={`${season.info.season}-${season.info.team}`}
-          type="club"
+          type={type}
           team={season.info.team}
           season={season.info.season}
           league={season.info.league}
@@ -47,6 +58,16 @@ function ClubSeasonsInner({ pod }: { pod: string }) {
           yellowCards={season.events.yellowCards}
           redCards={season.events.redCards}
         />
+      ))}
+    </div>
+  );
+}
+
+function SeasonsSkeleton() {
+  return (
+    <div className="grid gap-2">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <div key={i} className="h-[126px] bg-muted rounded-md animate-pulse" />
       ))}
     </div>
   );

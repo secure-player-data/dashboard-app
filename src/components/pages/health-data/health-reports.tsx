@@ -24,9 +24,9 @@ import { useAuth } from '@/context/auth-context';
 import { useGetMedicalReports } from '@/use-cases/health-data';
 import { FileText } from 'lucide-react';
 
-export default function HealthReports({ playerPod }: { playerPod: string }) {
+export default function HealthReports({ pod }: { pod: string }) {
   const { session } = useAuth();
-  const { data, error, isPending } = useGetMedicalReports(session, playerPod);
+  const { data, error, isPending } = useGetMedicalReports(session, pod);
 
   if (isPending) {
     return <Skeleton />;

@@ -6,14 +6,12 @@ import { TabsContent } from '@radix-ui/react-tabs';
 import { createFileRoute } from '@tanstack/react-router';
 import { Activity, FileText, Syringe } from 'lucide-react';
 
-export const Route = createFileRoute(
-  '/__dashboard/__data-page-layout/health-data'
-)({
+export const Route = createFileRoute('/__dashboard/player/$pod/health-data')({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { player } = Route.useSearch();
+  const { pod } = Route.useParams();
 
   return (
     <div className="h-full">
@@ -33,13 +31,13 @@ function RouteComponent() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="injuries">
-          <Injuries player={player} />
+          <Injuries pod={pod} />
         </TabsContent>
         <TabsContent value="reports" className="@container">
-          <HealthReports playerPod={player} />
+          <HealthReports pod={pod} />
         </TabsContent>
         <TabsContent value="vaccinations">
-          <Vaccinations playerPod={player} />
+          <Vaccinations pod={pod} />
         </TabsContent>
       </Tabs>
     </div>

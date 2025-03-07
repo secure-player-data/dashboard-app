@@ -31,9 +31,9 @@ import dayjs from 'dayjs';
 import { Calendar, CheckCircle2, User, XCircle } from 'lucide-react';
 import { useMemo } from 'react';
 
-export default function Vaccinations({ playerPod }: { playerPod: string }) {
+export default function Vaccinations({ pod }: { pod: string }) {
   const { session } = useAuth();
-  const { data, error, isPending } = useGetVaccinations(session, playerPod);
+  const { data, error, isPending } = useGetVaccinations(session, pod);
 
   if (isPending) {
     return <Skeleton />;

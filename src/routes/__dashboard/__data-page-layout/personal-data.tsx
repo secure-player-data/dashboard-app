@@ -24,16 +24,23 @@ import {
   Weight,
 } from 'lucide-react';
 
-export const Route = createFileRoute('/__dashboard/__data-page-layout/personal-data')({
+export const Route = createFileRoute(
+  '/__dashboard/__data-page-layout/personal-data'
+)({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { session, pod } = useAuth();
-  const { data: player, isPending, error } = useGetPersonalData(session, pod);
+  const { session } = useAuth();
+  const { player: playerPod } = Route.useSearch();
+  const {
+    data: player,
+    isPending,
+    error,
+  } = useGetPersonalData(session, playerPod);
   const { data: season } = useGetSeasonInfo(
     session,
-    pod,
+    playerPod,
     'club',
     new Date().getFullYear().toString()
   );

@@ -3,25 +3,29 @@ import { useGetAllSeasonsInfo } from '@/use-cases/football-data';
 import { SeasonsSkeleton } from './seasons-skeleton';
 import { SeasonCard } from './season-card';
 
-export function ClubSeasons() {
+export function ClubSeasons({ pod }: { pod: string }) {
   return (
     <>
       <h2 className="font-bold mb-4 text-xl">Seasons</h2>
-      <ClubSeasonsInner />
+      <ClubSeasonsInner pod={pod} />
     </>
   );
 }
 
-function ClubSeasonsInner() {
-  const { session, pod } = useAuth();
-  const { data: seasons, isPending } = useGetAllSeasonsInfo(
-    session,
-    pod,
-    'club'
-  );
+function ClubSeasonsInner({ pod }: { pod: string }) {
+  const { session } = useAuth();
+  const {
+    data: seasons,
+    error,
+    isPending,
+  } = useGetAllSeasonsInfo(session, pod, 'club');
 
   if (isPending) {
     return <SeasonsSkeleton />;
+  }
+
+  if (error) {
+    return <p>Error: {error.message}</p>;
   }
 
   if (seasons?.length === 0) {

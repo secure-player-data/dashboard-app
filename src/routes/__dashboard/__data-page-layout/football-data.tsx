@@ -12,6 +12,8 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
+  const { player: playerPod } = Route.useSearch();
+
   return (
     <Tabs defaultValue="club">
       <TabsList className="grid grid-cols-2 w-full">
@@ -19,12 +21,12 @@ function RouteComponent() {
         <TabsTrigger value="nation">Nation</TabsTrigger>
       </TabsList>
       <TabsContent value="club" className="@container">
-        <ClubHeader />
-        <ClubSeasons />
+        <ClubHeader pod={playerPod} />
+        <ClubSeasons pod={playerPod} />
       </TabsContent>
       <TabsContent value="nation" className="@container">
-        <NationHeader />
-        <NationSeasons />
+        <NationHeader pod={playerPod} />
+        <NationSeasons pod={playerPod} />
       </TabsContent>
     </Tabs>
   );

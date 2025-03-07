@@ -1,7 +1,6 @@
 import { EventAggregation } from '@/entities/data/event-data';
 import { FootballAggregation } from '@/entities/data/football-data';
-import { HeaderSkeleton } from '../../headers/header-skeleton';
-import { StatCard } from '../../cards/stat-card';
+import { StatCard } from '../cards/stat-card';
 import {
   BarChart3,
   Calendar,
@@ -86,6 +85,21 @@ export function StatHeader({
           label="Trophies"
           value={`${eventData?.throphies}`}
         />
+      </div>
+    </>
+  );
+}
+
+function HeaderSkeleton() {
+  return (
+    <>
+      <div className="grid gap-4 mb-8 @md:grid-cols-2 @2xl:grid-cols-4">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div
+            key={i}
+            className="h-[130px] bg-muted animate-pulse rounded-md"
+          />
+        ))}
       </div>
     </>
   );

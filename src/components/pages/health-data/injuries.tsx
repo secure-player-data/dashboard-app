@@ -36,9 +36,9 @@ const severityColors: Record<string, { bg: string; text: string }> = {
   },
 };
 
-export default function Injuries({ player }: { player: string }) {
+export default function Injuries({ pod }: { pod: string }) {
   const { session } = useAuth();
-  const { data, error, isPending } = useGetInjuries(session, player);
+  const { data, error, isPending } = useGetInjuries(session, pod);
 
   const { minor, moderate, severe } = useMemo(() => {
     if (!data) return { minor: 0, moderate: 0, severe: 0 };

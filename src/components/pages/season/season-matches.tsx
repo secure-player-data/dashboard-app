@@ -58,13 +58,26 @@ function SeasonMatchesInner({
       style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))' }}
     >
       {data.map((match) => (
-        <MatchCard key={match.date.toISOString()} match={match} team={team} />
+        <MatchCard
+          key={match.date.toISOString()}
+          pod={pod}
+          match={match}
+          team={team}
+        />
       ))}
     </div>
   );
 }
 
-function MatchCard({ match, team }: { match: FootballData; team: string }) {
+function MatchCard({
+  pod,
+  match,
+  team,
+}: {
+  pod: string;
+  match: FootballData;
+  team: string;
+}) {
   const colors = {
     Victory: {
       bg: 'bg-green-100',
@@ -98,7 +111,10 @@ function MatchCard({ match, team }: { match: FootballData; team: string }) {
   }
 
   return (
-    <Link to="/matches/$match" params={{ match: match.url }}>
+    <Link
+      to="/player/$pod/matches/$match"
+      params={{ pod: pod, match: match.url }}
+    >
       <Card className="p-4 hover:scale-[101%] transition-transform">
         <div className="mb-4 text-sm">
           <p className="font-semibold">
@@ -151,7 +167,10 @@ function SeasonMatchesSkeleton() {
       style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))' }}
     >
       {Array.from({ length: 6 }).map((_, i) => (
-        <div className="h-[255px] bg-muted rounded-md animate-pulse"></div>
+        <div
+          key={i}
+          className="h-[255px] bg-muted rounded-md animate-pulse"
+        ></div>
       ))}
     </div>
   );

@@ -27,43 +27,43 @@ function RouteComponent() {
         title: 'Personal Data',
         description: 'Data related to you and your persona',
         icon: User,
-        link: '/personal-data',
-        search: { player: pod ?? 'unknown' },
+        link: '/player/$pod/personal-data',
+        params: { pod: pod ?? 'unknown' },
       },
       {
         title: 'Football Data',
         description: 'Data related to football',
         icon: Volleyball,
-        link: '/football-data',
-        search: { player: pod ?? 'unknown' },
+        link: '/player/$pod/football-data',
+        params: { pod: pod ?? 'unknown' },
       },
       {
         title: 'Event Data',
         description: 'Data related to events',
         icon: Calendar,
-        link: '/event-data',
-        search: { player: pod ?? 'unknown' },
+        link: '/',
+        params: { pod: pod ?? 'unknown' },
       },
       {
         title: 'Tracking Data',
         description: 'Data related to tracking',
         icon: Locate,
-        link: '/tracking-data',
-        search: { player: pod ?? 'unknown' },
+        link: '/player/$pod/tracking-data',
+        params: { pod: pod ?? 'unknown' },
       },
       {
         title: 'Biometric Data',
         description: 'Data related to biometrics',
         icon: Fingerprint,
-        link: '/biometric-data',
-        search: { player: pod ?? 'unknown' },
+        link: '/',
+        params: { pod: pod ?? 'unknown' },
       },
       {
         title: 'Health Data',
         description: 'Data related to health',
         icon: Activity,
-        link: '/health-data',
-        search: { player: pod ?? 'uknown' },
+        link: '/player/$pod/health-data',
+        params: { pod: pod ?? 'uknown' },
       },
     ],
     [pod]
@@ -91,7 +91,7 @@ function RouteComponent() {
             {categories.map((category) => (
               <Link
                 to={category.link}
-                search={category.search}
+                params={category.params}
                 key={category.title}
               >
                 <section className="border rounded-md p-4 hover:scale-105 transition-transform">

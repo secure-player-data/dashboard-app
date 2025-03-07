@@ -21,9 +21,7 @@ import {
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 
-export const Route = createFileRoute(
-  '/__dashboard/__data-page-layout/tracking-data'
-)({
+export const Route = createFileRoute('/__dashboard/player/$pod/tracking-data')({
   component: RouteComponent,
 });
 
@@ -33,10 +31,10 @@ function RouteComponent() {
   const [selectedSession, setSelectedSession] = useState<string>('');
 
   const { session } = useAuth();
-  const { player } = Route.useSearch();
+  const { pod } = Route.useParams();
   const { data: seasons } = useGetAllSeasonsWithTracking(
     session,
-    player,
+    pod,
     selectedType
   );
   const { data: matches } = useGetAllMatchesForSeasonWithTracking(

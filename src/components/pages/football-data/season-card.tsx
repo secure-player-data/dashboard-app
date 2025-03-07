@@ -4,6 +4,7 @@ import { useAuth } from '@/context/auth-context';
 import { Link } from '@tanstack/react-router';
 
 export function SeasonCard({
+  pod,
   type,
   team,
   season,
@@ -14,6 +15,7 @@ export function SeasonCard({
   yellowCards,
   redCards,
 }: {
+  pod: string;
   type: 'club' | 'nation';
   team: string;
   season: string;
@@ -50,12 +52,11 @@ export function SeasonCard({
       value: redCards,
     },
   ];
-  const { pod } = useAuth();
   return (
     <Link
-      to="/seasons/$season"
-      params={{ season: season }}
-      search={{ player: pod ?? '', type }}
+      to="/player/$pod/seasons/$season"
+      params={{ pod: pod, season: season }}
+      search={{ type }}
     >
       <Card className="p-4 hover:scale-[101%] transition-transform">
         <div className="flex justify-between items-center">

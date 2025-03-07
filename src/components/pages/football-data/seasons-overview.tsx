@@ -1,29 +1,41 @@
 import { useAuth } from '@/context/auth-context';
 import { useGetAggregatedEventData } from '@/use-cases/event-data';
 import { useGetAggregatedFootballData } from '@/use-cases/football-data';
-import { StatHeader } from './stat-header';
+import { StatHeader } from '../../headers/stat-header';
 
-export function NationHeader({ pod }: { pod: string }) {
+export default function SeasonsOverview({
+  pod,
+  type,
+}: {
+  pod: string;
+  type: 'club' | 'nation';
+}) {
   return (
     <>
-      <h2 className="font-bold text-xl mb-4">Overall Stats</h2>
-      <NationHeaderInner pod={pod} />
+      <h2 className="font-bold mb-4 text-xl">Overall Stats</h2>
+      <SeasonsOverviewInner pod={pod} type={type} />
     </>
   );
 }
 
-function NationHeaderInner({ pod }: { pod: string }) {
+function SeasonsOverviewInner({
+  pod,
+  type,
+}: {
+  pod: string;
+  type: 'club' | 'nation';
+}) {
   const { session } = useAuth();
   const {
     data: football,
     isPending: footballPending,
     error: footballError,
-  } = useGetAggregatedFootballData(session, pod, 'nation');
+  } = useGetAggregatedFootballData(session, pod, type);
   const {
     data: event,
     isPending: eventPending,
     error: eventError,
-  } = useGetAggregatedEventData(session, pod, 'nation');
+  } = useGetAggregatedEventData(session, pod, type);
 
   return (
     <StatHeader

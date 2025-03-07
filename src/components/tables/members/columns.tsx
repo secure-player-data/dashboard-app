@@ -13,7 +13,6 @@ import { Link } from '@tanstack/react-router';
 import { ColumnDef } from '@tanstack/react-table';
 import {
   Activity,
-  ChevronRight,
   Eye,
   Fingerprint,
   Locate,
@@ -47,19 +46,19 @@ export const columns: ColumnDef<Member>[] = [
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
-                <Link to="/personal-data" search={{ player: pod }}>
+                <Link to="/player/$pod/personal-data" params={{ pod: pod }}>
                   <User />
                   Player Data
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/football-data" search={{ player: pod }}>
+                <Link to="/player/$pod/football-data" params={{ pod: pod }}>
                   <Volleyball />
                   Football Data
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/tracking-data" search={{ player: pod }}>
+                <Link to="/player/$pod/tracking-data" params={{ pod: pod }}>
                   <Locate />
                   Tracking Data
                 </Link>
@@ -72,7 +71,7 @@ export const columns: ColumnDef<Member>[] = [
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/health-data" search={{ player: pod }}>
+                <Link to="/player/$pod/health-data" params={{ pod: pod }}>
                   <Activity />
                   Health Data
                 </Link>

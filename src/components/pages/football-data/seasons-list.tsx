@@ -47,6 +47,7 @@ function SeasonsListInner({
     <div className="grid gap-2">
       {seasons?.map((season) => (
         <SeasonCard
+          pod={pod}
           key={`${season.info.season}-${season.info.team}`}
           type={type}
           team={season.info.team}

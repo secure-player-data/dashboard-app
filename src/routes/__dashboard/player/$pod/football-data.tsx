@@ -1,4 +1,4 @@
-import EventOverview from '@/components/headers/event-overview';
+import SeasonsOverview from '@/components/pages/football-data/seasons-overview';
 import { SeasonsList } from '@/components/pages/football-data/seasons-list';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { createFileRoute } from '@tanstack/react-router';
@@ -17,11 +17,11 @@ function RouteComponent() {
         <TabsTrigger value="nation">Nation</TabsTrigger>
       </TabsList>
       <TabsContent value="club" className="@container">
-        <EventOverview pod={pod} type="club" />
+        <SeasonsOverview pod={pod} type="club" />
         <SeasonsList pod={pod} type="club" />
       </TabsContent>
       <TabsContent value="nation" className="@container">
-        <EventOverview pod={pod} type="nation" />
+        <SeasonsOverview pod={pod} type="nation" />
         <SeasonsList pod={pod} type="nation" />
       </TabsContent>
     </Tabs>

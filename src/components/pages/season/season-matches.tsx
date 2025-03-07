@@ -151,7 +151,10 @@ function SeasonMatchesSkeleton() {
       style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))' }}
     >
       {Array.from({ length: 6 }).map((_, i) => (
-        <div className="h-[255px] bg-muted rounded-md animate-pulse"></div>
+        <div
+          key={i}
+          className="h-[255px] bg-muted rounded-md animate-pulse"
+        ></div>
       ))}
     </div>
   );

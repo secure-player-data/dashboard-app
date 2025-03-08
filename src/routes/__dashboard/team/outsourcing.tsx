@@ -26,37 +26,41 @@ import { useAuth } from '@/context/auth-context';
 import { Member } from '@/entities/data/member';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { outsourcePlayerData } from '@/api/access-control/index';
+import {
+  NoControlAccessError,
+  NoControlAccessErrors,
+} from '@/exceptions/outsourcing-exception';
 
-// Data types that can be shared
 const dataTypes = [
   {
-    id: 'football',
+    id: 'football-data',
     label: 'Football Data',
     description: 'Match statistics, performance metrics, and tactical data',
   },
   {
-    id: 'personal',
+    id: 'personal-data',
     label: 'Personal Data',
     description: 'Contact information, demographics, and identification',
   },
   {
-    id: 'tracking',
+    id: 'tracking-data',
     label: 'Tracking Data',
     description: 'GPS data, movement patterns, and distance covered',
   },
   {
-    id: 'event',
+    id: 'event-data',
     label: 'Event Data',
     description: 'Match events like passes, shots, tackles, and interceptions',
   },
   {
-    id: 'biometric',
+    id: 'biometric-data',
     label: 'Biometric Data',
     description:
       'Physical measurements, body composition, and physiological data',
   },
   {
-    id: 'health',
+    id: 'health-data',
     label: 'Health Data',
     description: 'Medical records, injury history, and rehabilitation progress',
   },
@@ -95,6 +99,25 @@ function RouteComponent() {
     );
   };
 
+  const handleOutsource = async () => {
+    try {
+      await outsourcePlayerData(
+        session!,
+        members!.filter((member) => selectedMembers.includes(member.webId)),
+        selectedDataTypes,
+        webId
+      );
+    } catch (error) {
+      if (error instanceof NoControlAccessErrors) {
+        error.failedAccesses.forEach((failedAccess) => {
+          toast(
+            `Could not outsource ${failedAccess.ownerpod}'s ${failedAccess.url} as you do not have Control Access to this resource`
+          );
+        });
+      }
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log({
@@ -108,7 +131,6 @@ function RouteComponent() {
       duration,
       webId,
     });
-    // check if member update was successful or not
     toast('Outsourcing successful');
   };
 
@@ -121,7 +143,6 @@ function RouteComponent() {
   };
 
   const isValidWebId = (id: string) => {
-    // Basic validation: check if it's a valid URL
     try {
       new URL(id);
       return true;
@@ -282,6 +303,9 @@ function RouteComponent() {
                   }
                 >
                   Outsource
+                </Button>
+                <Button type="submit" onClick={() => handleOutsource()}>
+                  test
                 </Button>
               </CardFooter>
             </Card>

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from './query-keys';
 import { Session } from '@inrupt/solid-client-authn-browser';
-import { getPermissionDetails } from '@/api/access-control/utils';
+import { getPermissionDetails } from '@/api/access-control/index';
 
 export function useGetPermissionDetails(
   session: Session | null,

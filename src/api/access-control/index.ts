@@ -196,6 +196,7 @@ export async function getPermissionDetails(
  * @param resourceUrls a list of the resources of the dataowners that should be outsourced
  * @param dataReceiver the receiver of the outsoured data
  */
+
 export async function outsourcePlayerData(
   session: Session,
   dataOwners: Member[],
@@ -203,36 +204,43 @@ export async function outsourcePlayerData(
   dataReceiver: string
 ) {
   let failedAccesses: { url: string; ownerpod: string }[] = [];
-  try {
-    await Promise.all(
-      dataOwners.map(async (owner) => {
-        for (const url of resourceUrls) {
-          const [error, _] = await safeCall(
-            updateAgentAccess({
-              session: session,
-              containerUrl: `${owner.pod}secure-player-data/${url}/`,
-              agentWebId: dataReceiver,
-              modes: ['Read'],
-            })
-          );
-          if (error) {
-            if (error instanceof NoControlAccessError) {
-              failedAccesses.push({ url: url, ownerpod: owner.name });
-            }
-            throw new Error(`Error while outsourcing: ${error.message}`);
-          }
-        }
-      })
-    );
-    if (failedAccesses.length > 0) {
-      console.log(failedAccesses);
-      throw new NoControlAccessErrors(
-        'No access control for resource: ',
-        failedAccesses
+
+  const allPromises = dataOwners.flatMap((owner) =>
+    resourceUrls.map(async (url) => {
+      const [error, _] = await safeCall(
+        updateAgentAccess({
+          session: session,
+          containerUrl: `${owner.pod}secure-player-data/${url}/`,
+          agentWebId: dataReceiver,
+          modes: ['Read'],
+        })
       );
-    }
-  } catch (error: any) {
-    if (error instanceof NoControlAccessError) throw error;
-    throw error;
+
+      if (error) {
+        if (error instanceof NoControlAccessError) {
+          failedAccesses.push({ url: url, ownerpod: owner.webId });
+        }
+        return { error, url, owner: owner.name };
+      }
+      return null;
+    })
+  );
+
+  const results = await Promise.allSettled(allPromises);
+
+  // Handle errors after all promises have resolved
+  const errors = results
+    .filter((result) => result.status === 'fulfilled' && result.value !== null)
+    .map(
+      (result: any) =>
+        result.value as { error: any; url: string; owner: string }
+    );
+
+  if (errors.length > 0) {
+    console.log(failedAccesses);
+    throw new NoControlAccessErrors(
+      'No access control for resource: ',
+      failedAccesses
+    );
   }
 }

@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import type React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -77,6 +77,9 @@ function RouteComponent() {
   const [duration, setDuration] = useState('30');
   const [webId, setWebId] = useState('');
   const { session, pod } = useAuth();
+  const [failedAccesses, setFailedAccesses] = useState<
+    { webid: string; resource: string }[]
+  >([]);
 
   const { data: members, isPending: membersPending } = useGetMembers(
     session,
@@ -100,6 +103,7 @@ function RouteComponent() {
   };
 
   const handleOutsource = async () => {
+    setFailedAccesses([]);
     try {
       await outsourcePlayerData(
         session!,
@@ -109,11 +113,15 @@ function RouteComponent() {
       );
     } catch (error) {
       if (error instanceof NoControlAccessErrors) {
-        error.failedAccesses.forEach((failedAccess) => {
-          toast(
-            `Could not outsource ${failedAccess.ownerpod}'s ${failedAccess.url} as you do not have Control Access to this resource`
-          );
-        });
+        setFailedAccesses([
+          ...error.failedAccesses.map((failedAccess) => ({
+            webid: failedAccess.ownerpod,
+            resource: failedAccess.url,
+          })),
+        ]);
+        toast(
+          'Failed to outsource resources due to insufficient control access to certain selected resources.'
+        );
       }
     }
   };
@@ -134,14 +142,6 @@ function RouteComponent() {
     toast('Outsourcing successful');
   };
 
-  const resetForm = () => {
-    setSelectedMembers([]);
-    setSelectedDataTypes([]);
-    setReason('');
-    setDuration('30');
-    setWebId('');
-  };
-
   const isValidWebId = (id: string) => {
     try {
       new URL(id);
@@ -153,20 +153,43 @@ function RouteComponent() {
 
   const showMembers = () => {
     if (members) {
+      console.log(failedAccesses);
       return members.map((member: Member) => (
-        <div key={member.webId} className="flex items-center space-x-2">
-          <Checkbox
-            id={`Member-${member.webId}`}
-            checked={selectedMembers.includes(member.webId)}
-            onCheckedChange={() => handleMemberToggle(member.webId)}
-          />
-          <label
-            htmlFor={`Member-${member.webId}`}
-            className="flex flex-1 justify-between text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        <div
+          key={'wrapper' + member.webId}
+          className={`flex flex-col ${failedAccesses.some((failedAccess) => failedAccess.webid === member.webId) ? 'border border-red-500 p-2 rounded-md' : ''}`}
+        >
+          <div key={member.webId} className={`flex items-center space-x-2 `}>
+            <Checkbox
+              id={`Member-${member.webId}`}
+              checked={selectedMembers.includes(member.webId)}
+              onCheckedChange={() => handleMemberToggle(member.webId)}
+            />
+            <label
+              htmlFor={`Member-${member.webId}`}
+              className="flex flex-1 justify-between text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              {member.name}
+              <span className="text-muted-foreground">{member.role}</span>
+            </label>
+          </div>
+          <div
+            className={`${failedAccesses.some((failedAccess) => failedAccess.webid === member.webId) ? 'visible text-red-400' : 'hidden'}`}
           >
-            {member.name}
-            <span className="text-muted-foreground">{member.role}</span>
-          </label>
+            Failed to outsource:{' '}
+            {failedAccesses
+              .filter((failedAccess) => failedAccess.webid === member.webId)
+              .map((failedAccess, index) => (
+                <span key={index}>
+                  {failedAccess.resource}
+                  {index <
+                    failedAccesses.filter(
+                      (failedAccess) => failedAccess.webid === member.webId
+                    ).length -
+                      1 && ', '}
+                </span>
+              )) || 'Unknown resource'}
+          </div>
         </div>
       ));
     } else if (membersPending) {

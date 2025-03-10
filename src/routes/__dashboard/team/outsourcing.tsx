@@ -13,7 +13,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import { Clock, Info } from 'lucide-react';
+import { Info } from 'lucide-react';
 import { useGetMembers } from '@/use-cases/use-get-members';
 import { useAuth } from '@/context/auth-context';
 import { Member } from '@/entities/data/member';

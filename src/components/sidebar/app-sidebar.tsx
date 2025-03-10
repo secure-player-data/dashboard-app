@@ -212,6 +212,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             url: '/team/members',
             icon: Users,
           },
+          {
+            name: 'Outsourcing',
+            url: '/team/outsourcing',
+            icon: Share,
+          },
         ],
       },
       footer: [

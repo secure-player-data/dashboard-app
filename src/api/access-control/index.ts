@@ -194,11 +194,13 @@ export async function getPermissionDetails(
 /**
  * Uses the sessions control access to outsource give read access to sections of a players pod, for a specified webid
  * @param session of the logged in user
+ * @param profile of the logged in user
+ * @param pod of the logged in user
+ * @param reason for outsourcing the data
  * @param dataOwners a list of the owners of the data
  * @param resourceUrls a list of the resources of the dataowners that should be outsourced
  * @param dataReceiver the receiver of the outsoured data
  */
-
 export async function outsourcePlayerData(
   session: Session,
   profile: Profile,
@@ -213,7 +215,6 @@ export async function outsourcePlayerData(
 
   const allPromises = dataOwners.flatMap((owner) =>
     resourceUrls.map(async (url) => {
-      console.log('outsourcing for agent');
       const [error, _] = await safeCall(
         updateAgentAccess({
           session: session,
@@ -231,7 +232,6 @@ export async function outsourcePlayerData(
       }
 
       if (!error) {
-        console.log('no error encountered, appending successfull resources');
         const existingOwner = grantedAccesses.find(
           (entry) => entry.owner === owner
         );

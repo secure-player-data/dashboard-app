@@ -103,7 +103,6 @@ export async function getAgentAccessAll({
  * * access level (shared, private or public)
  * @param session of the logged in user
  * @param pod url of the pod the app is working with
- * TODO: Create a tanstack use-case for this
  */
 export async function getResourceList(
   session: Session | null,

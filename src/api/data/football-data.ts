@@ -1,15 +1,21 @@
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { paths } from '../paths';
 import {
+  getDate,
   getInteger,
   getSolidDataset,
   getStringNoLocale,
   getThing,
   getThingAll,
 } from '@inrupt/solid-client';
-import { FootballAggregation, SeasonInfo } from '@/entities/data/football-data';
+import {
+  FootballAggregation,
+  FootballData,
+  SeasonInfo,
+} from '@/entities/data/football-data';
 import {
   FOOTBALL_AGGREGATION_SCHEMA,
+  FOOTBALL_DATA_SCHEMA,
   SEASON_INFO_SCHEMA,
 } from '@/schemas/football';
 import { EventAggregation } from '@/entities/data/event-data';
@@ -174,5 +180,99 @@ export async function fetchAllSeasonInfo({
     })
   );
 
-  return seasonsInfo;
+  // Sort by season
+  return seasonsInfo.sort((a, b) => {
+    return parseInt(b.info.season) - parseInt(a.info.season);
+  });
+}
+
+/**
+ * Returns a list of matches for a given player in a given season
+ * @param session of the user reqiesting the data
+ * @param pod pod url of the player to fetch the data for
+ * @param type wether to fetch data for players club or nation performance
+ * @param season season to fetch matches for
+ * @returns
+ */
+export async function fetchAllMatchesBySeason({
+  session,
+  pod,
+  type,
+  season,
+}: {
+  session: Session | null;
+  pod: string | null;
+  type: 'club' | 'nation';
+  season: string;
+}): Promise<FootballData[]> {
+  if (!session || !pod) {
+    throw new Error('Session or pod not found');
+  }
+
+  const category =
+    type === 'club' ? paths.footballData.club : paths.footballData.national;
+  const path = category.season.root(pod, season);
+
+  const dataset = await getSolidDataset(path, {
+    fetch: session.fetch,
+  });
+  const things = getThingAll(dataset).filter(
+    (thing) =>
+      thing.url !== `${path}/` &&
+      thing.url !== category.season.aggregation(pod, season) &&
+      thing.url !== category.season.info(pod, season)
+  );
+
+  const data = await Promise.all(
+    things.map(async (thing) => {
+      const matchDataset = await getSolidDataset(thing.url, {
+        fetch: session.fetch,
+      });
+      const matchThing = getThingAll(matchDataset)[0];
+      return mapThingToFootballData(matchThing);
+    })
+  );
+
+  return data.sort((a, b) => {
+    return b.date.getTime() - a.date.getTime();
+  });
+}
+
+export async function fetchMatchData({
+  session,
+  url,
+}: {
+  session: Session | null;
+  url: string;
+}): Promise<FootballData> {
+  if (!session) {
+    throw new Error('Session not found');
+  }
+
+  const dataset = await getSolidDataset(url, {
+    fetch: session.fetch,
+  });
+  const thing = getThingAll(dataset)[0];
+
+  return mapThingToFootballData(thing);
+}
+
+/**
+ * Maps a 'footbal' thing form a solid dataset to a FootballData object
+ * @param thing to map
+ * @returns
+ */
+function mapThingToFootballData(thing: any): FootballData {
+  return {
+    url: thing.url,
+    home: getStringNoLocale(thing, FOOTBALL_DATA_SCHEMA.homeTeam) ?? '',
+    away: getStringNoLocale(thing, FOOTBALL_DATA_SCHEMA.awayTeam) ?? '',
+    homeScore: getInteger(thing, FOOTBALL_DATA_SCHEMA.homeScore) ?? 0,
+    awayScore: getInteger(thing, FOOTBALL_DATA_SCHEMA.awayScore) ?? 0,
+    date: getDate(thing, FOOTBALL_DATA_SCHEMA.date) ?? new Date(),
+    location: getStringNoLocale(thing, FOOTBALL_DATA_SCHEMA.location) ?? '',
+    playTime: getInteger(thing, FOOTBALL_DATA_SCHEMA.playTime) ?? 0,
+    playerPosition:
+      getStringNoLocale(thing, FOOTBALL_DATA_SCHEMA.position) ?? '',
+  };
 }

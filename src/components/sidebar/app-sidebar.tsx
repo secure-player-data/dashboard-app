@@ -3,7 +3,6 @@ import { useAuth } from '@/context/auth-context';
 import {
   Database,
   EyeOff,
-  FileDown,
   FileStack,
   House,
   Share,
@@ -132,6 +131,104 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { session, pod } = useAuth();
+  const data = React.useMemo(
+    () => ({
+      user: {
+        name: 'shadcn',
+        email: 'm@example.com',
+        avatar: '/avatars/shadcn.jpg',
+      },
+      navMain: [
+        {
+          title: 'Your data',
+          url: '/',
+          icon: Database,
+          isActive: true,
+          items: [
+            {
+              title: 'Personal Data',
+              url: '/player/$pod/personal-data',
+              params: { pod: pod ?? 'unknown' },
+              icon: User,
+            },
+            {
+              title: 'Football Data',
+              url: '/player/$pod/football-data',
+              params: { pod: pod ?? 'unknown' },
+              icon: Volleyball,
+            },
+            {
+              title: 'Event Data',
+              url: '/',
+              params: { pod: pod ?? 'unknown' },
+              icon: Calendar,
+            },
+            {
+              title: 'Tracking Data',
+              url: '/player/$pod/tracking-data',
+              params: { pod: pod ?? 'unknown' },
+              icon: Locate,
+            },
+            {
+              title: 'Biometric Data',
+              url: '/',
+              params: { pod: pod ?? 'unknown' },
+              icon: Fingerprint,
+            },
+            {
+              title: 'Health Data',
+              url: '/player/$pod/health-data',
+              params: { pod: pod ?? 'unknown' },
+              icon: Activity,
+            },
+          ],
+        },
+        {
+          title: 'Inbox',
+          url: '/inbox',
+          icon: InboxIcon,
+        },
+        {
+          title: 'Access Control',
+          url: '/access-control',
+          icon: EyeOff,
+        },
+        {
+          title: 'Access History',
+          url: '/access-history',
+          icon: FileStack,
+        },
+      ],
+      team: {
+        title: 'Team',
+        items: [
+          {
+            name: 'Team Details',
+            url: '/team/details',
+            icon: ReceiptText,
+          },
+          {
+            name: 'Members',
+            url: '/team/members',
+            icon: Users,
+          },
+        ],
+      },
+      footer: [
+        {
+          title: 'Support',
+          url: '#',
+          icon: LifeBuoy,
+        },
+        {
+          title: 'Feedback',
+          url: '#',
+          icon: Send,
+        },
+      ],
+    }),
+    [pod]
+  );
 
   const { data: user } = useGetProfile(session, pod);
 

@@ -1,4 +1,5 @@
 import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/context/auth-context';
 import { useGetSeasonInfo } from '@/use-cases/football-data';
@@ -23,12 +24,14 @@ import {
   Weight,
 } from 'lucide-react';
 
-export const Route = createFileRoute('/__dashboard/personal-data')({
+export const Route = createFileRoute('/__dashboard/player/$pod/personal-data')({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { session, pod } = useAuth();
+  const { session } = useAuth();
+  const { pod } = Route.useParams();
+
   const { data: player, isPending, error } = useGetPersonalData(session, pod);
   const { data: season } = useGetSeasonInfo(
     session,
@@ -46,8 +49,8 @@ function RouteComponent() {
   }
 
   return (
-    <div className="flex">
-      <section className="grid md:grid-cols-2 max-w-[1200px]">
+    <Card className="flex max-w-[1200px] m-auto">
+      <section className="grid md:grid-cols-2">
         {/* Left side */}
         <div className="relative h-full flex items-center justify-center">
           <img
@@ -186,7 +189,7 @@ function RouteComponent() {
           </Tabs>
         </div>
       </section>
-    </div>
+    </Card>
   );
 }
 
@@ -197,7 +200,7 @@ function OverviewValue(props: {
 }) {
   return (
     <div className="flex items-center gap-2">
-      <div className="bg-muted p-2 rounde-md">
+      <div className="bg-muted p-2 rounded-sm">
         <props.icon className="size-4" />
       </div>
       <div>

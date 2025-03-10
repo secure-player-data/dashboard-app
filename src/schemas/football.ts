@@ -5,6 +5,7 @@ export const FOOTBALL_DATA_SCHEMA = {
   homeScore: 'https://schema.org/homeScore',
   awayScore: 'https://schema.org/awayScore',
   date: 'https://schema.org/date',
+  location: 'https://schema.org/location',
   playTime: 'https://schema.org/playTime',
   position: 'https://schema.org/position',
 };

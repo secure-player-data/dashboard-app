@@ -5,7 +5,7 @@ export type TrackingData = {
     y: number;
     z: number;
   };
-  time: number;
+  time: string;
   speed: number;
-  notes: string;
+  distance: number;
 };

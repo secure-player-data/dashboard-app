@@ -30,6 +30,7 @@ export function NavMain({
       title: string;
       url: string;
       icon: LucideIcon;
+      params?: Record<string, string>;
     }[];
   }[];
 }) {
@@ -59,7 +60,7 @@ export function NavMain({
                       {item.items?.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.title}>
                           <SidebarMenuSubButton asChild>
-                            <Link to={subItem.url}>
+                            <Link to={subItem.url} params={subItem.params}>
                               <subItem.icon />
                               <span>{subItem.title}</span>
                             </Link>

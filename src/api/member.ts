@@ -38,7 +38,9 @@ export async function fetchMembers(
   const [teamUrlError, teamUrl] = await safeCall(fetchTeamUrl(session, pod));
 
   if (teamUrlError) {
-    throw new TeamNotFoundException('Team url not found');
+    throw new TeamNotFoundException(
+      'You are not part of a team. Create or join one to see members.'
+    );
   }
 
   const [datasetError, teamDataset] = await safeCall(

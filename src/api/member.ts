@@ -121,7 +121,6 @@ export async function fetchMembersWithPermissions(
  * @param members object containing the members and their new permissions
  * @param session of the requesting user
  * @param pod pod url of the user to update the permissions for
- * TODO: Update this for new file structure
  */
 export async function updateActorPermissions(
   member:
@@ -135,59 +134,35 @@ export async function updateActorPermissions(
     throw new SessionNotSetException('No session provided');
   }
 
-  if (Array.isArray(member)) {
-    Promise.all(
-      member.map(async (mem) => {
-        if (mem.webId === session.info.webId) {
-          console.log('Cannot update own permissions');
-          return;
-        }
+  const members = Array.isArray(member) ? member : [member];
 
-        const modes = [] as Permission[];
-        if (mem.permissions.read) {
-          modes.push('Read');
-        }
-        if (mem.permissions.write) {
-          modes.push('Write');
-        }
-        if (mem.permissions.append) {
-          modes.push('Append');
-        }
-        if (mem.permissions.control) {
-          modes.push('Control');
-        }
-
-        await updateAgentAccess({
-          session,
-          agentWebId: mem.webId,
-          containerUrl: pod!,
-          modes,
-        });
-      })
-    );
-  } else {
-    if (member.webId === session.info.webId) {
+  for (const singleMember of members) {
+    // Check if it's the same user as the session user
+    if (singleMember.webId === session.info.webId) {
       console.log('Cannot update own permissions');
-      return;
+      continue; // Skip this member if it's the same as the session user
     }
 
     const modes = [] as Permission[];
-    if (member.permissions.read) {
+
+    // Check for permissions and add them to the modes array
+    if (singleMember.permissions.read) {
       modes.push('Read');
     }
-    if (member.permissions.write) {
+    if (singleMember.permissions.write) {
       modes.push('Write');
     }
-    if (member.permissions.append) {
+    if (singleMember.permissions.append) {
       modes.push('Append');
     }
-    if (member.permissions.control) {
+    if (singleMember.permissions.control) {
       modes.push('Control');
     }
 
+    // Update the agent's permissions for each member
     await updateAgentAccess({
       session,
-      agentWebId: member.webId,
+      agentWebId: singleMember.webId,
       containerUrl: pod!,
       modes,
     });

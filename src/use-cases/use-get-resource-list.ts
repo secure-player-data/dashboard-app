@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from './query-keys';
 import { Session } from '@inrupt/solid-client-authn-browser';
-import { getResourceList } from '@/api/access-control/utils';
+import { getResourceList } from '@/api/access-control/index';
 
 export function useGetResourceList(
   session: Session | null,

@@ -85,6 +85,40 @@ export function TableRowDialog({
     }
   };
 
+  const handleInformationBody = (informationBody: string) => {
+    const bodyHeader = informationBody.split(';')[0];
+    const resources = informationBody.split(';')[1];
+    const reason = informationBody.split(';')[2];
+
+    return (
+      <div className="p-4 rounded-lg border bg-card text-card-foreground shadow-sm">
+        <div className="text-lg font-semibold text-primary mb-3">
+          {bodyHeader}
+        </div>
+        <div className="mb-3">
+          <div className="font-medium mb-1">Resources:</div>
+          <ul className="space-y-1 pl-5 list-disc text-sm text-muted-foreground">
+            {resources ? (
+              resources
+                .split(',')
+                .map((resource, index) => (
+                  <li key={index}>{resource.trim()}</li>
+                ))
+            ) : (
+              <li>No resources listed</li>
+            )}
+          </ul>
+        </div>
+        <div className="pt-2 border-t">
+          <span className="font-medium">Reason: </span>
+          <span className="text-sm text-muted-foreground">
+            {reason || 'No reason provided'}
+          </span>
+        </div>
+      </div>
+    );
+  };
+
   const handleDecline = (rowId: number) => {
     const invitation = data[rowId];
 
@@ -165,6 +199,11 @@ export function TableRowDialog({
                   </div>
                 </div>
               )}
+              {row.original.type === 'Information' && (
+                <div>
+                  <div>Information about an action on your pod.</div>
+                </div>
+              )}
             </div>
           </DialogDescription>{' '}
         </DialogHeader>
@@ -224,23 +263,51 @@ export function TableRowDialog({
                   ></Input>
                 </div>
               )}
+              {row.original.type === 'Information' && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 mb-2 pt-7">
+                    {row.original.informationHeader}
+                  </div>
+                  <div className="flex items-center gap-2 mb-2 pt-7">
+                    {handleInformationBody(row.original.informationBody)}
+                  </div>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
         <DialogFooter className="sm:justify-end gap-2 mt-6">
-          <ButtonWithLoader
-            isLoading={declinePending}
-            variant="outline"
-            onClick={() => handleDecline(Number.parseInt(row.id))}
-          >
-            Decline
-          </ButtonWithLoader>
-          <ButtonWithLoader
-            isLoading={acceptPending}
-            onClick={() => handleAccept(parseInt(row.id), row.original.type)}
-          >
-            Accept
-          </ButtonWithLoader>
+          {row.original.type !== 'Information' ? (
+            <div className="flex gap-2">
+              <ButtonWithLoader
+                isLoading={declinePending}
+                variant="outline"
+                onClick={() => handleDecline(Number.parseInt(row.id))}
+              >
+                Decline
+              </ButtonWithLoader>
+              <ButtonWithLoader
+                isLoading={acceptPending}
+                onClick={() =>
+                  handleAccept(parseInt(row.id), row.original.type)
+                }
+              >
+                Accept
+              </ButtonWithLoader>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setOpen(!open)}>
+                Cancel
+              </Button>
+              <ButtonWithLoader
+                isLoading={declinePending}
+                onClick={() => handleDecline(Number.parseInt(row.id))}
+              >
+                Delete
+              </ButtonWithLoader>
+            </div>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

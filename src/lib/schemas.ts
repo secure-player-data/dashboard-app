@@ -14,6 +14,8 @@ export const INBOX_ITEM_SCHEMA = {
   xmlstring: 'http://www.w3.org/2001/XMLSchema#string',
   organization: 'https://schema.org/Organization',
   accessReason: 'https://schema.org/requestReason',
+  informationHeader: 'https://schema.org/informationHeader',
+  informationBody: 'https://schema.org/informationBody',
 };
 
 export const ACCESS_REQUEST_SCHEMA = {

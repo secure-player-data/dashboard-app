@@ -15,6 +15,8 @@ import { permissionDetail, resource } from '@/entities/data/access-control';
 import { Member } from '@/entities/data/member';
 import { getThingAll, getSolidDataset, Thing } from '@inrupt/solid-client';
 import { paths } from '../paths';
+import { sendInformation } from '../inbox';
+import { Profile } from '@/entities/data/profile';
 
 /**
  * Updates the permissions of an agent for a container and its children
@@ -199,14 +201,19 @@ export async function getPermissionDetails(
 
 export async function outsourcePlayerData(
   session: Session,
+  profile: Profile,
+  pod: string,
   dataOwners: Member[],
   resourceUrls: string[],
-  dataReceiver: string
+  dataReceiver: string,
+  reason: string
 ) {
-  let failedAccesses: { url: string; ownerpod: string }[] = [];
+  let failedAccesses: { url: string; ownerWebId: string }[] = [];
+  let grantedAccesses: { owner: Member; urls: string[] }[] = [];
 
   const allPromises = dataOwners.flatMap((owner) =>
     resourceUrls.map(async (url) => {
+      console.log('outsourcing for agent');
       const [error, _] = await safeCall(
         updateAgentAccess({
           session: session,
@@ -218,9 +225,22 @@ export async function outsourcePlayerData(
 
       if (error) {
         if (error instanceof NoControlAccessError) {
-          failedAccesses.push({ url: url, ownerpod: owner.webId });
+          failedAccesses.push({ url: url, ownerWebId: owner.webId });
         }
         return { error, url, owner: owner.name };
+      }
+
+      if (!error) {
+        console.log('no error encountered, appending successfull resources');
+        const existingOwner = grantedAccesses.find(
+          (entry) => entry.owner === owner
+        );
+
+        if (existingOwner) {
+          existingOwner.urls.push(url);
+        } else {
+          grantedAccesses.push({ owner: owner, urls: [url] });
+        }
       }
       return null;
     })
@@ -228,7 +248,17 @@ export async function outsourcePlayerData(
 
   const results = await Promise.allSettled(allPromises);
 
-  // Handle errors after all promises have resolved
+  grantedAccesses.forEach(async (grantedAccess) => {
+    const urlsList = grantedAccess.urls.join(', ');
+    await sendInformation(
+      session,
+      pod,
+      grantedAccess.owner.pod,
+      'Your data was outsourced',
+      `${profile.name} has shared the following of your resources with ${dataReceiver} ; ${urlsList} ; ${reason}`
+    );
+  });
+
   const errors = results
     .filter((result) => result.status === 'fulfilled' && result.value !== null)
     .map(
@@ -237,7 +267,6 @@ export async function outsourcePlayerData(
     );
 
   if (errors.length > 0) {
-    console.log(failedAccesses);
     throw new NoControlAccessErrors(
       'No access control for resource: ',
       failedAccesses

@@ -78,9 +78,17 @@ export async function fetchInbox(
           getStringNoLocale(item, INBOX_ITEM_SCHEMA.organization) ?? '';
         const accessReason =
           getStringNoLocale(item, INBOX_ITEM_SCHEMA.accessReason) ?? '';
+        const informationHeader =
+          getStringNoLocale(item, INBOX_ITEM_SCHEMA.informationHeader) ?? '';
+        const informationBody =
+          getStringNoLocale(item, INBOX_ITEM_SCHEMA.informationBody) ?? '';
 
         const inboxItem: InboxItem = {
-          type: type == 'Invitation' ? 'Invitation' : 'Access Request',
+          type: type?.includes('Information')
+            ? 'Information'
+            : type?.includes('Invitation')
+              ? 'Invitation'
+              : 'Access Request',
           senderName: name,
           email,
           webId,
@@ -88,6 +96,8 @@ export async function fetchInbox(
           date,
           organization,
           accessReason,
+          informationHeader,
+          informationBody,
         };
 
         return inboxItem;
@@ -150,6 +160,45 @@ export async function sendInvitation(
     receiver: receiver.name,
     sender: session.info.webId ?? '',
   });
+}
+
+export async function sendInformation(
+  session: Session | null,
+  senderPod: string | null,
+  receiverPod: string | null,
+  informationHeader: string,
+  informationBody: string
+) {
+  if (!session) {
+    throw new Error('No session found');
+  }
+
+  const [err, sender] = await safeCall(fetchProfileData(session, senderPod));
+
+  if (!receiverPod || !senderPod) {
+    throw new Error(`Could not send information, receiver or sender was null`);
+  }
+
+  const today = new Date(Date.now());
+  const isoDate = today.toISOString();
+
+  const informationToSend = buildThing(
+    createThing({
+      name: `#information-${isoDate}`,
+    })
+  )
+    .addUrl(RDF.type, INBOX_ITEM_SCHEMA.inboxItem)
+    .addStringNoLocale(INBOX_ITEM_SCHEMA.type, 'Information')
+    .addStringNoLocale(INBOX_ITEM_SCHEMA.name, sender!.name)
+    .addStringNoLocale(INBOX_ITEM_SCHEMA.email, sender!.email)
+    .addStringNoLocale(INBOX_ITEM_SCHEMA.webId, sender!.webId)
+    .addStringNoLocale(INBOX_ITEM_SCHEMA.podUrl, senderPod)
+    .addStringNoLocale(INBOX_ITEM_SCHEMA.time, isoDate)
+    .addStringNoLocale(INBOX_ITEM_SCHEMA.informationHeader, informationHeader)
+    .addStringNoLocale(INBOX_ITEM_SCHEMA.informationBody, informationBody)
+    .build();
+
+  await sendToInbox(session, receiverPod, informationToSend);
 }
 
 /**

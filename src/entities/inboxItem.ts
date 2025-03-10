@@ -1,5 +1,5 @@
 export type InboxItem = {
-  type: 'Invitation' | 'Access Request';
+  type: 'Invitation' | 'Access Request' | 'Information';
   senderName: string;
   email: string;
   webId: string;
@@ -7,4 +7,6 @@ export type InboxItem = {
   date?: string;
   organization?: string;
   accessReason?: string;
+  informationHeader?: string;
+  informationBody?: string;
 };

@@ -122,7 +122,10 @@ export async function fetchMembersWithPermissions(
  * TODO: Update this for new file structure
  */
 export async function updateActorPermissions(
-  member: MemberWithPermissions | ActorWithPermissions,
+  member:
+    | MemberWithPermissions
+    | ActorWithPermissions
+    | MemberWithPermissions[],
   session: Session | null,
   pod: string | null
 ) {
@@ -130,31 +133,39 @@ export async function updateActorPermissions(
     throw new SessionNotSetException('No session provided');
   }
 
-  if (member.webId === session.info.webId) {
-    console.log('Cannot update own permissions');
-    return;
-  }
+  const members = Array.isArray(member) ? member : [member];
 
-  const modes = [] as Permission[];
-  if (member.permissions.read) {
-    modes.push('Read');
-  }
-  if (member.permissions.write) {
-    modes.push('Write');
-  }
-  if (member.permissions.append) {
-    modes.push('Append');
-  }
-  if (member.permissions.control) {
-    modes.push('Control');
-  }
+  for (const singleMember of members) {
+    // Check if it's the same user as the session user
+    if (singleMember.webId === session.info.webId) {
+      console.log('Cannot update own permissions');
+      continue; // Skip this member if it's the same as the session user
+    }
 
-  await updateAgentAccess({
-    session,
-    agentWebId: member.webId,
-    containerUrl: pod!,
-    modes,
-  });
+    const modes = [] as Permission[];
+
+    // Check for permissions and add them to the modes array
+    if (singleMember.permissions.read) {
+      modes.push('Read');
+    }
+    if (singleMember.permissions.write) {
+      modes.push('Write');
+    }
+    if (singleMember.permissions.append) {
+      modes.push('Append');
+    }
+    if (singleMember.permissions.control) {
+      modes.push('Control');
+    }
+
+    // Update the agent's permissions for each member
+    await updateAgentAccess({
+      session,
+      agentWebId: singleMember.webId,
+      containerUrl: pod!,
+      modes,
+    });
+  }
 }
 
 /**

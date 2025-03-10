@@ -10,11 +10,11 @@ export class NoControlAccessError extends Error {
 }
 
 export class NoControlAccessErrors extends Error {
-  public failedAccesses: { url: string; ownerpod: string }[];
+  public failedAccesses: { url: string; ownerWebId: string }[];
 
   constructor(
     message: string,
-    failedAccesses: { url: string; ownerpod: string }[]
+    failedAccesses: { url: string; ownerWebId: string }[]
   ) {
     super(message);
     this.failedAccesses = failedAccesses ?? [];

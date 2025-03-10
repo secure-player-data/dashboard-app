@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -11,13 +11,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Clock, Info } from 'lucide-react';
@@ -27,10 +20,8 @@ import { Member } from '@/entities/data/member';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { outsourcePlayerData } from '@/api/access-control/index';
-import {
-  NoControlAccessError,
-  NoControlAccessErrors,
-} from '@/exceptions/outsourcing-exception';
+import { NoControlAccessErrors } from '@/exceptions/outsourcing-exception';
+import { useGetProfile } from '@/use-cases/use-get-profile';
 
 const dataTypes = [
   {
@@ -74,7 +65,6 @@ function RouteComponent() {
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
   const [selectedDataTypes, setSelectedDataTypes] = useState<string[]>([]);
   const [reason, setReason] = useState('');
-  const [duration, setDuration] = useState('30');
   const [webId, setWebId] = useState('');
   const { session, pod } = useAuth();
   const [failedAccesses, setFailedAccesses] = useState<
@@ -85,6 +75,8 @@ function RouteComponent() {
     session,
     pod
   );
+
+  const { data: profile } = useGetProfile(session, pod);
 
   const handleMemberToggle = (MemberId: string) => {
     setSelectedMembers((prev) =>
@@ -107,15 +99,18 @@ function RouteComponent() {
     try {
       await outsourcePlayerData(
         session!,
+        profile!,
+        pod!,
         members!.filter((member) => selectedMembers.includes(member.webId)),
         selectedDataTypes,
-        webId
+        webId,
+        reason
       );
     } catch (error) {
       if (error instanceof NoControlAccessErrors) {
         setFailedAccesses([
           ...error.failedAccesses.map((failedAccess) => ({
-            webid: failedAccess.ownerpod,
+            webid: failedAccess.ownerWebId,
             resource: failedAccess.url,
           })),
         ]);
@@ -126,19 +121,9 @@ function RouteComponent() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({
-      Members: selectedMembers.map((id) =>
-        members!.find((member: Member) => member.webId === id)
-      ),
-      dataTypes: selectedDataTypes.map((id) =>
-        dataTypes.find((d) => d.id === id)
-      ),
-      reason,
-      duration,
-      webId,
-    });
+    await handleOutsource();
     toast('Outsourcing successful');
   };
 
@@ -153,7 +138,6 @@ function RouteComponent() {
 
   const showMembers = () => {
     if (members) {
-      console.log(failedAccesses);
       return members.map((member: Member) => (
         <div
           key={'wrapper' + member.webId}
@@ -288,27 +272,6 @@ function RouteComponent() {
                       required={selectedMembers.length > 0}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium" htmlFor="duration">
-                      Duration (days)
-                    </label>
-                    <div className="flex items-center space-x-2">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
-                      <Select value={duration} onValueChange={setDuration}>
-                        <SelectTrigger id="duration" className="w-full">
-                          <SelectValue placeholder="Select duration" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="7">7 days</SelectItem>
-                          <SelectItem value="14">14 days</SelectItem>
-                          <SelectItem value="30">30 days</SelectItem>
-                          <SelectItem value="90">90 days</SelectItem>
-                          <SelectItem value="180">180 days</SelectItem>
-                          <SelectItem value="365">365 days</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
                 </div>
               </CardContent>
               <CardFooter className="flex justify-between">
@@ -326,9 +289,6 @@ function RouteComponent() {
                   }
                 >
                   Outsource
-                </Button>
-                <Button type="submit" onClick={() => handleOutsource()}>
-                  test
                 </Button>
               </CardFooter>
             </Card>

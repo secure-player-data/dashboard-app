@@ -32,7 +32,7 @@ export function NavUser({ user }: { user: Profile | null | undefined }) {
 
   const showProfilePicture = () => {
     if (profilePending) {
-      return <Loader2 />;
+      return <Loader2 className="animate-spin" />;
     }
 
     return (

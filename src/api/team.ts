@@ -55,11 +55,7 @@ export async function fetchTeam(
     throw new TeamNotFoundException('Team thing not found');
   }
 
-  return {
-    url: teamUrl,
-    name: getStringNoLocale(teamThing, TEAM_SCHEMA.name) ?? '',
-    tag: getStringNoLocale(teamThing, TEAM_SCHEMA.tag) ?? '',
-  };
+  return mapThingToTeam(teamThing);
 }
 
 /**
@@ -201,4 +197,15 @@ export async function addMemberToTeam(
   await saveSolidDatasetAt(teamUrl, updatedTeamDataset, {
     fetch: session.fetch,
   });
+}
+
+function mapThingToTeam(thing: any): Team {
+  return {
+    url: thing,
+    img: getStringNoLocale(thing, TEAM_SCHEMA.img) ?? '',
+    name: getStringNoLocale(thing, TEAM_SCHEMA.name) ?? '',
+    tag: getStringNoLocale(thing, TEAM_SCHEMA.tag) ?? '',
+    founded: getStringNoLocale(thing, TEAM_SCHEMA.founded) ?? '-',
+    location: getStringNoLocale(thing, TEAM_SCHEMA.location) ?? '-',
+  };
 }

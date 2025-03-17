@@ -1,7 +1,10 @@
 export const TEAM_SCHEMA = {
   type: 'http://schema.org/Organization',
+  img: 'http://schema.org/image',
   name: 'http://schema.org/name',
   tag: 'http://schema.org/tag',
+  founded: 'http://schema.org/founded',
+  location: 'http://schema.org/location',
 };
 
 export const TEAM_MEMBER_SCHEMA = {

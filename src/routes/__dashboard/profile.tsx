@@ -165,35 +165,6 @@ function RouteComponent() {
       {showProfileInformation()}
       <div className="flex flex-row gap-2 justify-evenly">
         {showTeamInformation()}
-
-        <div className="p-4 border rounded-lg border-red-300 w-full">
-          <h3 className="text-xl font-semibold mb-4">Danger Zone</h3>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <p className="text-sm mr-2">Removes you from the team</p>
-              <Button
-                variant="outline"
-                className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
-                onClick={handleLeaveTeam}
-              >
-                <LogOut className="mr-2 h-4 w-4" /> Leave Team
-              </Button>
-            </div>
-            <div className="flex items-center justify-between">
-              <p className="text-sm mr-2">
-                Delete your account - deletes all information used by this
-                application from your pod
-              </p>
-              <Button
-                variant="outline"
-                className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
-                onClick={handleDeleteAccount}
-              >
-                <Trash2 className="mr-2 h-4 w-4" /> Delete Account
-              </Button>
-            </div>
-          </div>
-        </div>
       </div>
       {profile && (
         <ProfileEditDialog

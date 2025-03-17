@@ -42,9 +42,9 @@ function RouteComponent() {
       coach = 'No coach in team';
     } else {
       role = members.filter((member) => member.webId == session!.info.webId)[0]
-        .role;
+        ?.role;
 
-      coach = members.filter((member) => member.role == 'Coach')[0].name;
+      coach = members.filter((member) => member.role == 'Coach')[0]?.name;
     }
 
     return (

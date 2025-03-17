@@ -23,6 +23,52 @@ import { PROFILE_SCHEMA } from '@/schemas/profile';
 import { TEAM_MEMBER_SCHEMA } from '@/schemas/team';
 
 /**
+ * Returns member details of a player
+ * @param session of the user requesting the details
+ * @param pod of the user to get the details from
+ */
+export async function fetchMember(
+  session: Session | null,
+  pod: string | null
+): Promise<Member> {
+  if (!session || !pod) {
+    throw new SessionNotSetException('No session provided');
+  }
+
+  const [teamUrlError, teamUrl] = await safeCall(fetchTeamUrl(session, pod));
+
+  if (teamUrlError) {
+    throw new TeamNotFoundException('You are not part of a team.');
+  }
+
+  const [datasetError, teamDataset] = await safeCall(
+    getSolidDataset(teamUrl, { fetch: session.fetch })
+  );
+
+  if (datasetError) {
+    throw new TeamNotFoundException('Team dataset not found');
+  }
+
+  const memberThings = getThingAll(teamDataset).filter((thing) => {
+    const membePod = getStringNoLocale(thing, TEAM_MEMBER_SCHEMA.pod);
+    return membePod === pod;
+  })[0];
+
+  const [nameError, name] = await safeCall(fetchMemberName(pod, session));
+
+  if (nameError) {
+    throw new Error('Failed to fetch member name');
+  }
+
+  return {
+    webId: getStringNoLocale(memberThings, TEAM_MEMBER_SCHEMA.webId) ?? '',
+    pod,
+    name,
+    role: getStringNoLocale(memberThings, TEAM_MEMBER_SCHEMA.role) ?? '',
+  };
+}
+
+/**
  * Returns a list of members in the team of the user with the specified pod
  * @param session of the requesting user
  * @param pod pod url of the user to fetch the members from

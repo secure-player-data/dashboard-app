@@ -3,14 +3,13 @@ import { useAuth } from '@/context/auth-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Switch } from '@/components/ui/switch';
-import { Clipboard, Sun, Moon, Trash2, LogOut } from 'lucide-react';
-import { useState } from 'react';
+import { Clipboard, Trash2, LogOut, SquarePen } from 'lucide-react';
 import { toast } from 'sonner';
 import { useGetProfile } from '@/use-cases/use-get-profile';
 import { useGetMembers } from '@/use-cases/use-get-members';
-import { paths } from '@/api/paths';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ProfileEditDialog } from '@/components/dialogs/profile-edit-dialog';
+import { useState } from 'react';
 
 export const Route = createFileRoute('/__dashboard/profile')({
   component: RouteComponent,
@@ -18,8 +17,7 @@ export const Route = createFileRoute('/__dashboard/profile')({
 
 function RouteComponent() {
   const { session, pod } = useAuth();
-  console.log(useAuth());
-  const [isDarkTheme, setIsDarkTheme] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const { data: members, isPending: membersPending } = useGetMembers(
     session,
@@ -77,6 +75,7 @@ function RouteComponent() {
     let profileEmail = 'No Email';
     let profileWebId = 'No WebId';
     let profilePod = 'No Pod';
+    let profilePicture = 'No picture';
 
     if (session) {
       profileWebId = session.info.webId!;
@@ -93,22 +92,30 @@ function RouteComponent() {
     if (profile) {
       profileName = profile.name;
       profileEmail = profile.email;
+      profilePicture = profile.picture;
+      console.log(profilePicture);
     }
 
     return (
       <div className="space-y-4 p-4 border rounded-lg">
-        <div className="flex items-center space-x-4">
-          <Avatar className="w-20 h-20">
-            <AvatarImage
-              src="/placeholder.svg?height=80&width=80"
-              alt="Profile picture"
-            />
-            <AvatarFallback>TE</AvatarFallback>
-          </Avatar>
-          <div>
-            <h2 className="text-2xl font-bold">{profileName}</h2>
-            <p className="text-muted-foreground">{profileEmail}</p>
+        <div className="flex flex-row gap-2">
+          <div className="flex items-center space-x-4 ">
+            <Avatar className="w-20 h-20">
+              <AvatarImage src={profilePicture} alt="Profile picture" />
+              <AvatarFallback>TE</AvatarFallback>
+            </Avatar>
+            <div>
+              <h2 className="text-2xl font-bold">{profileName}</h2>
+              <p className="text-muted-foreground">{profileEmail}</p>
+            </div>
           </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsEditDialogOpen(!isEditDialogOpen)}
+          >
+            <SquarePen />
+          </Button>
         </div>
 
         <div className="space-y-2">
@@ -188,6 +195,15 @@ function RouteComponent() {
           </div>
         </div>
       </div>
+      {profile && (
+        <ProfileEditDialog
+          session={session!}
+          pod={pod!}
+          open={isEditDialogOpen}
+          onOpenChange={setIsEditDialogOpen}
+          profile={profile}
+        />
+      )}
     </div>
   );
 }

@@ -12,7 +12,9 @@ import {
   saveSolidDatasetAt,
   setStringNoLocale,
   createContainerAt,
+  deleteSolidDataset,
 } from '@inrupt/solid-client';
+import { uploadFile } from '@/api/utils';
 import { RDF } from '@inrupt/vocab-common-rdf';
 import { BASE_APP_CONTAINER, paths } from './paths';
 import {
@@ -71,6 +73,7 @@ export async function fetchProfileData(
   const profileEmail = getStringNoLocale(profile, PROFILE_SCHEMA.email);
   const profileWebId = getStringNoLocale(profile, PROFILE_SCHEMA.webId);
   const teamUrl = getStringNoLocale(profile, PROFILE_SCHEMA.teamUrl);
+  const pictureUrl = getStringNoLocale(profile, PROFILE_SCHEMA.picture);
 
   if (teamUrl === null) {
     throw new TeamNotFoundException('team url not found');
@@ -87,6 +90,7 @@ export async function fetchProfileData(
     webId: profileWebId!,
     email: profileEmail!,
     team: team ?? null,
+    picture: pictureUrl ?? '',
   };
 
   if (isEmptyOrSpaces(profileName) || isEmptyOrSpaces(profileEmail)) {
@@ -109,6 +113,7 @@ export async function updateAppProfile(
     name?: string | null;
     email?: string | null;
     teamUrl?: string | null;
+    picture?: File | null;
   }
 ) {
   if (!session || !pod) {
@@ -143,6 +148,29 @@ export async function updateAppProfile(
   }
   if (profile.email) {
     thing = setStringNoLocale(thing, PROFILE_SCHEMA.email, profile.email);
+  }
+
+  if (profile.picture) {
+    const picturePath = `${paths.root(pod)}/`;
+    await deleteSolidDataset(`${picturePath}/profile.jpg`, {
+      fetch: session.fetch,
+    });
+    var blob = profile.picture.slice(0, profile.picture.size, 'image/png');
+    const profilePicture = new File([blob], 'profile.jpg', {
+      type: 'image/png',
+    });
+    await uploadFile(session, pod, picturePath, profilePicture);
+    await setPublicAccess({
+      session,
+      url: `${picturePath}/profile.jpg`,
+      modes: ['Read'],
+    });
+
+    thing = setStringNoLocale(
+      thing,
+      PROFILE_SCHEMA.picture,
+      picturePath + profilePicture.name
+    );
   }
 
   const updatedDataset = setThing(dataset, thing);
@@ -253,6 +281,7 @@ export async function createAppProfile(
     .addStringNoLocale(PROFILE_SCHEMA.email, profile.email)
     .addStringNoLocale(PROFILE_SCHEMA.webId, session.info.webId ?? '')
     .addStringNoLocale(PROFILE_SCHEMA.teamUrl, '')
+    .addStringNoLocale(PROFILE_SCHEMA.picture, `${paths.root(pod)}/profile.png`)
     .build();
 
   appProfileSolidDataset = setThing(appProfileSolidDataset, appProfile);

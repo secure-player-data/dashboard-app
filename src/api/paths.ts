@@ -15,6 +15,9 @@ export const paths = {
   profile: (pod: string) => `${pod}${BASE_APP_CONTAINER}/Profile`,
   personalData: (pod: string) => `${pod}${BASE_APP_CONTAINER}/PersonalData`,
   inbox: (pod: string) => `${pod}${BASE_APP_CONTAINER}/${INBOX_CONTAINER}`,
+  team: {
+    root: (pod: string) => `${pod}${BASE_APP_CONTAINER}/team/`,
+  },
   accessHistory: (pod: string) =>
     `${pod}${BASE_APP_CONTAINER}/${ACCESS_HISTORY_CONTAINER}`,
   footballData: {

@@ -3,9 +3,13 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { useGetProfile } from '@/use-cases/use-get-profile';
 import { useAuth } from '@/context/auth-context';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useRef, useState } from 'react';
 import { Button, ButtonWithLoader } from '../ui/button';
 import { useUpdateTeam } from '@/use-cases/team';
+import { toast } from 'sonner';
+import { Avatar, AvatarImage } from '../ui/avatar';
+import { AvatarFallback } from '@radix-ui/react-avatar';
+import { Upload } from 'lucide-react';
 
 const teamSchema = z.object({
   name: z.string().nonempty({ message: 'Name is required' }),
@@ -23,12 +27,31 @@ export default function EditTeamForm({ onSuccess }: { onSuccess: () => void }) {
   const { data } = useGetProfile(session, pod);
   const mutation = useUpdateTeam(session, pod);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [avatarPreview, setAvatarPreview] = useState<string>(
+    data?.team?.img || '/placeholder.svg'
+  );
+  const [avatarFile, setAvatarFile] = useState<File | undefined>(undefined);
   const [name, setName] = useState<string>(data?.team?.name ?? '');
   const [tag, setTag] = useState<string>(data?.team?.tag ?? '');
   const [founded, setFounded] = useState<string>(data?.team?.founded ?? '');
   const [location, setLocation] = useState<string>(data?.team?.location ?? '');
 
   const [errors, setErrors] = useState<ErrorsState>({});
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setAvatarFile(file);
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setAvatarPreview(event.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
 
   function handleFormSubmit(event: FormEvent) {
     event.preventDefault();
@@ -47,15 +70,42 @@ export default function EditTeamForm({ onSuccess }: { onSuccess: () => void }) {
     }
 
     mutation.mutate(
-      { name, tag, founded, location },
+      { img: avatarFile, name, tag, founded, location },
       {
-        onSuccess,
+        onSuccess: () => {
+          onSuccess();
+          toast.success('Team updated!');
+        },
       }
     );
   }
 
   return (
     <form onSubmit={handleFormSubmit} className="grid gap-4">
+      <div className="flex flex-col items-center gap-4">
+        <Avatar className="size-24 cursor-pointer">
+          <AvatarImage
+            src={avatarPreview}
+            alt="Team logo"
+            className="object-cover"
+          />
+        </Avatar>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <Upload className="size-4" />
+          Upload photo
+        </Button>
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept="image/*"
+          className="hidden"
+        />
+      </div>
       <div>
         <Label htmlFor="name">
           Name <span className="text-destructive">*</span>

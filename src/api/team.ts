@@ -1,13 +1,16 @@
 import { Session } from '@inrupt/solid-client-authn-browser';
-import { BASE_APP_CONTAINER } from './paths';
+import { BASE_APP_CONTAINER, paths } from './paths';
 import { Team } from '@/entities/data/team';
 import {
   buildThing,
+  createContainerAt,
   createSolidDataset,
   createThing,
+  deleteFile,
   getSolidDataset,
   getStringNoLocale,
   getThing,
+  saveFileInContainer,
   saveSolidDatasetAt,
   setStringNoLocale,
   setThing,
@@ -17,10 +20,11 @@ import { safeCall } from '@/utils';
 import { SessionNotSetException } from '@/exceptions/session-exceptions';
 import { TeamNotFoundException } from '@/exceptions/team-exceptions';
 import { TeamCreationConflictException } from '@/exceptions/team-creation-conflict-exception';
-import { updateAppProfile } from './profile';
-import { updateAgentAccess } from './access-control';
+import { fetchProfileData, updateAppProfile } from './profile';
+import { setPublicAccess, updateAgentAccess } from './access-control';
 import { PROFILE_SCHEMA } from '@/schemas/profile';
 import { TEAM_MEMBER_SCHEMA, TEAM_SCHEMA } from '@/schemas/team';
+import { setPublic } from 'node_modules/@inrupt/solid-client/dist/acp/matcher';
 
 /**
  * Returns team details from the team specified by the teamUrl
@@ -137,6 +141,9 @@ export async function createTeam({
     .build();
   dataset = setThing(dataset, teamDetails);
 
+  // Create team folder
+  await createContainerAt(paths.team.root(pod), { fetch: session.fetch });
+
   // Create and add owner as member
   const owner = buildThing(createThing({ name: 'owner' }))
     .addStringNoLocale(TEAM_MEMBER_SCHEMA.webId, session.info.webId)
@@ -209,6 +216,12 @@ export async function updateTeam({
     throw new Error('Team thing not found');
   }
 
+  if (team.img) {
+    const oldImg = getStringNoLocale(teamThing, TEAM_SCHEMA.img);
+    const newImg = await updateTeamImage(session, pod, oldImg, team.img);
+    teamThing = setStringNoLocale(teamThing, TEAM_SCHEMA.img, newImg);
+  }
+
   if (team.name) {
     teamThing = setStringNoLocale(teamThing, TEAM_SCHEMA.name, team.name);
   }
@@ -229,6 +242,44 @@ export async function updateTeam({
   const updatedDataset = setThing(dataset, teamThing);
 
   await saveSolidDatasetAt(teamUrl, updatedDataset, { fetch: session.fetch });
+}
+
+/**
+ * Updates the image for a team
+ * @param session of the user requesting the update
+ * @param pod of the team
+ * @param oldImgUrl url to the old image
+ * @param newImg file with the new image
+ * @return the url to the uploaded image
+ */
+async function updateTeamImage(
+  session: Session,
+  pod: string,
+  oldImgUrl: string | null,
+  newImg: File
+): Promise<string> {
+  // Delete old image
+  if (oldImgUrl) {
+    await deleteFile(oldImgUrl, { fetch: session.fetch });
+  }
+
+  // Upload new image
+  const rootPath = paths.team.root(pod);
+  const fullPath = `${rootPath}/${newImg.name}`;
+  const [error, _] = await safeCall(
+    saveFileInContainer(rootPath, newImg, { fetch: session.fetch })
+  );
+  await setPublicAccess({
+    session,
+    url: fullPath,
+    modes: ['Read'],
+  });
+
+  if (error) {
+    throw new Error('Failed to save file');
+  }
+
+  return fullPath;
 }
 
 /**

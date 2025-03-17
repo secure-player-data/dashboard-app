@@ -1,11 +1,9 @@
 import EditTeamDialog from '@/components/dialogs/edit-team-dialog';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAuth } from '@/context/auth-context';
 import { useGetMember } from '@/use-cases/members';
 import { useGetProfile } from '@/use-cases/use-get-profile';
-import { Link } from '@tanstack/react-router';
-import { Calendar, Pencil, Pin, Trophy, Users } from 'lucide-react';
+import { Calendar, Pin, Trophy, Users } from 'lucide-react';
 
 export default function Header() {
   const { session, pod } = useAuth();
@@ -17,7 +15,7 @@ export default function Header() {
       <img
         src={profile?.team?.img || '/placeholder.svg'}
         alt="Placeholder"
-        className="size-56 rounded-md"
+        className="size-56 rounded-md object-cover"
       />
       <CardContent>
         {member?.role === 'owner' && (

@@ -5,4 +5,5 @@ export type Profile = {
   webId: string;
   email: string;
   team: Team | null;
+  picture: string;
 };

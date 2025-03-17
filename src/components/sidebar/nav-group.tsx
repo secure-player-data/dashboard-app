@@ -8,6 +8,7 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { Link } from '@tanstack/react-router';
+import { useAuth } from '@/context/auth-context';
 
 export function NavGroup({
   group,

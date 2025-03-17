@@ -14,11 +14,13 @@ export function useUpdateAppProfile(
       name,
       email,
       teamUrl,
+      picture,
     }: {
       name?: string;
       email?: string;
       teamUrl?: string;
-    }) => updateAppProfile(session, pod, { name, email, teamUrl }),
+      picture?: File;
+    }) => updateAppProfile(session, pod, { name, email, teamUrl, picture }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.profile(session!.info.webId!),

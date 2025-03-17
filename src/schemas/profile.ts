@@ -4,4 +4,5 @@ export const PROFILE_SCHEMA = {
   webId: 'https://schema.org/webId',
   email: 'https://schema.org/email',
   teamUrl: 'https://schema.org/teamUrl',
+  picture: 'https://schema.org/picture',
 };

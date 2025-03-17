@@ -1,6 +1,6 @@
-import { ChevronsUpDown, Cog, LogOut, User } from 'lucide-react';
+import { ChevronsUpDown, Cog, Loader2, LogOut, User } from 'lucide-react';
 
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,11 +18,30 @@ import {
 import { useAuth } from '@/context/auth-context';
 import type { Profile } from '@/entities/data/profile';
 import { useNavigate } from '@tanstack/react-router';
+import { useGetProfile } from '@/use-cases/use-get-profile';
 
 export function NavUser({ user }: { user: Profile | null | undefined }) {
   const { isMobile } = useSidebar();
-  const { signOut, session } = useAuth();
+  const { signOut, session, pod } = useAuth();
   const navigate = useNavigate();
+
+  const { data: profile, isPending: profilePending } = useGetProfile(
+    session,
+    pod
+  );
+
+  const showProfilePicture = () => {
+    if (profilePending) {
+      return <Loader2 />;
+    }
+
+    return (
+      <div>
+        <AvatarImage src={profile?.picture} alt="Profile picture" />
+        <AvatarFallback className="rounded-lg"></AvatarFallback>
+      </div>
+    );
+  };
 
   return (
     <SidebarMenu>
@@ -34,7 +53,7 @@ export function NavUser({ user }: { user: Profile | null | undefined }) {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                {showProfilePicture()}
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">
@@ -54,7 +73,7 @@ export function NavUser({ user }: { user: Profile | null | undefined }) {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  {showProfilePicture()}
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">

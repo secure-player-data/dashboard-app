@@ -9,6 +9,7 @@ import {
   getStringNoLocale,
   getThing,
   saveSolidDatasetAt,
+  setStringNoLocale,
   setThing,
 } from '@inrupt/solid-client';
 import { RDF } from '@inrupt/vocab-common-rdf';
@@ -160,6 +161,72 @@ export async function createTeam({
 
   // Update profile with team url
   await updateAppProfile(session, pod, { teamUrl: teamFileUrl });
+}
+
+/**
+ * Updates the team detals
+ * @param session of the user requesting the update
+ * @param pod of the team owner
+ * @param team new team details to update to
+ */
+export async function updateTeam({
+  session,
+  pod,
+  team,
+}: {
+  session: Session | null;
+  pod: string | null;
+  team: {
+    name?: string;
+    tag?: string;
+    founded?: string;
+    location?: string;
+  };
+}) {
+  if (!session || !pod) {
+    throw new Error('session was not found');
+  }
+
+  const [teamUrlError, teamUrl] = await safeCall(fetchTeamUrl(session, pod));
+
+  if (teamUrlError) {
+    throw new Error('Team url not found');
+  }
+
+  const [datasetError, dataset] = await safeCall(
+    getSolidDataset(teamUrl, { fetch: session.fetch })
+  );
+
+  if (datasetError) {
+    throw new Error('Team dataset not found');
+  }
+
+  let teamThing = getThing(dataset, `${teamUrl}#team`);
+
+  if (!teamThing) {
+    throw new Error('Team thing not found');
+  }
+
+  if (team.name) {
+    teamThing = setStringNoLocale(teamThing, TEAM_SCHEMA.name, team.name);
+  }
+  if (team.tag) {
+    teamThing = setStringNoLocale(teamThing, TEAM_SCHEMA.tag, team.tag);
+  }
+  if (team.founded) {
+    teamThing = setStringNoLocale(teamThing, TEAM_SCHEMA.founded, team.founded);
+  }
+  if (team.location) {
+    teamThing = setStringNoLocale(
+      teamThing,
+      TEAM_SCHEMA.location,
+      team.location
+    );
+  }
+
+  const updatedDataset = setThing(dataset, teamThing);
+
+  await saveSolidDatasetAt(teamUrl, updatedDataset, { fetch: session.fetch });
 }
 
 /**

@@ -191,7 +191,7 @@ export async function updateAppProfile(
 export async function initAppProfile(
   session: Session | null,
   pod: string | null,
-  profile: Omit<Profile, 'webId' | 'team'>
+  profile: Omit<Profile, 'webId' | 'team' | 'picture'>
 ) {
   if (!session || !pod) {
     throw new Error('No session or pod found');
@@ -267,7 +267,7 @@ export async function initAppProfile(
 export async function createAppProfile(
   session: Session | null,
   pod: string,
-  profile: Omit<Profile, 'webId' | 'team'>
+  profile: Omit<Profile, 'webId' | 'team' | 'picture'>
 ) {
   if (!session) {
     throw new Error('No session found');

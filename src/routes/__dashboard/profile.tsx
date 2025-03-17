@@ -93,7 +93,6 @@ function RouteComponent() {
       profileName = profile.name;
       profileEmail = profile.email;
       profilePicture = profile.picture;
-      console.log(profilePicture);
     }
 
     return (
@@ -150,14 +149,6 @@ function RouteComponent() {
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toast.success('Copied to clipboard!');
-  };
-
-  const handleLeaveTeam = () => {
-    console.log('leaving team');
-  };
-
-  const handleDeleteAccount = () => {
-    console.log('deleting account');
   };
 
   return (

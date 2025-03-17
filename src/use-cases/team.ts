@@ -8,6 +8,7 @@ export function useUpdateTeam(session: Session | null, pod: string | null) {
 
   return useMutation({
     mutationFn: async (team: {
+      img?: File;
       name: string;
       tag: string;
       founded?: string;

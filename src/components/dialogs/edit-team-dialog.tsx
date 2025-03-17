@@ -1,4 +1,4 @@
-import { Pencil } from 'lucide-react';
+import { SquarePen } from 'lucide-react';
 import { Button } from '../ui/button';
 import {
   Dialog,
@@ -17,9 +17,8 @@ export default function EditTeamDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">
-          <Pencil className="size-4" />
-          Edit team
+        <Button variant="ghost">
+          <SquarePen className="size-4" />
         </Button>
       </DialogTrigger>
       <DialogContent>

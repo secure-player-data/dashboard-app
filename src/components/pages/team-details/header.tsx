@@ -13,54 +13,56 @@ export default function Header() {
   const { data: member } = useGetMember(session, pod);
 
   return (
-    <div className="flex flex-col gap-2">
-      <Card className="flex items-center gap-4">
-        <img
-          src={profile?.team?.img || '/placeholder.svg'}
-          alt="Placeholder"
-          className="size-56 rounded-md"
-        />
-        <CardContent>
-          <div className="flex flex-col gap-4">
-            <h1 className="font-bold text-3xl">{profile?.team?.name}</h1>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <Calendar />
-                <div>
-                  <p className="font-semibold">Founded</p>
-                  <p className="text-muted-foreground">
-                    {profile?.team?.founded}
-                  </p>
-                </div>
+    <Card className="flex items-center gap-4 relative">
+      <img
+        src={profile?.team?.img || '/placeholder.svg'}
+        alt="Placeholder"
+        className="size-56 rounded-md"
+      />
+      <CardContent>
+        {member?.role === 'owner' && (
+          <div className="absolute top-4 right-4">
+            <EditTeamDialog />
+          </div>
+        )}
+        <div className="flex flex-col gap-4">
+          <h1 className="font-bold text-3xl">{profile?.team?.name}</h1>
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="flex items-center gap-2">
+              <Calendar />
+              <div>
+                <p className="font-semibold">Founded</p>
+                <p className="text-muted-foreground">
+                  {profile?.team?.founded}
+                </p>
               </div>
-              <div className="flex items-center gap-2">
-                <Pin />
-                <div>
-                  <p className="font-semibold">Location</p>
-                  <p className="text-muted-foreground">
-                    {profile?.team?.location}
-                  </p>
-                </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Pin />
+              <div>
+                <p className="font-semibold">Location</p>
+                <p className="text-muted-foreground">
+                  {profile?.team?.location}
+                </p>
               </div>
-              <div className="flex items-center gap-2">
-                <Users />
-                <div>
-                  <p className="font-semibold">Squad Size</p>
-                  <p className="text-muted-foreground">32</p>
-                </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Users />
+              <div>
+                <p className="font-semibold">Squad Size</p>
+                <p className="text-muted-foreground">32</p>
               </div>
-              <div className="flex items-center gap-2">
-                <Trophy />
-                <div>
-                  <p className="font-semibold">Championships</p>
-                  <p className="text-muted-foreground">3 titles</p>
-                </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Trophy />
+              <div>
+                <p className="font-semibold">Championships</p>
+                <p className="text-muted-foreground">3 titles</p>
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
-      {member?.role === 'owner' && <EditTeamDialog />}
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

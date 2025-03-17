@@ -130,6 +130,7 @@ export async function createTeam({
   // Create and add team details to dataset
   let dataset = createSolidDataset();
   const teamDetails = buildThing(createThing({ name: 'team' }))
+    .addStringNoLocale(TEAM_SCHEMA.img, '')
     .addStringNoLocale(TEAM_SCHEMA.name, name)
     .addStringNoLocale(TEAM_SCHEMA.tag, tag)
     .addUrl(RDF.type, TEAM_SCHEMA.type)
@@ -177,6 +178,7 @@ export async function updateTeam({
   session: Session | null;
   pod: string | null;
   team: {
+    img?: File;
     name?: string;
     tag?: string;
     founded?: string;

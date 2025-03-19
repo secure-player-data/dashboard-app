@@ -125,7 +125,7 @@ function RouteComponent() {
             <Input value={profileWebId} readOnly />
             <Button
               variant="outline"
-              onClick={() => copyToClipboard('https://id.inrupt.com/torstein')}
+              onClick={() => copyToClipboard(profileWebId)}
             >
               <Clipboard className="h-4 w-4" />
             </Button>
@@ -138,7 +138,7 @@ function RouteComponent() {
             <Input value={profilePod} readOnly />
             <Button
               variant="outline"
-              onClick={() => copyToClipboard('https://podlink.com/storage')}
+              onClick={() => copyToClipboard(profilePod)}
             >
               <Clipboard className="h-4 w-4" />
             </Button>

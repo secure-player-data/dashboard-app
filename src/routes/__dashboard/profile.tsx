@@ -47,6 +47,8 @@ function RouteComponent() {
       coach = members.filter((member) => member.role == 'Coach')[0]?.name;
     }
 
+    if (!profile?.team) return;
+
     return (
       <div className="space-y-3 p-4 border rounded-lg w-full">
         <div className="flex items-center space-x-4">
@@ -59,9 +61,9 @@ function RouteComponent() {
           </Avatar>
           <div>
             <p className="text-sm text-muted-foreground">
-              {profile!.team!.name}
+              {profile?.team?.name}
             </p>
-            <h3 className="text-xl font-semibold">{profile!.team!.tag}</h3>
+            <h3 className="text-xl font-semibold">{profile?.team?.tag}</h3>
           </div>
         </div>
         <p className="text-base">Team Role: {role ?? 'No role'}</p>

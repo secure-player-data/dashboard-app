@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/context/auth-context';
 import { useGetPersonalData } from '@/use-cases/personal-data';
+import { useGetProfile } from '@/use-cases/use-get-profile';
 import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { Dot } from 'lucide-react';
 
@@ -12,13 +13,14 @@ function RouteComponent() {
   const { pod } = Route.useParams();
   const { session } = useAuth();
   const { data } = useGetPersonalData(session, pod);
+  const { data: profile } = useGetProfile(session, pod);
 
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center gap-4 mb-4">
         <img
-          src={data?.image || '/placeholder.svg'}
-          alt={data?.name}
+          src={profile?.picture || '/placeholder.svg'}
+          alt={profile?.name}
           className="size-16 rounded-full"
         />
         <div className="flex flex-col gap-1">

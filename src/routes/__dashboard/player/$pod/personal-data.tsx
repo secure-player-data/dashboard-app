@@ -4,6 +4,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/context/auth-context';
 import { useGetSeasonInfo } from '@/use-cases/football-data';
 import { useGetPersonalData } from '@/use-cases/personal-data';
+import { useGetProfile } from '@/use-cases/use-get-profile';
 import { birthdateToAge } from '@/utils';
 import { TabsContent } from '@radix-ui/react-tabs';
 import { createFileRoute } from '@tanstack/react-router';
@@ -33,6 +34,7 @@ function RouteComponent() {
   const { pod } = Route.useParams();
 
   const { data: player, isPending, error } = useGetPersonalData(session, pod);
+  const { data: profile } = useGetProfile(session, pod);
   const { data: season } = useGetSeasonInfo(
     session,
     pod,
@@ -54,8 +56,8 @@ function RouteComponent() {
         {/* Left side */}
         <div className="relative h-full flex items-center justify-center">
           <img
-            src={player.image || '/placeholder.svg'}
-            alt={player.name}
+            src={profile?.picture || '/placeholder.svg'}
+            alt={profile?.name}
             className="w-full h-full object-cover rounded-md aspect-square"
           />
           <div className="absolute top-4 right-4">

@@ -1,7 +1,6 @@
 export const PERSONAL_DATA_SCHEMA = {
   type: 'https://schema.org/Person',
   name: 'https://schema.org/name',
-  image: 'https://schema.org/image',
   birthdate: 'https://schema.org/birthDate',
   address: 'https://schema.org/address',
   phone: 'https://schema.org/telephone',

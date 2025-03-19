@@ -1,6 +1,5 @@
 export type PersonalData = {
   name: string;
-  image: string;
   birtdate: Date;
   address: string;
   phone: string;

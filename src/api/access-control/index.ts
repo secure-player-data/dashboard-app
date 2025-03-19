@@ -214,10 +214,11 @@ export async function outsourcePlayerData(
 
   const allPromises = dataOwners.flatMap((owner) =>
     resourceUrls.map(async (url) => {
+      console.log('url', url);
       const [error, _] = await safeCall(
         updateAgentAccess({
           session: session,
-          containerUrl: `${owner.pod}secure-player-data/${url}/`,
+          containerUrl: `${paths.root(owner.pod)}/${url}`,
           agentWebId: dataReceiver,
           modes: ['Read'],
         })

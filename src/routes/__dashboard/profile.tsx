@@ -9,7 +9,7 @@ import { useGetProfile } from '@/use-cases/use-get-profile';
 import { useGetMembers } from '@/use-cases/use-get-members';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ProfileEditDialog } from '@/components/dialogs/profile-edit-dialog';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 export const Route = createFileRoute('/__dashboard/profile')({
   component: RouteComponent,
@@ -73,41 +73,32 @@ function RouteComponent() {
   };
 
   const showProfileInformation = () => {
-    let profileName = 'No Name';
-    let profileEmail = 'No Email';
-    let profileWebId = 'No WebId';
-    let profilePod = 'No Pod';
-    let profilePicture = 'No picture';
+    const initials = useMemo(() => {
+      if (!profile) return 'N/A';
 
-    if (session) {
-      profileWebId = session.info.webId!;
-    }
-
-    if (pod) {
-      profilePod = pod;
-    }
-
-    if (profilePending) {
-      return <Skeleton />;
-    }
-
-    if (profile) {
-      profileName = profile.name;
-      profileEmail = profile.email;
-      profilePicture = profile.picture;
-    }
+      return profile.name
+        .split(' ')
+        .map((part) => part[0])
+        .join('')
+        .toUpperCase()
+        .substring(0, 2);
+    }, [profile]);
 
     return (
       <div className="space-y-4 p-4 border rounded-lg">
         <div className="flex flex-row gap-2">
           <div className="flex items-center space-x-4 ">
             <Avatar className="w-20 h-20">
-              <AvatarImage src={profilePicture} alt="Profile picture" />
-              <AvatarFallback>TE</AvatarFallback>
+              <AvatarImage src={profile?.picture} alt="Profile picture" />
+              <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
             <div>
-              <h2 className="text-2xl font-bold">{profileName}</h2>
-              <p className="text-muted-foreground">{profileEmail}</p>
+              <h2 className="text-2xl font-bold">
+                {profile?.name || 'No name'}
+              </h2>
+              <p className="text-muted-foreground">
+                {profile?.email || 'No email'}
+              </p>
             </div>
           </div>
           <Button
@@ -122,10 +113,10 @@ function RouteComponent() {
         <div className="space-y-2">
           <label className="text-sm font-medium">WebID</label>
           <div className="flex gap-2">
-            <Input value={profileWebId} readOnly />
+            <Input value={session?.info.webId || 'No WebId'} readOnly />
             <Button
               variant="outline"
-              onClick={() => copyToClipboard(profileWebId)}
+              onClick={() => copyToClipboard(session?.info.webId || '')}
             >
               <Clipboard className="h-4 w-4" />
             </Button>
@@ -135,10 +126,10 @@ function RouteComponent() {
         <div className="space-y-2">
           <label className="text-sm font-medium">Pod URL</label>
           <div className="flex gap-2">
-            <Input value={profilePod} readOnly />
+            <Input value={pod || 'No pod'} readOnly />
             <Button
               variant="outline"
-              onClick={() => copyToClipboard(profilePod)}
+              onClick={() => copyToClipboard(pod || '')}
             >
               <Clipboard className="h-4 w-4" />
             </Button>

@@ -12,11 +12,17 @@ export default function Header() {
 
   return (
     <Card className="flex items-center gap-4 relative">
-      <img
-        src={profile?.team?.img || '/placeholder.svg'}
-        alt="Placeholder"
-        className="size-56 rounded-md object-cover"
-      />
+      {profile?.team?.img ? (
+        <img
+          src={profile?.team?.img || '/placeholder.svg'}
+          alt="Placeholder"
+          className="size-56 rounded-md object-cover"
+        />
+      ) : (
+        <div className="size-56 flex items-center justify-center rounnded-md bg-muted">
+          <p className="text-muted-foreground text-lg">{profile?.team?.tag}</p>
+        </div>
+      )}
       <CardContent>
         {member?.role === 'owner' && (
           <div className="absolute top-4 right-4">

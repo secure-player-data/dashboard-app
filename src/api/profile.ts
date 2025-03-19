@@ -13,6 +13,7 @@ import {
   setStringNoLocale,
   createContainerAt,
   deleteSolidDataset,
+  saveFileInContainer,
 } from '@inrupt/solid-client';
 import { uploadFile } from '@/api/utils';
 import { RDF } from '@inrupt/vocab-common-rdf';
@@ -151,25 +152,27 @@ export async function updateAppProfile(
   }
 
   if (profile.picture) {
-    const picturePath = `${paths.root(pod)}/`;
-    await deleteSolidDataset(`${picturePath}/profile.jpg`, {
-      fetch: session.fetch,
-    });
-    var blob = profile.picture.slice(0, profile.picture.size, 'image/png');
-    const profilePicture = new File([blob], 'profile.jpg', {
-      type: 'image/png',
-    });
-    await uploadFile(session, pod, picturePath, profilePicture);
+    const oldPicturePath = getStringNoLocale(thing, PROFILE_SCHEMA.picture);
+
+    if (oldPicturePath) {
+      await deleteSolidDataset(oldPicturePath, {
+        fetch: session.fetch,
+      });
+    }
+
+    const newPictureBasePath = paths.root(pod);
+    const newPictureFullPath = `${newPictureBasePath}/${profile.picture.name}`;
+    await uploadFile(session, pod, newPictureBasePath, profile.picture);
     await setPublicAccess({
       session,
-      url: `${picturePath}/profile.jpg`,
+      url: newPictureFullPath,
       modes: ['Read'],
     });
 
     thing = setStringNoLocale(
       thing,
       PROFILE_SCHEMA.picture,
-      picturePath + profilePicture.name
+      newPictureFullPath
     );
   }
 
@@ -281,7 +284,7 @@ export async function createAppProfile(
     .addStringNoLocale(PROFILE_SCHEMA.email, profile.email)
     .addStringNoLocale(PROFILE_SCHEMA.webId, session.info.webId ?? '')
     .addStringNoLocale(PROFILE_SCHEMA.teamUrl, '')
-    .addStringNoLocale(PROFILE_SCHEMA.picture, `${paths.root(pod)}/profile.png`)
+    .addStringNoLocale(PROFILE_SCHEMA.picture, '')
     .build();
 
   appProfileSolidDataset = setThing(appProfileSolidDataset, appProfile);

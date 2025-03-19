@@ -102,29 +102,11 @@ export async function seedDb(_session: Session, _pod: string) {
 async function seedPersonalData(data: TPersonal) {
   console.log('Seeding personal data...');
 
-  // Upload profile image
-  const imageUrl = '/profile.jpg';
-  const res = await fetch(imageUrl);
-  const blob = await res.blob();
-  const file = new File([blob], 'profile.jpg', { type: blob.type });
-  await uploadFile(session, pod, paths.root(pod), file);
-
-  // Make profile image public
-  await setPublicAccess({
-    session,
-    url: `${paths.root(pod)}/profile.jpg`,
-    modes: ['Read'],
-  });
-
   // Create personal data
   let dataset = createSolidDataset();
   const thing = buildThing(createThing({ name: 'personal-data' }))
     .addUrl(RDF.type, PERSONAL_DATA_SCHEMA.type)
     .addStringNoLocale(PERSONAL_DATA_SCHEMA.name, data.name)
-    .addStringNoLocale(
-      PERSONAL_DATA_SCHEMA.image,
-      `${paths.root(pod)}/profile.jpg`
-    )
     .addDate(PERSONAL_DATA_SCHEMA.birthdate, new Date(data.birthdate))
     .addStringNoLocale(PERSONAL_DATA_SCHEMA.address, data.address)
     .addStringNoLocale(PERSONAL_DATA_SCHEMA.phone, data.phone)

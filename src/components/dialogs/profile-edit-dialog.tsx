@@ -35,7 +35,9 @@ export function ProfileEditDialog({
 }: ProfileEditDialogProps) {
   const [name, setName] = useState(profile.name);
   const [email, setEmail] = useState(profile.email);
-  const [avatarPreview, setAvatarPreview] = useState<string | undefined>('');
+  const [avatarPreview, setAvatarPreview] = useState<string | undefined>(
+    profile.picture || undefined
+  );
   const [avatarFile, setAvatarFile] = useState<File | undefined>(undefined);
 
   const fileInputRef = useRef<HTMLInputElement>(null);

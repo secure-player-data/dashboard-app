@@ -34,7 +34,6 @@ export async function fetchPersonalData(
 
   return {
     name: getStringNoLocale(thing, PERSONAL_DATA_SCHEMA.name) ?? '',
-    image: getStringNoLocale(thing, PERSONAL_DATA_SCHEMA.image) ?? '',
     birtdate: getDate(thing, PERSONAL_DATA_SCHEMA.birthdate) ?? new Date(),
     address: getStringNoLocale(thing, PERSONAL_DATA_SCHEMA.address) ?? '',
     phone: getStringNoLocale(thing, PERSONAL_DATA_SCHEMA.phone) ?? '',

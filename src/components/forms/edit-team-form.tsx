@@ -82,7 +82,10 @@ export default function EditTeamForm({ onSuccess }: { onSuccess: () => void }) {
   return (
     <form onSubmit={handleFormSubmit} className="grid gap-4">
       <div className="flex flex-col items-center gap-4">
-        <Avatar className="size-24 cursor-pointer">
+        <Avatar
+          className="size-24 cursor-pointer"
+          onClick={() => fileInputRef.current?.click()}
+        >
           <AvatarImage
             src={avatarPreview}
             alt="Team logo"

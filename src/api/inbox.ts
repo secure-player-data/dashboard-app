@@ -321,19 +321,21 @@ async function deleteInboxItem(
 
   const inboxThings = getThingAll(inboxDataset);
 
-  inboxThings.forEach(async (item) => {
+  for (const item of inboxThings) {
     const dataset = await getSolidDataset(item.url, { fetch: session.fetch });
     const things = getThingAll(dataset);
-    things.forEach(async (thing) => {
+
+    for (const thing of things) {
       const inboxItemDate: string =
         thing.predicates[INBOX_ITEM_SCHEMA.time]?.literals?.[
           'http://www.w3.org/2001/XMLSchema#string'
         ]?.[0] || 'Unknown';
+
       if (inboxItemDate === date) {
         await deleteSolidDataset(item.url, { fetch: session.fetch });
       }
-    });
-  });
+    }
+  }
 }
 
 export async function declineInvitation(

@@ -22,36 +22,50 @@ import { toast } from 'sonner';
 import { outsourcePlayerData } from '@/api/access-control/index';
 import { NoControlAccessErrors } from '@/exceptions/outsourcing-exception';
 import { useGetProfile } from '@/use-cases/use-get-profile';
+import {
+  BIOMETRIC_DATA,
+  EVENT_DATA,
+  FOOTBALL_DATA,
+  HEALTH_DATA,
+  PERSONAL_DATA,
+  TRACKING_DATA,
+} from '@/api/paths';
 
 const dataTypes = [
   {
     id: 'football-data',
+    path: `${FOOTBALL_DATA}/`,
     label: 'Football Data',
     description: 'Match statistics, performance metrics, and tactical data',
   },
   {
     id: 'personal-data',
+    path: `${PERSONAL_DATA}`,
     label: 'Personal Data',
     description: 'Contact information, demographics, and identification',
   },
   {
     id: 'tracking-data',
+    path: `${TRACKING_DATA}/`,
     label: 'Tracking Data',
     description: 'GPS data, movement patterns, and distance covered',
   },
   {
     id: 'event-data',
+    path: `${EVENT_DATA}/`,
     label: 'Event Data',
     description: 'Match events like passes, shots, tackles, and interceptions',
   },
   {
     id: 'biometric-data',
+    path: `${BIOMETRIC_DATA}/`,
     label: 'Biometric Data',
     description:
       'Physical measurements, body composition, and physiological data',
   },
   {
     id: 'health-data',
+    path: `${HEALTH_DATA}/`,
     label: 'Health Data',
     description: 'Medical records, injury history, and rehabilitation progress',
   },
@@ -215,9 +229,9 @@ function RouteComponent() {
                     >
                       <Checkbox
                         id={`data-${dataType.id}`}
-                        checked={selectedDataTypes.includes(dataType.id)}
+                        checked={selectedDataTypes.includes(dataType.path)}
                         onCheckedChange={() =>
-                          handleDataTypeToggle(dataType.id)
+                          handleDataTypeToggle(dataType.path)
                         }
                         className="mt-1"
                       />

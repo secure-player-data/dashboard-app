@@ -17,6 +17,7 @@ import { getThingAll, getSolidDataset, Thing } from '@inrupt/solid-client';
 import { paths } from '../paths';
 import { sendInformation } from '../inbox';
 import { Profile } from '@/entities/data/profile';
+import { isAcpControlled } from '@inrupt/solid-client/acp/acp';
 
 /**
  * Updates the permissions of an agent for a container and its children
@@ -268,4 +269,26 @@ export async function outsourcePlayerData(
   });
 
   return { successful: grantedAccesses, failed: failedAccesses };
+}
+
+/**
+ * Checks is a pod uses ACP
+ * @param session of the user requesting the check
+ * @param pod of the user to check
+ * @returns true if the pod uses ACP, false otherwise
+ */
+export async function usesAcp(session: Session | null, pod: string | null) {
+  if (!session || !pod) {
+    throw new Error('Session and pod are required');
+  }
+
+  const [err, usesAcp] = await safeCall(
+    isAcpControlled(paths.root(pod), { fetch: session.fetch })
+  );
+
+  if (err) {
+    throw new Error('Error checking if ACP is used');
+  }
+
+  return usesAcp || false;
 }

@@ -4,13 +4,11 @@ import {
   Database,
   EyeOff,
   FileStack,
-  House,
   Share,
   LifeBuoy,
   Send,
   InboxIcon,
   Users,
-  ReceiptText,
   User,
   Volleyball,
   Calendar,
@@ -110,11 +108,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           {
             name: 'Team Details',
             url: '/team/details',
-            icon: ReceiptText,
-          },
-          {
-            name: 'Members',
-            url: '/team/members',
             icon: Users,
           },
           {

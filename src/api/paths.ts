@@ -1,6 +1,7 @@
 export const DATA_CONTAINER = 'data';
 
 export const BASE_APP_CONTAINER = 'secure-player-data';
+export const PERSONAL_DATA = 'personal-data';
 export const FOOTBALL_DATA = 'football-data';
 export const EVENT_DATA = 'event-data';
 export const TRACKING_DATA = 'tracking-data';
@@ -13,7 +14,7 @@ export const ACCESS_HISTORY_CONTAINER = 'access-history';
 export const paths = {
   root: (pod: string) => `${pod}${BASE_APP_CONTAINER}`,
   profile: (pod: string) => `${pod}${BASE_APP_CONTAINER}/Profile`,
-  personalData: (pod: string) => `${pod}${BASE_APP_CONTAINER}/PersonalData`,
+  personalData: (pod: string) => `${pod}${BASE_APP_CONTAINER}/${PERSONAL_DATA}`,
   inbox: (pod: string) => `${pod}${BASE_APP_CONTAINER}/${INBOX_CONTAINER}`,
   team: {
     root: (pod: string) => `${pod}${BASE_APP_CONTAINER}/team/`,

@@ -7,8 +7,7 @@ import { FormEvent, useRef, useState } from 'react';
 import { Button, ButtonWithLoader } from '../ui/button';
 import { useUpdateTeam } from '@/use-cases/team';
 import { toast } from 'sonner';
-import { Avatar, AvatarImage } from '../ui/avatar';
-import { AvatarFallback } from '@radix-ui/react-avatar';
+import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
 import { Upload } from 'lucide-react';
 
 const teamSchema = z.object({
@@ -29,8 +28,8 @@ export default function EditTeamForm({ onSuccess }: { onSuccess: () => void }) {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [avatarPreview, setAvatarPreview] = useState<string>(
-    data?.team?.img || '/placeholder.svg'
+  const [avatarPreview, setAvatarPreview] = useState<string | undefined>(
+    data?.team?.img || undefined
   );
   const [avatarFile, setAvatarFile] = useState<File | undefined>(undefined);
   const [name, setName] = useState<string>(data?.team?.name ?? '');
@@ -83,12 +82,18 @@ export default function EditTeamForm({ onSuccess }: { onSuccess: () => void }) {
   return (
     <form onSubmit={handleFormSubmit} className="grid gap-4">
       <div className="flex flex-col items-center gap-4">
-        <Avatar className="size-24 cursor-pointer">
+        <Avatar
+          className="size-24 cursor-pointer"
+          onClick={() => fileInputRef.current?.click()}
+        >
           <AvatarImage
             src={avatarPreview}
             alt="Team logo"
             className="object-cover"
           />
+          <AvatarFallback className="text-lg text-muted-foreground">
+            {tag}
+          </AvatarFallback>
         </Avatar>
         <Button
           type="button"

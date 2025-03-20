@@ -21,6 +21,16 @@ import { toast } from 'sonner';
 import { useAcceptInvitation } from '@/use-cases/invitations/use-accept-invitation';
 import { useState } from 'react';
 import { useGetProfile } from '@/use-cases/use-get-profile';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
+import { Label } from '../ui/label';
 
 interface TableRowDialogProps {
   session: Session;
@@ -181,8 +191,7 @@ export function TableRowDialog({
               {row.original.type === 'Access Request' && (
                 <div>
                   <div>
-                    {row.original.organization} asking for access to your
-                    data.{' '}
+                    {row.original.organization} asking for access to your data.{' '}
                   </div>
                   <div>
                     If you choose to accept you will grant them access to your
@@ -253,14 +262,49 @@ export function TableRowDialog({
               )}
               {row.original.type === 'Invitation' && (
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 mb-2 pt-7">
-                    {row.original.senderName} needs a role if they are to be
-                    accepted
-                  </div>
-                  <Input
-                    placeholder="Player"
-                    onChange={(event) => setMemberRole(event.target.value)}
-                  ></Input>
+                  <Label htmlFor="role">
+                    Give {row.original.senderName} a role
+                  </Label>
+                  <Select onValueChange={(e) => setMemberRole(e)}>
+                    <SelectTrigger id="role">
+                      <SelectValue placeholder="Select a role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Player</SelectLabel>
+                        <SelectItem value="Goalkeeper">Goalkeeper</SelectItem>
+                        <SelectItem value="Defender">Defender</SelectItem>
+                        <SelectItem value="Midfielder">Midfielder</SelectItem>
+                        <SelectItem value="Forward">Forward</SelectItem>
+                      </SelectGroup>
+                      <SelectGroup>
+                        <SelectLabel>Coaching</SelectLabel>
+                        <SelectItem value="Coach">Coach</SelectItem>
+                        <SelectItem value="Assistant Coach">
+                          Assistant Coach
+                        </SelectItem>
+                        <SelectItem value="Goalkeeping Coach">
+                          Goalkeeping Coach
+                        </SelectItem>
+                        <SelectItem value="Fitness Coach">
+                          Fitness Coach
+                        </SelectItem>
+                      </SelectGroup>
+                      <SelectGroup>
+                        <SelectLabel>Staff</SelectLabel>
+                        <SelectItem value="Owner">Owner</SelectItem>
+                        <SelectItem value="Co-Owner">Co-Owner</SelectItem>
+                        <SelectItem value="Medical">Medical</SelectItem>
+                        <SelectItem value="Data Analyst">
+                          Data Analyst
+                        </SelectItem>
+                        <SelectItem value="Scout">Scout</SelectItem>
+                        <SelectItem value="Nutritionist">
+                          Nutritionist
+                        </SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </div>
               )}
               {row.original.type === 'Information' && (

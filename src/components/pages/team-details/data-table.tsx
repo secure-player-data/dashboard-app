@@ -37,6 +37,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
+      <h1 className="font-semibold mb-2">Members</h1>
       <div className="rounded-md border">
         <Table>
           <TableHeader>

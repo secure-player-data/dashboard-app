@@ -210,8 +210,8 @@ export async function outsourcePlayerData(
   dataReceiver: string,
   reason: string
 ) {
-  let failedAccesses: { url: string; ownerWebId: string }[] = [];
-  let grantedAccesses: { owner: Member; urls: string[] }[] = [];
+  let failedAccesses: { urls: string[]; owner: Member }[] = [];
+  let grantedAccesses: { urls: string[]; owner: Member }[] = [];
 
   const allPromises = dataOwners.flatMap((owner) =>
     resourceUrls.map(async (url) => {
@@ -227,7 +227,15 @@ export async function outsourcePlayerData(
 
       if (error) {
         if (error instanceof NoControlAccessError) {
-          failedAccesses.push({ url: url, ownerWebId: owner.webId });
+          const existingOwner = failedAccesses.find(
+            (entry) => entry.owner === owner
+          );
+
+          if (existingOwner) {
+            existingOwner.urls.push(url);
+          } else {
+            failedAccesses.push({ owner: owner, urls: [url] });
+          }
         }
         return { error, url, owner: owner.name };
       }
@@ -247,7 +255,7 @@ export async function outsourcePlayerData(
     })
   );
 
-  const results = await Promise.allSettled(allPromises);
+  await Promise.allSettled(allPromises);
 
   grantedAccesses.forEach(async (grantedAccess) => {
     const urlsList = grantedAccess.urls.join(', ');
@@ -260,19 +268,7 @@ export async function outsourcePlayerData(
     );
   });
 
-  const errors = results
-    .filter((result) => result.status === 'fulfilled' && result.value !== null)
-    .map(
-      (result: any) =>
-        result.value as { error: any; url: string; owner: string }
-    );
-
-  if (errors.length > 0) {
-    throw new NoControlAccessErrors(
-      'No access control for resource: ',
-      failedAccesses
-    );
-  }
+  return { successful: grantedAccesses, failed: failedAccesses };
 }
 
 /**

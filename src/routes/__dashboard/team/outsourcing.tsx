@@ -319,8 +319,8 @@ function RouteComponent() {
                         <Info className="h-4 w-4 text-green-600 mr-2" />
                         <span>
                           <strong>{item.owner.name}</strong>:{' '}
-                          {item.urls.map((url) => (
-                            <div>- {url}</div>
+                          {item.urls.map((url, index) => (
+                            <div key={index}>- {url}</div>
                           ))}
                         </span>
                       </div>
@@ -347,8 +347,8 @@ function RouteComponent() {
                         <AlertCircle className="h-4 w-4 text-red-600 mr-2" />
                         <span>
                           <strong>{item.owner.name}</strong>:{' '}
-                          {item.urls.map((url) => (
-                            <div>- Insufficient access: {url}</div>
+                          {item.urls.map((url, index) => (
+                            <div key={index}>- Insufficient access: {url}</div>
                           ))}
                         </span>
                       </div>

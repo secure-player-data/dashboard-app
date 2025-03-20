@@ -20,11 +20,10 @@ import { safeCall } from '@/utils';
 import { SessionNotSetException } from '@/exceptions/session-exceptions';
 import { TeamNotFoundException } from '@/exceptions/team-exceptions';
 import { TeamCreationConflictException } from '@/exceptions/team-creation-conflict-exception';
-import { fetchProfileData, updateAppProfile } from './profile';
+import { updateAppProfile } from './profile';
 import { setPublicAccess, updateAgentAccess } from './access-control';
 import { PROFILE_SCHEMA } from '@/schemas/profile';
 import { TEAM_MEMBER_SCHEMA, TEAM_SCHEMA } from '@/schemas/team';
-import { setPublic } from 'node_modules/@inrupt/solid-client/dist/acp/matcher';
 
 /**
  * Returns team details from the team specified by the teamUrl
@@ -148,7 +147,7 @@ export async function createTeam({
   const owner = buildThing(createThing({ name: 'owner' }))
     .addStringNoLocale(TEAM_MEMBER_SCHEMA.webId, session.info.webId)
     .addStringNoLocale(TEAM_MEMBER_SCHEMA.pod, pod)
-    .addStringNoLocale(TEAM_MEMBER_SCHEMA.role, 'owner')
+    .addStringNoLocale(TEAM_MEMBER_SCHEMA.role, 'Owner')
     .addUrl(RDF.type, TEAM_MEMBER_SCHEMA.type)
     .build();
   dataset = setThing(dataset, owner);

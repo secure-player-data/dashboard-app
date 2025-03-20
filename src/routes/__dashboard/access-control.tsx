@@ -16,6 +16,7 @@ function RouteComponent() {
   if (resourcesPending) {
     return <Loader2 className="size-4 animate-spin" />;
   }
+  console.log(resourceList);
 
   return <AccessControlPanel resourceList={resourceList!} />;
 }

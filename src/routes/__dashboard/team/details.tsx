@@ -1,7 +1,7 @@
 import CreateTeamForm from '@/components/forms/create-team-form';
 import JoinTeamForm from '@/components/forms/join-team-form';
 import Header from '@/components/pages/team-details/header';
-import MatchHistory from '@/components/pages/team-details/match-history';
+import MembersList from '@/components/pages/team-details/members-list';
 import { useAuth } from '@/context/auth-context';
 import { useGetProfile } from '@/use-cases/use-get-profile';
 import { createFileRoute } from '@tanstack/react-router';
@@ -36,7 +36,7 @@ function RouteComponent() {
   return (
     <div className="flex flex-col gap-8">
       <Header />
-      <MatchHistory />
+      <MembersList />
     </div>
   );
 }

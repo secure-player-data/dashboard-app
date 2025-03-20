@@ -24,7 +24,7 @@ export default function Header() {
         </div>
       )}
       <CardContent>
-        {member?.role === 'owner' && (
+        {member?.role === 'Owner' && (
           <div className="absolute top-4 right-4">
             <EditTeamDialog />
           </div>

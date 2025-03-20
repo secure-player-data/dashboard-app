@@ -3,17 +3,8 @@ import {
   Outlet,
   redirect,
   useNavigate,
-  useRouterState,
 } from '@tanstack/react-router';
 import { AppSidebar } from '@/components/sidebar/app-sidebar';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import { Separator } from '@/components/ui/separator';
 import {
   SidebarInset,
   SidebarProvider,
@@ -27,7 +18,10 @@ import {
   ProfileDoesNotExistException,
 } from '@/exceptions/profile-data-exceptions';
 import { usePageTitle } from '@/hooks/use-page-title';
-import { Info, TriangleAlert } from 'lucide-react';
+import { useGetAccessPolicy } from '@/use-cases/access-controll';
+import { TriangleAlert, X } from 'lucide-react';
+import { useLocalStorage } from '@/hooks/use-local-storage';
+import { Button } from '@/components/ui/button';
 
 export const Route = createFileRoute('/__dashboard')({
   component: RouteComponent,
@@ -40,20 +34,15 @@ export const Route = createFileRoute('/__dashboard')({
 
 function RouteComponent() {
   const { session, pod } = useAuth();
-  const router = useRouterState();
   const navigate = useNavigate();
   usePageTitle('Secure Player Data - Dashboard');
-
-  const paths = useMemo(
-    () => router.location.pathname.split('/').filter((p) => p !== '') ?? [],
-    [router.location.pathname]
-  );
 
   const {
     error: profileError,
     data: profile,
     isFetching: profilePending,
   } = useGetProfile(session, pod);
+  const { data: usesAcp } = useGetAccessPolicy(session, pod);
 
   useEffect(() => {
     handleRedirect();
@@ -71,6 +60,7 @@ function RouteComponent() {
       navigate({ to: '/auth/profile' });
     }
   }
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -78,32 +68,42 @@ function RouteComponent() {
         <header className="flex h-16 shrink-0 items-center gap-2">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            {/* <Breadcrumb>
-              <BreadcrumbList>
-                {paths.map((path, index) => {
-                  return (
-                    <div
-                      key={`${path}-${index}`}
-                      className="flex items-center gap-2"
-                    >
-                      <BreadcrumbItem>
-                        <BreadcrumbPage>
-                          {decodeURIComponent(path)}
-                        </BreadcrumbPage>
-                      </BreadcrumbItem>
-                      {index < paths.length - 1 && <BreadcrumbSeparator />}
-                    </div>
-                  );
-                })}
-              </BreadcrumbList>
-            </Breadcrumb> */}
           </div>
         </header>
         <div className="px-4 pb-4 h-full w-full">
+          {usesAcp === false && <AccessPolicyWarning />}
           <Outlet />
         </div>
       </SidebarInset>
     </SidebarProvider>
+  );
+}
+
+function AccessPolicyWarning() {
+  const [isDismissed, setDismissed] = useLocalStorage(
+    'is-unsupported-policy-dismissed',
+    false
+  );
+
+  if (isDismissed) {
+    return null;
+  }
+
+  return (
+    <div className="relative mb-4 border-2 border-yellow-400 bg-yellow-400/10 p-4 rounded-md">
+      <TriangleAlert className="mb-2" />
+      <h1 className="text-lg font-semibold">Unsupported Access Policy</h1>
+      <p className="text-sm">
+        Your pod provider does not support ACP policy. Because of this, some of
+        the features in this app might not work as expected!
+      </p>
+      <Button
+        variant="ghost"
+        className="absolute top-2 right-2 hover:bg-yellow-400/50 p-2"
+        onClick={() => setDismissed(true)}
+      >
+        <X className="size-4" />
+      </Button>
+    </div>
   );
 }

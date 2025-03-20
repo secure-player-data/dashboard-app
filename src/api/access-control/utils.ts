@@ -29,5 +29,6 @@ export async function getAccessControlService(
   if (usesAcp) {
     return Acp.getInstance();
   }
-  return Acl.getInstance();
+
+  throw new Error('Only ACP is supported!');
 }

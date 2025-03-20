@@ -18,7 +18,6 @@ const redirectUri = encodeURIComponent(import.meta.env.VITE_APP_BASE_URL);
 
 const providers = {
   inrupt: 'https://login.inrupt.com',
-  igrant: `https://datapod.igrant.io/login?client_id=f6ac5d12e6f4f8cceda1017174f82da4&redirect_uri=${redirectUri}&response_type=code&scope=openid%20offline_access%20webid&state=def76a477f2d4b28a5f907513c270422&code_challenge=HxpDGFK7UUlZx9jMVNru4qoznuvn2nIp0vwe09mAHNk&code_challenge_method=S256&prompt=consent&response_mode=query`,
 };
 
 export function LoginForm({
@@ -96,13 +95,6 @@ export function LoginForm({
                     onClick={() => handleProviderLogin('inrupt')}
                   >
                     <img src="/inrupt-logo.png" alt="Inrupt" className="h-5" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => handleProviderLogin('igrant')}
-                  >
-                    <img src="/igrant-logo.png" alt="iGrant" className="h-12" />
                   </Button>
                 </div>
               </div>

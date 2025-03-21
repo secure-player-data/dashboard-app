@@ -13,6 +13,7 @@ import React, { FormEvent, useState } from 'react';
 import { safeCall } from '@/utils.ts';
 import { Link } from '@tanstack/react-router';
 import { useAuth } from '@/context/auth-context';
+import { log } from '@/lib/log';
 
 const redirectUri = encodeURIComponent(import.meta.env.VITE_APP_BASE_URL);
 
@@ -48,6 +49,12 @@ export function LoginForm({
     const [error, _] = await safeCall(signIn(issuerUrl));
 
     if (error) {
+      log({
+        type: 'error',
+        label: 'Login Form',
+        message: error.message,
+        obj: error,
+      });
       setErrorMsg('Invalid issuer URL');
     }
   }

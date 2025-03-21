@@ -1,0 +1,8 @@
+# Docker compose file to run Node Solid Server in development mode
+
+services:
+  provider:
+    platform: linux/x86_64
+    image: nodesolidserver/node-solid-server
+    ports:
+      - 8443:8443

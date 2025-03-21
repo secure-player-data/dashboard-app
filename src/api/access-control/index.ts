@@ -221,7 +221,6 @@ export async function outsourcePlayerData(
 
   const allPromises = dataOwners.flatMap((owner) =>
     resourceUrls.map(async (url) => {
-      console.log('url', url);
       const [error, _] = await safeCall(
         updateAgentAccess({
           session: session,

@@ -12,15 +12,15 @@ export const INBOX_CONTAINER = 'inbox';
 export const ACCESS_HISTORY_CONTAINER = 'access-history';
 
 export const paths = {
-  root: (pod: string) => `${pod}${BASE_APP_CONTAINER}`,
+  root: (pod: string) => `${pod}${BASE_APP_CONTAINER}/`,
   profile: (pod: string) => `${pod}${BASE_APP_CONTAINER}/Profile`,
   personalData: (pod: string) => `${pod}${BASE_APP_CONTAINER}/${PERSONAL_DATA}`,
-  inbox: (pod: string) => `${pod}${BASE_APP_CONTAINER}/${INBOX_CONTAINER}`,
+  inbox: (pod: string) => `${pod}${BASE_APP_CONTAINER}/${INBOX_CONTAINER}/`,
   team: {
     root: (pod: string) => `${pod}${BASE_APP_CONTAINER}/team/`,
   },
   accessHistory: (pod: string) =>
-    `${pod}${BASE_APP_CONTAINER}/${ACCESS_HISTORY_CONTAINER}`,
+    `${pod}${BASE_APP_CONTAINER}/${ACCESS_HISTORY_CONTAINER}/`,
   footballData: {
     root: (pod: string) => `${pod}${BASE_APP_CONTAINER}/${FOOTBALL_DATA}`,
     club: {

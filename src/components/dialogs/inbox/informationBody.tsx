@@ -1,5 +1,5 @@
 import { Information } from '@/entities/inboxItem';
-import { Button } from '@/components/ui/button';
+import { Button, ButtonWithLoader } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Calendar, User } from 'lucide-react';
 import { DialogFooter } from '@/components/ui/dialog';
@@ -111,7 +111,12 @@ export function InformationDialogBody({
           <Button variant="outline" onClick={() => closeDialog()}>
             Cancel
           </Button>
-          <Button onClick={() => handleDeleteInformation()}>Delete</Button>
+          <ButtonWithLoader
+            isLoading={declinePending}
+            onClick={() => handleDeleteInformation()}
+          >
+            Delete
+          </ButtonWithLoader>
         </div>
       </DialogFooter>
     </div>

@@ -107,7 +107,7 @@ export function InvitationDialogBody({
         onError: (error) => {
           toast('Error declining invitation: ' + error.message);
         },
-        onSuccess: () => closeDialog,
+        onSuccess: () => closeDialog(),
       }
     );
   };

@@ -25,6 +25,7 @@ import { Route as dashboardAccessHistoryImport } from './routes/__dashboard/acce
 import { Route as dashboardAccessControlImport } from './routes/__dashboard/access-control'
 import { Route as AuthSetupTeamImport } from './routes/auth/_setup.team'
 import { Route as AuthSetupProfileImport } from './routes/auth/_setup.profile'
+import { Route as dashboardTeamUploadDataImport } from './routes/__dashboard/team/upload-data'
 import { Route as dashboardTeamOutsourcingImport } from './routes/__dashboard/team/outsourcing'
 import { Route as dashboardTeamDetailsImport } from './routes/__dashboard/team/details'
 import { Route as dashboardPlayerPodImport } from './routes/__dashboard/player/$pod'
@@ -117,6 +118,12 @@ const AuthSetupProfileRoute = AuthSetupProfileImport.update({
   id: '/profile',
   path: '/profile',
   getParentRoute: () => AuthSetupRoute,
+} as any)
+
+const dashboardTeamUploadDataRoute = dashboardTeamUploadDataImport.update({
+  id: '/team/upload-data',
+  path: '/team/upload-data',
+  getParentRoute: () => dashboardRoute,
 } as any)
 
 const dashboardTeamOutsourcingRoute = dashboardTeamOutsourcingImport.update({
@@ -288,6 +295,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboardTeamOutsourcingImport
       parentRoute: typeof dashboardImport
     }
+    '/__dashboard/team/upload-data': {
+      id: '/__dashboard/team/upload-data'
+      path: '/team/upload-data'
+      fullPath: '/team/upload-data'
+      preLoaderRoute: typeof dashboardTeamUploadDataImport
+      parentRoute: typeof dashboardImport
+    }
     '/auth/_setup/profile': {
       id: '/auth/_setup/profile'
       path: '/profile'
@@ -412,6 +426,7 @@ interface dashboardRouteChildren {
   dashboardPlayerPodRoute: typeof dashboardPlayerPodRouteWithChildren
   dashboardTeamDetailsRoute: typeof dashboardTeamDetailsRoute
   dashboardTeamOutsourcingRoute: typeof dashboardTeamOutsourcingRoute
+  dashboardTeamUploadDataRoute: typeof dashboardTeamUploadDataRoute
 }
 
 const dashboardRouteChildren: dashboardRouteChildren = {
@@ -424,6 +439,7 @@ const dashboardRouteChildren: dashboardRouteChildren = {
   dashboardPlayerPodRoute: dashboardPlayerPodRouteWithChildren,
   dashboardTeamDetailsRoute: dashboardTeamDetailsRoute,
   dashboardTeamOutsourcingRoute: dashboardTeamOutsourcingRoute,
+  dashboardTeamUploadDataRoute: dashboardTeamUploadDataRoute,
 }
 
 const dashboardRouteWithChildren = dashboardRoute._addFileChildren(
@@ -445,6 +461,7 @@ export interface FileRoutesByFullPath {
   '/player/$pod': typeof dashboardPlayerPodRouteWithChildren
   '/team/details': typeof dashboardTeamDetailsRoute
   '/team/outsourcing': typeof dashboardTeamOutsourcingRoute
+  '/team/upload-data': typeof dashboardTeamUploadDataRoute
   '/auth/profile': typeof AuthSetupProfileRoute
   '/auth/team': typeof AuthSetupTeamRoute
   '/player/$pod/football-data': typeof dashboardPlayerPodFootballDataRoute
@@ -469,6 +486,7 @@ export interface FileRoutesByTo {
   '/player/$pod': typeof dashboardPlayerPodRouteWithChildren
   '/team/details': typeof dashboardTeamDetailsRoute
   '/team/outsourcing': typeof dashboardTeamOutsourcingRoute
+  '/team/upload-data': typeof dashboardTeamUploadDataRoute
   '/auth/profile': typeof AuthSetupProfileRoute
   '/auth/team': typeof AuthSetupTeamRoute
   '/player/$pod/football-data': typeof dashboardPlayerPodFootballDataRoute
@@ -496,6 +514,7 @@ export interface FileRoutesById {
   '/__dashboard/player/$pod': typeof dashboardPlayerPodRouteWithChildren
   '/__dashboard/team/details': typeof dashboardTeamDetailsRoute
   '/__dashboard/team/outsourcing': typeof dashboardTeamOutsourcingRoute
+  '/__dashboard/team/upload-data': typeof dashboardTeamUploadDataRoute
   '/auth/_setup/profile': typeof AuthSetupProfileRoute
   '/auth/_setup/team': typeof AuthSetupTeamRoute
   '/__dashboard/player/$pod/football-data': typeof dashboardPlayerPodFootballDataRoute
@@ -523,6 +542,7 @@ export interface FileRouteTypes {
     | '/player/$pod'
     | '/team/details'
     | '/team/outsourcing'
+    | '/team/upload-data'
     | '/auth/profile'
     | '/auth/team'
     | '/player/$pod/football-data'
@@ -546,6 +566,7 @@ export interface FileRouteTypes {
     | '/player/$pod'
     | '/team/details'
     | '/team/outsourcing'
+    | '/team/upload-data'
     | '/auth/profile'
     | '/auth/team'
     | '/player/$pod/football-data'
@@ -571,6 +592,7 @@ export interface FileRouteTypes {
     | '/__dashboard/player/$pod'
     | '/__dashboard/team/details'
     | '/__dashboard/team/outsourcing'
+    | '/__dashboard/team/upload-data'
     | '/auth/_setup/profile'
     | '/auth/_setup/team'
     | '/__dashboard/player/$pod/football-data'
@@ -626,7 +648,8 @@ export const routeTree = rootRoute
         "/__dashboard/",
         "/__dashboard/player/$pod",
         "/__dashboard/team/details",
-        "/__dashboard/team/outsourcing"
+        "/__dashboard/team/outsourcing",
+        "/__dashboard/team/upload-data"
       ]
     },
     "/__dashboard/access-control": {
@@ -691,6 +714,10 @@ export const routeTree = rootRoute
     },
     "/__dashboard/team/outsourcing": {
       "filePath": "__dashboard/team/outsourcing.tsx",
+      "parent": "/__dashboard"
+    },
+    "/__dashboard/team/upload-data": {
+      "filePath": "__dashboard/team/upload-data.tsx",
       "parent": "/__dashboard"
     },
     "/auth/_setup/profile": {

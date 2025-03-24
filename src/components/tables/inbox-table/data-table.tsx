@@ -17,6 +17,7 @@ import {
 import { Loader2 } from 'lucide-react';
 import { InboxItem } from '@/entities/inboxItem';
 import { TableRowDialog } from '@/components/dialogs/inbox-item-dialog';
+import { InboxTableRowDialog } from '@/components/dialogs/inbox/inbox-item-main';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -125,7 +126,7 @@ function TableContent<TData, TValue>({
   return (
     <>
       {table.getRowModel().rows.map((row) => (
-        <TableRowDialog
+        <InboxTableRowDialog
           key={row.id}
           session={session!}
           pod={pod!}

@@ -13,11 +13,21 @@ import {
   Thing,
 } from '@inrupt/solid-client';
 import { RDF } from '@inrupt/vocab-common-rdf';
-import { BASE_APP_CONTAINER, DATA_CONTAINER, INBOX_CONTAINER } from './paths';
+import { BASE_APP_CONTAINER, INBOX_CONTAINER } from './paths';
 import { safeCall } from '@/utils';
 import { InboxDoesNotExistException } from '@/exceptions/inbox-exceptions';
-import { InboxItem } from '@/entities/inboxItem';
-import { INBOX_ITEM_SCHEMA } from '@/lib/schemas';
+import {
+  InboxItem,
+  Invitation,
+  Information,
+  AccessRequest,
+} from '@/entities/inboxItem';
+import {
+  ACCESS_REQUEST_SCHEMA,
+  INBOX_ITEM_SCHEMA,
+  INVITATION_SCHEMA,
+  INFORMATION_SCHEMA,
+} from '@/schemas/InboxItems';
 import { fetchProfileData, updateAppProfile } from './profile';
 import { addMemberToTeam, fetchTeamUrl } from './team';
 import { setPublicAccess, updateAgentAccess } from './access-control';
@@ -68,39 +78,16 @@ export async function fetchInbox(
     .map((dataset) => {
       const inboxThings = getThingAll(dataset);
       return inboxThings.map((item) => {
-        const type = getStringNoLocale(item, INBOX_ITEM_SCHEMA.type);
-        const name = getStringNoLocale(item, INBOX_ITEM_SCHEMA.name) ?? '';
-        const email = getStringNoLocale(item, INBOX_ITEM_SCHEMA.email) ?? '';
-        const webId = getStringNoLocale(item, INBOX_ITEM_SCHEMA.webId) ?? '';
-        const podUrl = getStringNoLocale(item, INBOX_ITEM_SCHEMA.podUrl) ?? '';
-        const date = getStringNoLocale(item, INBOX_ITEM_SCHEMA.time) ?? '';
-        const organization =
-          getStringNoLocale(item, INBOX_ITEM_SCHEMA.organization) ?? '';
-        const accessReason =
-          getStringNoLocale(item, INBOX_ITEM_SCHEMA.accessReason) ?? '';
-        const informationHeader =
-          getStringNoLocale(item, INBOX_ITEM_SCHEMA.informationHeader) ?? '';
-        const informationBody =
-          getStringNoLocale(item, INBOX_ITEM_SCHEMA.informationBody) ?? '';
+        const baseInboxItem = mapThingToInboxItem(item);
 
-        const inboxItem: InboxItem = {
-          type: type?.includes('Information')
-            ? 'Information'
-            : type?.includes('Invitation')
-              ? 'Invitation'
-              : 'Access Request',
-          senderName: name,
-          email,
-          webId,
-          podUrl,
-          date,
-          organization,
-          accessReason,
-          informationHeader,
-          informationBody,
-        };
-
-        return inboxItem;
+        switch (baseInboxItem.type) {
+          case 'Access Request':
+            return mapThingToAccessRequest(item, baseInboxItem);
+          case 'Information':
+            return mapThingToInformation(item, baseInboxItem);
+          default:
+            return baseInboxItem;
+        }
       });
     })
     .flat();
@@ -111,7 +98,7 @@ export async function fetchInbox(
 export async function sendInvitation(
   session: Session | null,
   receiverPod: string | null,
-  invitation: InboxItem | undefined
+  invitation: Invitation | undefined
 ) {
   if (!session) {
     throw new Error('No session found');
@@ -137,13 +124,13 @@ export async function sendInvitation(
       name: `#invitation-${isoDate}`,
     })
   )
-    .addUrl(RDF.type, INBOX_ITEM_SCHEMA.inboxItem)
-    .addStringNoLocale(INBOX_ITEM_SCHEMA.type, 'Invitation')
-    .addStringNoLocale(INBOX_ITEM_SCHEMA.name, invitation.senderName)
-    .addStringNoLocale(INBOX_ITEM_SCHEMA.email, invitation.email)
-    .addStringNoLocale(INBOX_ITEM_SCHEMA.webId, invitation.webId)
-    .addStringNoLocale(INBOX_ITEM_SCHEMA.podUrl, invitation.podUrl)
-    .addStringNoLocale(INBOX_ITEM_SCHEMA.time, isoDate)
+    .addUrl(RDF.type, INVITATION_SCHEMA.inboxItem)
+    .addStringNoLocale(INVITATION_SCHEMA.type, 'Invitation')
+    .addStringNoLocale(INVITATION_SCHEMA.name, invitation.senderName)
+    .addStringNoLocale(INVITATION_SCHEMA.email, invitation.email)
+    .addStringNoLocale(INVITATION_SCHEMA.webId, invitation.webId)
+    .addStringNoLocale(INVITATION_SCHEMA.podUrl, invitation.podUrl)
+    .addStringNoLocale(INVITATION_SCHEMA.time, isoDate)
     .build();
 
   await sendToInbox(session, receiverPod, notificationToSend);
@@ -173,7 +160,7 @@ export async function sendInformation(
     throw new Error('No session found');
   }
 
-  const [err, sender] = await safeCall(fetchProfileData(session, senderPod));
+  const [_, sender] = await safeCall(fetchProfileData(session, senderPod));
 
   if (!receiverPod || !senderPod) {
     throw new Error(`Could not send information, receiver or sender was null`);
@@ -187,15 +174,15 @@ export async function sendInformation(
       name: `#information-${isoDate}`,
     })
   )
-    .addUrl(RDF.type, INBOX_ITEM_SCHEMA.inboxItem)
-    .addStringNoLocale(INBOX_ITEM_SCHEMA.type, 'Information')
-    .addStringNoLocale(INBOX_ITEM_SCHEMA.name, sender!.name)
-    .addStringNoLocale(INBOX_ITEM_SCHEMA.email, sender!.email)
-    .addStringNoLocale(INBOX_ITEM_SCHEMA.webId, sender!.webId)
-    .addStringNoLocale(INBOX_ITEM_SCHEMA.podUrl, senderPod)
-    .addStringNoLocale(INBOX_ITEM_SCHEMA.time, isoDate)
-    .addStringNoLocale(INBOX_ITEM_SCHEMA.informationHeader, informationHeader)
-    .addStringNoLocale(INBOX_ITEM_SCHEMA.informationBody, informationBody)
+    .addUrl(RDF.type, INFORMATION_SCHEMA.inboxItem)
+    .addStringNoLocale(INFORMATION_SCHEMA.type, 'Information')
+    .addStringNoLocale(INFORMATION_SCHEMA.name, sender!.name)
+    .addStringNoLocale(INFORMATION_SCHEMA.email, sender!.email)
+    .addStringNoLocale(INFORMATION_SCHEMA.webId, sender!.webId)
+    .addStringNoLocale(INFORMATION_SCHEMA.podUrl, senderPod)
+    .addStringNoLocale(INFORMATION_SCHEMA.time, isoDate)
+    .addStringNoLocale(INFORMATION_SCHEMA.informationHeader, informationHeader)
+    .addStringNoLocale(INFORMATION_SCHEMA.informationBody, informationBody)
     .build();
 
   await sendToInbox(session, receiverPod, informationToSend);
@@ -239,7 +226,7 @@ export async function sendAccessRequest(
   session: Session | null,
   receiverPod: string | null,
   receiverWebId: string | null,
-  accessRequest: InboxItem | undefined
+  accessRequest: AccessRequest | undefined
 ) {
   if (!session) {
     throw new Error('No session found');
@@ -259,18 +246,18 @@ export async function sendAccessRequest(
       name: `#access-request-${isoDate}`,
     })
   )
-    .addUrl(RDF.type, INBOX_ITEM_SCHEMA.inboxItem)
-    .addStringNoLocale(INBOX_ITEM_SCHEMA.type, accessRequest.type)
-    .addStringNoLocale(INBOX_ITEM_SCHEMA.name, accessRequest.senderName)
-    .addStringNoLocale(INBOX_ITEM_SCHEMA.webId, accessRequest.webId)
-    .addStringNoLocale(INBOX_ITEM_SCHEMA.podUrl, accessRequest.podUrl)
-    .addStringNoLocale(INBOX_ITEM_SCHEMA.time, isoDate)
+    .addUrl(RDF.type, ACCESS_REQUEST_SCHEMA.inboxItem)
+    .addStringNoLocale(ACCESS_REQUEST_SCHEMA.type, 'Access Request')
+    .addStringNoLocale(ACCESS_REQUEST_SCHEMA.name, accessRequest.senderName)
+    .addStringNoLocale(ACCESS_REQUEST_SCHEMA.webId, accessRequest.webId)
+    .addStringNoLocale(ACCESS_REQUEST_SCHEMA.podUrl, accessRequest.podUrl)
+    .addStringNoLocale(ACCESS_REQUEST_SCHEMA.time, isoDate)
     .addStringNoLocale(
-      INBOX_ITEM_SCHEMA.organization,
+      ACCESS_REQUEST_SCHEMA.organization,
       accessRequest.organization!
     )
     .addStringNoLocale(
-      INBOX_ITEM_SCHEMA.accessReason,
+      ACCESS_REQUEST_SCHEMA.accessReason,
       accessRequest.accessReason!
     )
 
@@ -414,4 +401,50 @@ export async function acceptInvitation({
     team: teamName,
   });
   await declineInvitation(session, receiverPod, date);
+}
+
+function mapThingToInboxItem(thing: any): InboxItem {
+  return {
+    type: getStringNoLocale(thing, INBOX_ITEM_SCHEMA.type) ?? '',
+    senderName: getStringNoLocale(thing, INBOX_ITEM_SCHEMA.name) ?? '',
+    webId: getStringNoLocale(thing, INBOX_ITEM_SCHEMA.webId) ?? '',
+    email: getStringNoLocale(thing, INBOX_ITEM_SCHEMA.email) ?? '',
+    podUrl: getStringNoLocale(thing, INBOX_ITEM_SCHEMA.podUrl) ?? '',
+    date: getStringNoLocale(thing, INBOX_ITEM_SCHEMA.time) ?? '',
+    organization:
+      getStringNoLocale(thing, INBOX_ITEM_SCHEMA.organization) ?? '',
+  };
+}
+function mapThingToAccessRequest(
+  thing: any,
+  baseInboxItem: InboxItem
+): AccessRequest {
+  return {
+    type: baseInboxItem.type,
+    senderName: baseInboxItem.senderName,
+    webId: baseInboxItem.webId,
+    email: baseInboxItem.email,
+    podUrl: baseInboxItem.podUrl,
+    date: baseInboxItem.date,
+    organization: baseInboxItem.organization,
+    accessReason:
+      getStringNoLocale(thing, ACCESS_REQUEST_SCHEMA.accessReason) ?? '',
+  };
+}
+function mapThingToInformation(
+  thing: any,
+  baseInboxItem: InboxItem
+): Information {
+  return {
+    type: baseInboxItem.type,
+    senderName: baseInboxItem.senderName,
+    webId: baseInboxItem.webId,
+    email: baseInboxItem.email,
+    podUrl: baseInboxItem.podUrl,
+    date: baseInboxItem.date,
+    informationHeader:
+      getStringNoLocale(thing, INFORMATION_SCHEMA.informationHeader) ?? '',
+    informationBody:
+      getStringNoLocale(thing, INFORMATION_SCHEMA.informationBody) ?? '',
+  };
 }

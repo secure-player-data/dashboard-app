@@ -132,8 +132,6 @@ export default function PermissionDetails({
     return [];
   };
 
-  console.log(autoCompleteMembers());
-
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">

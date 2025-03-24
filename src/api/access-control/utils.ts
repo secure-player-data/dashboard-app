@@ -23,6 +23,7 @@ export async function getAccessControlService(
     if (err.message.includes('403')) {
       throw new NoControlAccessError('No control access over this resource');
     }
+    console.error(err);
     throw new Error('Error checking if ACP is used');
   }
 
@@ -30,5 +31,5 @@ export async function getAccessControlService(
     return Acp.getInstance();
   }
 
-  throw new Error('Only ACP is supported!');
+  return Acl.getInstance();
 }

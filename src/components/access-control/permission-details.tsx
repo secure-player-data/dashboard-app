@@ -18,7 +18,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useGetPermissionDetails } from '@/use-cases/use-get-permission-details';
@@ -29,6 +28,9 @@ import { paths } from '@/api/paths';
 import { useUpdateActorPermissions } from '@/use-cases/use-update-members-permissions';
 import { ButtonWithLoader } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { AutoComplete } from '../ui/auto-complete';
+import { useGetMembers } from '@/use-cases/use-get-members';
+import { Option } from '../ui/auto-complete';
 
 interface PermissionDetailsProps {
   resourcePath: string;
@@ -49,7 +51,10 @@ export default function PermissionDetails({
   const [showDialog, setShowDialog] = useState<
     'add' | 'edit' | 'delete' | null
   >(null);
-  const [activeAgent, setActiveAgent] = useState<string>('');
+  const [activeAgent, setActiveAgent] = useState<Option>({
+    value: '',
+    label: '',
+  });
   const [activePermissions, setActivePermissions] = useState<PermissionSet>({
     read: false,
     write: false,
@@ -60,8 +65,10 @@ export default function PermissionDetails({
   const { data: permissions, isPending: permissionsPending } =
     useGetPermissionDetails(session, fullResourcePath);
 
-  const { mutate: updateMutation, isPending: deletePending } =
+  const { mutate: updateMutation, isPending: updatePending } =
     useUpdateActorPermissions(session, fullResourcePath);
+
+  const { data: members } = useGetMembers(session, pod);
 
   const handleAgentName = (agent: string) => {
     if (agent === 'http://www.w3.org/ns/solid/acp#PublicAgent') {
@@ -70,18 +77,20 @@ export default function PermissionDetails({
     return agent;
   };
 
-  const resetAccesses = () => {
+  const cleanDialog = () => {
     setActivePermissions({
       read: false,
       write: false,
       append: false,
       control: false,
     });
+
+    setActiveAgent({ value: '', label: '' });
   };
 
   const handleDialogSubmission = (action: 'add' | 'edit' | 'delete') => {
     const actorWithPermissions = {
-      webId: activeAgent,
+      webId: activeAgent.value,
       permissions: {
         read: activePermissions.read,
         write: activePermissions.write,
@@ -101,7 +110,7 @@ export default function PermissionDetails({
     updateMutation(actorWithPermissions, {
       onSuccess: () => {
         setShowDialog(null), toast(successMessage);
-        resetAccesses();
+        cleanDialog();
       },
       onError: () => {
         toast('Whoops! Something something went wrong, please try again!');
@@ -112,6 +121,18 @@ export default function PermissionDetails({
   if (permissionsPending) {
     return <Loader2 className="size-4 animate-spin" />;
   }
+
+  const autoCompleteMembers = () => {
+    if (members) {
+      return members.map((member) => ({
+        value: member.webId,
+        label: `${member.webId} (${member.name})`,
+      }));
+    }
+    return [];
+  };
+
+  console.log(autoCompleteMembers());
 
   return (
     <div className="space-y-4">
@@ -140,10 +161,12 @@ export default function PermissionDetails({
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
                 <Label htmlFor="agent">Agent WebID or Group</Label>
-                <Input
-                  id="agent"
-                  onChange={(event) => setActiveAgent(event.target.value)}
+                <AutoComplete
+                  options={autoCompleteMembers()}
+                  emptyMessage="No results."
                   placeholder="https://example.org/profile/card#me"
+                  onValueChange={(value) => setActiveAgent(value)}
+                  value={activeAgent}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -202,14 +225,17 @@ export default function PermissionDetails({
                 variant="outline"
                 onClick={() => {
                   setShowDialog(null);
-                  resetAccesses();
+                  cleanDialog();
                 }}
               >
                 Cancel
               </Button>
-              <Button onClick={() => handleDialogSubmission('add')}>
+              <ButtonWithLoader
+                isLoading={updatePending}
+                onClick={() => handleDialogSubmission('add')}
+              >
                 Save Permissions
-              </Button>
+              </ButtonWithLoader>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -233,14 +259,14 @@ export default function PermissionDetails({
                 variant="outline"
                 onClick={() => {
                   setShowDialog(null);
-                  resetAccesses();
+                  cleanDialog();
                 }}
               >
                 Cancel
               </Button>
               <ButtonWithLoader
                 onClick={() => handleDialogSubmission('delete')}
-                isLoading={deletePending}
+                isLoading={updatePending}
               >
                 Delete Agent
               </ButtonWithLoader>
@@ -255,7 +281,9 @@ export default function PermissionDetails({
         >
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Edit Permissions For {activeAgent}</DialogTitle>
+              <DialogTitle>
+                Edit Permissions For {activeAgent.value}
+              </DialogTitle>
               <DialogDescription>
                 Update the permissions for an agent.{' '}
                 {resourcePath.replace('-', ' ').replace('/', ' ')}
@@ -266,7 +294,7 @@ export default function PermissionDetails({
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="read"
-                    disabled={activeAgent == session?.info.webId!}
+                    disabled={activeAgent.value == session?.info.webId!}
                     checked={activePermissions.read}
                     onCheckedChange={() => {
                       setActivePermissions((prev) => ({
@@ -280,7 +308,7 @@ export default function PermissionDetails({
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="write"
-                    disabled={activeAgent == session?.info.webId!}
+                    disabled={activeAgent.value == session?.info.webId!}
                     checked={activePermissions.write}
                     onCheckedChange={() => {
                       setActivePermissions((prev) => ({
@@ -294,7 +322,7 @@ export default function PermissionDetails({
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="append"
-                    disabled={activeAgent == session?.info.webId!}
+                    disabled={activeAgent.value == session?.info.webId!}
                     checked={activePermissions.append}
                     onCheckedChange={() => {
                       setActivePermissions((prev) => ({
@@ -308,7 +336,7 @@ export default function PermissionDetails({
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="control"
-                    disabled={activeAgent == session?.info.webId!}
+                    disabled={activeAgent.value == session?.info.webId!}
                     checked={activePermissions.control}
                     onCheckedChange={() => {
                       setActivePermissions((prev) => ({
@@ -327,14 +355,14 @@ export default function PermissionDetails({
                 variant="outline"
                 onClick={() => {
                   setShowDialog(null);
-                  resetAccesses();
+                  cleanDialog();
                 }}
               >
                 Cancel
               </Button>
               <ButtonWithLoader
                 onClick={() => handleDialogSubmission('edit')}
-                isLoading={deletePending}
+                isLoading={updatePending}
               >
                 Update Access
               </ButtonWithLoader>
@@ -400,7 +428,10 @@ export default function PermissionDetails({
                     disabled={permission.agent === session?.info.webId!}
                     onClick={() => {
                       setShowDialog('edit');
-                      setActiveAgent(permission.agent);
+                      setActiveAgent({
+                        value: permission.agent,
+                        label: 'non team member',
+                      });
                       setActivePermissions({
                         read: permission.read,
                         write: permission.write,
@@ -418,7 +449,10 @@ export default function PermissionDetails({
                     disabled={permission.agent === session?.info.webId!}
                     onClick={() => {
                       setShowDialog('delete');
-                      setActiveAgent(permission.agent);
+                      setActiveAgent({
+                        value: permission.agent,
+                        label: 'non team member',
+                      });
                     }}
                   >
                     <Trash2 className="h-4 w-4" />

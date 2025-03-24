@@ -10,6 +10,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { LogOut, Trash2 } from 'lucide-react';
 import LeaveTeamDialog from '@/components/alerts/leave-team-alert';
+import { Separator } from '@/components/ui/separator';
 
 export const Route = createFileRoute('/__dashboard/settings')({
   component: RouteComponent,
@@ -36,23 +37,34 @@ function RouteComponent() {
         </CardContent>
       </Card>
 
-      <Card className="flex items-start justify-between border-red-500">
+      <Card className="flex flex-col items-start justify-between border-red-500">
         <CardHeader>
           <CardTitle>Danger Zone</CardTitle>
+          <CardDescription>
+            Actions here are irreverisble and may permanently impact your
+            account or data. Proceed with caution
+          </CardDescription>
         </CardHeader>
-
-        <CardContent className="flex items-center flex-col gap-4 pt-6">
-          <div className="flex justify-between w-full">
-            <p className="text-sm mr-2">Removes you from the team</p>
+        <CardContent className="flex flex-col items-center gap-4 w-full">
+          <div className="grid grid-cols-3 items-end gap-2 w-full">
+            <div className="col-span-2">
+              <h2 className="font-semibold text-lg">Leave team</h2>
+              <p className="text-sm text-muted-foreground">
+                Removes you from the team
+              </p>
+            </div>
             <LeaveTeamDialog />
           </div>
-          <div className="flex justify-between w-full">
-            <p className="text-sm mr-2">
-              Delete your account - deletes all information used by this
-              application from your pod
-            </p>
+          <Separator />
+          <div className="grid grid-cols-3 items-end gap-2 w-full">
+            <div className="col-span-2">
+              <h2 className="font-semibold text-lg">Delete account</h2>
+              <p className="text-sm text-muted-foreground">
+                Deletes all information used by this application from your pod
+              </p>
+            </div>
             <Button variant="destructive" onClick={handleDeleteAccount}>
-              <Trash2 className="mr-2 h-4 w-4" /> Delete Account
+              <Trash2 className="mr-2 size-4" /> Delete Account
             </Button>
           </div>
         </CardContent>

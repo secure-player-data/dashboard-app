@@ -9,6 +9,7 @@ import { ModeToggle } from '@/components/ui/mode-toggle';
 import { createFileRoute } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { LogOut, Trash2 } from 'lucide-react';
+import LeaveTeamDialog from '@/components/alerts/leave-team-alert';
 
 export const Route = createFileRoute('/__dashboard/settings')({
   component: RouteComponent,
@@ -43,24 +44,14 @@ function RouteComponent() {
         <CardContent className="flex items-center flex-col gap-4 pt-6">
           <div className="flex justify-between w-full">
             <p className="text-sm mr-2">Removes you from the team</p>
-            <Button
-              variant="outline"
-              className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
-              onClick={handleLeaveTeam}
-            >
-              <LogOut className="mr-2 h-4 w-4" /> Leave Team
-            </Button>
+            <LeaveTeamDialog />
           </div>
           <div className="flex justify-between w-full">
             <p className="text-sm mr-2">
               Delete your account - deletes all information used by this
               application from your pod
             </p>
-            <Button
-              variant="outline"
-              className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
-              onClick={handleDeleteAccount}
-            >
+            <Button variant="destructive" onClick={handleDeleteAccount}>
               <Trash2 className="mr-2 h-4 w-4" /> Delete Account
             </Button>
           </div>

@@ -141,12 +141,11 @@ export async function getResourceList(
         accessLevel = 'public';
       } else if (accessKeys.length > 1) {
         accessLevel = 'shared';
-        if (
-          accessKeys.length === 1 &&
-          accessKeys[0].includes(session.info.webId!)
-        ) {
-          accessLevel = 'private';
-        }
+      } else if (
+        accessKeys.length == 1 &&
+        !accessKeys[0].includes(session.info.webId!)
+      ) {
+        accessLevel = 'shared';
       }
 
       return {

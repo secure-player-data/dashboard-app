@@ -1,7 +1,6 @@
 import { Button, ButtonWithLoader } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Calendar, User, Building, Info, Eye } from 'lucide-react';
-import { Input } from '../ui/input';
 import {
   Dialog,
   DialogContent,
@@ -191,7 +190,8 @@ export function TableRowDialog({
               {row.original.type === 'Access Request' && (
                 <div>
                   <div>
-                    {row.original.organization} asking for access to your data.{' '}
+                    {row.original.organization} asking for access to your
+                    data.{' '}
                   </div>
                   <div>
                     If you choose to accept you will grant them access to your

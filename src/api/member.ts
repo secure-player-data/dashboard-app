@@ -127,12 +127,14 @@ export async function fetchMembers(
  * contains their permissions to the requesting users pod.
  * @param session of the requesting user
  * @param pod pod url of the user to fetch the members from
+ * @param path to the container to fetch the permissions from
  * @returns list of members with their permission rights to the
  * requesting user
  */
 export async function fetchMembersWithPermissions(
   session: Session | null,
-  pod: string | null
+  pod: string | null,
+  path: string
 ): Promise<MemberWithPermissions[]> {
   if (!session || !pod) {
     throw new SessionNotSetException('No session provided');
@@ -142,7 +144,7 @@ export async function fetchMembersWithPermissions(
 
   const membersAccessMap = await getAgentAccessAll({
     session,
-    url: `${pod}${BASE_APP_CONTAINER}/${DATA_CONTAINER}`,
+    url: path,
   });
 
   const membersWithPermissions = members.map((member) => {

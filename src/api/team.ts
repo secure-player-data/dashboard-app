@@ -20,10 +20,11 @@ import { safeCall } from '@/utils';
 import { SessionNotSetException } from '@/exceptions/session-exceptions';
 import { TeamNotFoundException } from '@/exceptions/team-exceptions';
 import { TeamCreationConflictException } from '@/exceptions/team-creation-conflict-exception';
-import { updateAppProfile } from './profile';
+import { fetchProfileData, updateAppProfile } from './profile';
 import { setPublicAccess, updateAgentAccess } from './access-control';
 import { PROFILE_SCHEMA } from '@/schemas/profile';
 import { TEAM_MEMBER_SCHEMA, TEAM_SCHEMA } from '@/schemas/team';
+import { fetchMember, fetchMembersWithPermissions } from './member';
 
 /**
  * Returns team details from the team specified by the teamUrl
@@ -141,7 +142,9 @@ export async function createTeam({
   dataset = setThing(dataset, teamDetails);
 
   // Create team folder
-  await createContainerAt(paths.team.root(pod), { fetch: session.fetch });
+  await safeCall(
+    createContainerAt(paths.team.root(pod), { fetch: session.fetch })
+  );
 
   // Create and add owner as member
   const owner = buildThing(createThing({ name: 'owner' }))
@@ -316,6 +319,54 @@ export async function addMemberToTeam(
   await saveSolidDatasetAt(teamUrl, updatedTeamDataset, {
     fetch: session.fetch,
   });
+}
+
+/**
+ * Leaves the team the user is in
+ * @param session of the user leaving the team
+ * @param pod of the user leaving the team
+ */
+export async function leaveTeam(session: Session | null, pod: string | null) {
+  if (!session || !pod) {
+    throw new Error('Session was not found');
+  }
+
+  const user = await fetchMember(session, pod);
+  if (user.role === 'Owner') {
+    throw new Error(
+      'As a owner, you cannot leave the team. You need to transphere ownership of delete the team instead!'
+    );
+  }
+
+  const containers = [
+    paths.personalData(pod),
+    paths.footballData.root(pod),
+    paths.eventData.root(pod),
+    paths.trackingData.root(pod),
+    paths.biometricData.root(pod),
+    paths.healthData.root(pod),
+  ];
+
+  await Promise.all(
+    containers.map(async (container) => {
+      const members = (
+        await fetchMembersWithPermissions(session, pod, container)
+      ).filter((member) => member.webId !== session.info.webId);
+
+      await Promise.all(
+        members.map(async (member) => {
+          await updateAgentAccess({
+            session,
+            containerUrl: container,
+            agentWebId: member.webId,
+            modes: [],
+          });
+        })
+      );
+    })
+  );
+
+  await updateAppProfile(session, pod, { teamUrl: '' });
 }
 
 function mapThingToTeam(thing: any): Team {

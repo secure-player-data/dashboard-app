@@ -141,17 +141,17 @@ export async function updateAppProfile(
     throw new Error('could not get thing');
   }
 
-  if (profile.teamUrl) {
+  if (profile.teamUrl !== undefined && profile.teamUrl !== null) {
     thing = setStringNoLocale(thing, PROFILE_SCHEMA.teamUrl, profile.teamUrl);
   }
-  if (profile.name) {
+  if (profile.name !== undefined && profile.name !== null) {
     thing = setStringNoLocale(thing, PROFILE_SCHEMA.name, profile.name);
   }
-  if (profile.email) {
+  if (profile.email !== undefined && profile.email !== null) {
     thing = setStringNoLocale(thing, PROFILE_SCHEMA.email, profile.email);
   }
 
-  if (profile.picture) {
+  if (profile.picture !== undefined && profile.picture !== null) {
     const oldPicturePath = getStringNoLocale(thing, PROFILE_SCHEMA.picture);
 
     if (oldPicturePath) {

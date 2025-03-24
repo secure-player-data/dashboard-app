@@ -16,7 +16,6 @@ import {
 } from '@/components/ui/table';
 import { Loader2 } from 'lucide-react';
 import { InboxItem } from '@/entities/inboxItem';
-import { TableRowDialog } from '@/components/dialogs/inbox-item-dialog';
 import { InboxTableRowDialog } from '@/components/dialogs/inbox/inbox-item-main';
 
 interface DataTableProps<TData, TValue> {

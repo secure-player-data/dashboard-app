@@ -66,7 +66,7 @@ export async function seedDb(session: Session, pod: string) {
           .addStringNoLocale(DATA_INFO_SCHEMA.fileName, fileName)
           .addStringNoLocale(DATA_INFO_SCHEMA.webId, entry.uploadedBy.webId)
           .addStringNoLocale(DATA_INFO_SCHEMA.name, entry.uploadedBy.name)
-          .addStringNoLocale(DATA_INFO_SCHEMA.uploadedAt, entry.uploadedAt)
+          .addDate(DATA_INFO_SCHEMA.uploadedAt, new Date(entry.uploadedAt))
           .addStringNoLocale(DATA_INFO_SCHEMA.reason, entry.reason)
           .addStringNoLocale(DATA_INFO_SCHEMA.location, entry.location)
           .build();
@@ -97,7 +97,7 @@ function genereteMockCsv(): File {
   const headers = Object.keys(data[0]).join(',');
   const rows = data.map((row) => Object.values(row).join(',')).join('\n');
 
-  const csvContent = headers + rows;
+  const csvContent = `${headers}\n${rows}`;
 
   const blob = new Blob([csvContent], { type: 'text/csv' });
 

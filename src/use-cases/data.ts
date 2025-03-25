@@ -1,9 +1,10 @@
-import { fetchData } from '@/api/utils';
+import { fetchData, fetchFile } from '@/api/utils';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { useQuery } from '@tanstack/react-query';
 
 const queryKeys = {
-  getData: (pod: string, category: string) => ['data', pod, category],
+  allData: (pod: string, category: string) => ['data', pod, category],
+  file: (url: string) => ['file', url],
 };
 
 export function useGetData(
@@ -12,8 +13,15 @@ export function useGetData(
   category: string
 ) {
   return useQuery({
-    queryKey: queryKeys.getData(pod!, category),
+    queryKey: queryKeys.allData(pod!, category),
     queryFn: async () => await fetchData(session, pod, category),
     enabled: !!session || !!pod,
+  });
+}
+
+export function useGetFile(session: Session | null, url: string) {
+  return useQuery({
+    queryKey: queryKeys.file(url),
+    queryFn: async () => await fetchFile(session, url),
   });
 }

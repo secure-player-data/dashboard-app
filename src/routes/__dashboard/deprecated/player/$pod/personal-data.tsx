@@ -1,13 +1,13 @@
-import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useAuth } from '@/context/auth-context';
-import { useGetSeasonInfo } from '@/use-cases/football-data';
-import { useGetPersonalData } from '@/use-cases/personal-data';
-import { useGetProfile } from '@/use-cases/use-get-profile';
-import { birthdateToAge } from '@/utils';
-import { TabsContent } from '@radix-ui/react-tabs';
-import { createFileRoute } from '@tanstack/react-router';
+import { Badge } from '@/components/ui/badge'
+import { Card } from '@/components/ui/card'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useAuth } from '@/context/auth-context'
+import { useGetSeasonInfo } from '@/use-cases/football-data'
+import { useGetPersonalData } from '@/use-cases/personal-data'
+import { useGetProfile } from '@/use-cases/use-get-profile'
+import { birthdateToAge } from '@/utils'
+import { TabsContent } from '@radix-ui/react-tabs'
+import { createFileRoute } from '@tanstack/react-router'
 import {
   Calendar,
   Flag,
@@ -23,31 +23,33 @@ import {
   Trophy,
   Users,
   Weight,
-} from 'lucide-react';
+} from 'lucide-react'
 
-export const Route = createFileRoute('/__dashboard/player/$pod/personal-data')({
+export const Route = createFileRoute(
+  '/__dashboard/deprecated/player/$pod/personal-data',
+)({
   component: RouteComponent,
-});
+})
 
 function RouteComponent() {
-  const { session } = useAuth();
-  const { pod } = Route.useParams();
+  const { session } = useAuth()
+  const { pod } = Route.useParams()
 
-  const { data: player, isPending, error } = useGetPersonalData(session, pod);
-  const { data: profile } = useGetProfile(session, pod);
+  const { data: player, isPending, error } = useGetPersonalData(session, pod)
+  const { data: profile } = useGetProfile(session, pod)
   const { data: season } = useGetSeasonInfo(
     session,
     pod,
     'club',
-    new Date().getFullYear().toString()
-  );
+    new Date().getFullYear().toString(),
+  )
 
   if (isPending) {
-    return <Loader2 className="size-4 animate-spin" />;
+    return <Loader2 className="size-4 animate-spin" />
   }
 
   if (error) {
-    return <div>{error.message}</div>;
+    return <div>{error.message}</div>
   }
 
   return (
@@ -192,13 +194,13 @@ function RouteComponent() {
         </div>
       </section>
     </Card>
-  );
+  )
 }
 
 function OverviewValue(props: {
-  icon: LucideIcon;
-  label: string;
-  value: string;
+  icon: LucideIcon
+  label: string
+  value: string
 }) {
   return (
     <div className="flex items-center gap-2">
@@ -210,13 +212,13 @@ function OverviewValue(props: {
         <p className="font-medium">{props.value}</p>
       </div>
     </div>
-  );
+  )
 }
 
 function DetailsValue(props: {
-  icon: LucideIcon;
-  label: string;
-  value: string;
+  icon: LucideIcon
+  label: string
+  value: string
 }) {
   return (
     <div className="flex items-center gap-2">
@@ -224,5 +226,5 @@ function DetailsValue(props: {
       <span className="font-medium">{props.label}:</span>
       <span>{props.value}</span>
     </div>
-  );
+  )
 }

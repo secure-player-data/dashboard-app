@@ -1,8 +1,8 @@
-import DistanceChart from '@/components/pages/tracking-data/distance-chart';
-import Heatmap from '@/components/pages/tracking-data/heatmap';
-import PerformanceSummary from '@/components/pages/tracking-data/performance-summary';
-import SpeedChart from '@/components/pages/tracking-data/speed-chart';
-import { Label } from '@/components/ui/label';
+import DistanceChart from '@/components/pages/tracking-data/distance-chart'
+import Heatmap from '@/components/pages/tracking-data/heatmap'
+import PerformanceSummary from '@/components/pages/tracking-data/performance-summary'
+import SpeedChart from '@/components/pages/tracking-data/speed-chart'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -11,46 +11,48 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { useAuth } from '@/context/auth-context';
+} from '@/components/ui/select'
+import { useAuth } from '@/context/auth-context'
 import {
   useGetAllMatchesForSeasonWithTracking,
   useGetAllSeasonsWithTracking,
   useGetTrackingData,
-} from '@/use-cases/tracking-data';
-import { createFileRoute } from '@tanstack/react-router';
-import { useState } from 'react';
+} from '@/use-cases/tracking-data'
+import { createFileRoute } from '@tanstack/react-router'
+import { useState } from 'react'
 
-export const Route = createFileRoute('/__dashboard/player/$pod/tracking-data')({
+export const Route = createFileRoute(
+  '/__dashboard/deprecated/player/$pod/tracking-data',
+)({
   component: RouteComponent,
-});
+})
 
 function RouteComponent() {
-  const [selectedType, setSelectedType] = useState<string>('');
-  const [selectedSeason, setSelectedSeason] = useState<string>('');
-  const [selectedSession, setSelectedSession] = useState<string>('');
+  const [selectedType, setSelectedType] = useState<string>('')
+  const [selectedSeason, setSelectedSeason] = useState<string>('')
+  const [selectedSession, setSelectedSession] = useState<string>('')
 
-  const { session } = useAuth();
-  const { pod } = Route.useParams();
+  const { session } = useAuth()
+  const { pod } = Route.useParams()
   const { data: seasons } = useGetAllSeasonsWithTracking(
     session,
     pod,
-    selectedType
-  );
+    selectedType,
+  )
   const { data: matches } = useGetAllMatchesForSeasonWithTracking(
     session,
-    selectedSeason
-  );
+    selectedSeason,
+  )
 
   function handleTypeChange(type: string) {
-    setSelectedType(type);
-    setSelectedSeason('');
-    setSelectedSession('');
+    setSelectedType(type)
+    setSelectedSeason('')
+    setSelectedSession('')
   }
 
   function handleSeasonChange(season: string) {
-    setSelectedSeason(season);
-    setSelectedSession('');
+    setSelectedSeason(season)
+    setSelectedSession('')
   }
 
   return (
@@ -124,15 +126,15 @@ function RouteComponent() {
       </div>
       <PageBody selectedSession={selectedSession} />
     </div>
-  );
+  )
 }
 
 function PageBody({ selectedSession }: { selectedSession: string }) {
-  const { session } = useAuth();
+  const { session } = useAuth()
   const { data, isFetching, error } = useGetTrackingData(
     session,
-    selectedSession
-  );
+    selectedSession,
+  )
 
   if (selectedSession === '') {
     return (
@@ -141,21 +143,21 @@ function PageBody({ selectedSession }: { selectedSession: string }) {
           Please select a specific session to view its data
         </p>
       </div>
-    );
+    )
   }
 
   if (isFetching) {
-    <div className="flex-grow flex items-center justify-center bg-muted rounded-md">
+    ;<div className="flex-grow flex items-center justify-center bg-muted rounded-md">
       <p className="text-sm text-muted-foreground">Crunching the numbers...</p>
-    </div>;
+    </div>
   }
 
   if (error) {
-    <div className="flex-grow flex items-center justify-center bg-muted rounded-md">
+    ;<div className="flex-grow flex items-center justify-center bg-muted rounded-md">
       <p className="text-sm text-muted-foreground">
         Something went wrong: {error.message}
       </p>
-    </div>;
+    </div>
   }
 
   if (data) {
@@ -170,6 +172,6 @@ function PageBody({ selectedSession }: { selectedSession: string }) {
           </div>
         </div>
       </>
-    );
+    )
   }
 }

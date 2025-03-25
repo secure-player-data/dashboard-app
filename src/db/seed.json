@@ -1,12 +1,47 @@
 [
   {
-    "uploadedBy": {
-      "name": "John Doe",
-      "webId": "https://id.inrupt.com/john-doe"
-    },
-    "uploadedAt": "2025-01-01T00:00:00Z",
-    "reason": "Tracking data for analysis",
-    "location": "Catapult",
-    "fileUrl": ""
+    "category": "football-data",
+    "data": [
+      {
+        "uploadedBy": {
+          "name": "John Doe",
+          "webId": "https://id.inrupt.com/john-doe"
+        },
+        "uploadedAt": "2025-01-01T00:00:00Z",
+        "reason": "Tracking data for analysis",
+        "location": "Catapult",
+        "fileUrl": "test"
+      },
+      {
+        "uploadedBy": {
+          "name": "John Doe",
+          "webId": "https://id.inrupt.com/john-doe"
+        },
+        "uploadedAt": "2025-01-02T00:00:00Z",
+        "reason": "Tracking data for analysis",
+        "location": "Catapult",
+        "fileUrl": "test"
+      },
+      {
+        "uploadedBy": {
+          "name": "John Doe",
+          "webId": "https://id.inrupt.com/john-doe"
+        },
+        "uploadedAt": "2025-01-03T00:00:00Z",
+        "reason": "Tracking data for analysis",
+        "location": "Catapult",
+        "fileUrl": "test"
+      },
+      {
+        "uploadedBy": {
+          "name": "John Doe",
+          "webId": "https://id.inrupt.com/john-doe"
+        },
+        "uploadedAt": "2025-01-04T00:00:00Z",
+        "reason": "Tracking data for analysis",
+        "location": "Catapult",
+        "fileUrl": "test"
+      }
+    ]
   }
 ]

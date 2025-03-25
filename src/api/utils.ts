@@ -1,6 +1,6 @@
 import { SessionNotSetException } from '@/exceptions/session-exceptions';
 import { Session } from '@inrupt/solid-client-authn-browser';
-import { BASE_APP_CONTAINER, DATA_CONTAINER } from './paths';
+import { BASE_APP_CONTAINER, DATA_CONTAINER, paths } from './paths';
 import {
   deleteFile as inrupt_deleteFile,
   getFile,
@@ -11,9 +11,22 @@ import {
   getThingAll,
   deleteContainer,
   Thing,
+  getStringNoLocale,
+  getDate,
 } from '@inrupt/solid-client';
 import { logAccessRequest } from './access-history';
 import { safeCall } from '@/utils';
+import { DataInfo } from '@/entities/data-info';
+import { DATA_INFO_SCHEMA } from '@/schemas/metadata';
+
+const categories = [
+  'personal-data',
+  'football-data',
+  'event-data',
+  'tracking-data',
+  'biometric-data',
+  'health-data',
+];
 
 /**
  * Returns the url of the first pod found for the user
@@ -30,6 +43,57 @@ export async function getPodUrl(session: Session): Promise<string> {
   }
 
   return pods[0];
+}
+
+/**
+ *
+ * @param session
+ * @param pod
+ * @param categiry
+ */
+export async function fetchData(
+  session: Session | null,
+  pod: string | null,
+  category: string
+): Promise<DataInfo[]> {
+  if (!session || !pod) {
+    throw new Error('Session and pod are required');
+  }
+
+  if (!categories.includes(category)) {
+    throw new Error('Not a supported category');
+  }
+
+  const datasetUrl = `${pod}${BASE_APP_CONTAINER}/${category}/`;
+  const dataset = await getSolidDataset(datasetUrl, {
+    fetch: session.fetch,
+  });
+  const things = getThingAll(dataset).filter(
+    (thing) => thing.url !== datasetUrl
+  );
+
+  return await Promise.all(
+    things.map(async (thing) => {
+      const innerDataset = await getSolidDataset(thing.url, {
+        fetch: session.fetch,
+      });
+      const innerThing = getThingAll(innerDataset)[0];
+
+      return {
+        id: thing.url,
+        fileUrl: getStringNoLocale(innerThing, DATA_INFO_SCHEMA.fileUrl) ?? '',
+        uploader: {
+          webId: getStringNoLocale(innerThing, DATA_INFO_SCHEMA.webId) ?? '',
+          name: getStringNoLocale(innerThing, DATA_INFO_SCHEMA.name) ?? '',
+        },
+        uploadedAt:
+          getDate(innerThing, DATA_INFO_SCHEMA.uploadedAt) ?? new Date(),
+        reason: getStringNoLocale(innerThing, DATA_INFO_SCHEMA.reason) ?? '',
+        location:
+          getStringNoLocale(innerThing, DATA_INFO_SCHEMA.location) ?? '',
+      };
+    })
+  );
 }
 
 /**

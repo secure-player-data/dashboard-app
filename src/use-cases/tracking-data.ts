@@ -2,7 +2,7 @@ import {
   fetchAllMatchesForSeasonWithTracking,
   fetchAllSeasonsWithTracking,
   fetchTrackingData,
-} from '@/api/data/tracking-data';
+} from '@/api/deprecated/tracking-data';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { useQuery } from '@tanstack/react-query';
 

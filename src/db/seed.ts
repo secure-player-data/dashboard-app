@@ -1,7 +1,7 @@
 import { Session } from '@inrupt/solid-client-authn-browser';
 import deprecatedData from './deprecated-seed.json';
 import data from './seed.json';
-import { paths } from '@/api/paths';
+import { BASE_APP_CONTAINER, paths } from '@/api/paths';
 import {
   buildThing,
   createSolidDataset,
@@ -43,29 +43,31 @@ let pod: string;
 
 export async function seedDb(session: Session, pod: string) {
   await Promise.all(
-    data.map(async (entry) => {
-      const id = crypto.randomUUID();
-      const thing = buildThing(createThing({ name: id }))
-        .addUrl(RDF.type, DATA_INFO_SCHEMA.type)
-        .addStringNoLocale(DATA_INFO_SCHEMA.fileUrl, entry.fileUrl)
-        .addStringNoLocale(DATA_INFO_SCHEMA.webId, entry.uploadedBy.webId)
-        .addStringNoLocale(DATA_INFO_SCHEMA.name, entry.uploadedBy.name)
-        .addStringNoLocale(DATA_INFO_SCHEMA.uploadedAt, entry.uploadedAt)
-        .addStringNoLocale(DATA_INFO_SCHEMA.reason, entry.reason)
-        .addStringNoLocale(DATA_INFO_SCHEMA.location, entry.location)
-        .build();
+    data.map(async (type) => {
+      type.data.map(async (entry) => {
+        const id = crypto.randomUUID();
+        const thing = buildThing(createThing({ name: id }))
+          .addUrl(RDF.type, DATA_INFO_SCHEMA.type)
+          .addStringNoLocale(DATA_INFO_SCHEMA.fileUrl, entry.fileUrl)
+          .addStringNoLocale(DATA_INFO_SCHEMA.webId, entry.uploadedBy.webId)
+          .addStringNoLocale(DATA_INFO_SCHEMA.name, entry.uploadedBy.name)
+          .addStringNoLocale(DATA_INFO_SCHEMA.uploadedAt, entry.uploadedAt)
+          .addStringNoLocale(DATA_INFO_SCHEMA.reason, entry.reason)
+          .addStringNoLocale(DATA_INFO_SCHEMA.location, entry.location)
+          .build();
 
-      let dataset = createSolidDataset();
-      dataset = setThing(dataset, thing);
+        let dataset = createSolidDataset();
+        dataset = setThing(dataset, thing);
 
-      const url = paths.footballData.root(pod);
-      const [error, _] = await safeCall(
-        saveSolidDatasetAt(`${url}/${id}`, dataset, { fetch: session.fetch })
-      );
+        const url = `${pod}${BASE_APP_CONTAINER}/${type.category}/`;
+        const [error, _] = await safeCall(
+          saveSolidDatasetAt(`${url}/${id}`, dataset, { fetch: session.fetch })
+        );
 
-      if (error) {
-        console.error(error);
-      }
+        if (error) {
+          console.error(error);
+        }
+      });
     })
   );
 }

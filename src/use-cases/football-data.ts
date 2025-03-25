@@ -4,7 +4,7 @@ import {
   fetchAllSeasonInfo,
   fetchMatchData,
   fetchSeasonInfo,
-} from '@/api/data/football-data';
+} from '@/api/deprecated/football-data';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { useQuery } from '@tanstack/react-query';
 

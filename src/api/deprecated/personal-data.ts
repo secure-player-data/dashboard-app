@@ -6,7 +6,7 @@ import {
   getThing,
 } from '@inrupt/solid-client';
 import { Session } from '@inrupt/solid-client-authn-browser';
-import { paths } from './paths';
+import { paths } from '../paths';
 import { PersonalData } from '@/entities/data/personal-data';
 import { PERSONAL_DATA_SCHEMA } from '@/schemas/personal-data';
 

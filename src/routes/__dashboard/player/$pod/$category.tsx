@@ -162,7 +162,7 @@ function GridLayout({ data }: { data: DataInfo[] }) {
             </div>
             <Link
               to="/file/$url"
-              params={{ url: item.fileUrl }}
+              params={{ url: item.file.url }}
               className="flex items-center gap-2"
             >
               <ExternalLink /> View data
@@ -244,7 +244,7 @@ function ListLayout({
             <TableCell>
               <Link
                 to="/file/$url"
-                params={{ url: item.fileUrl }}
+                params={{ url: item.file.url }}
                 className="flex items-center gap-2"
               >
                 View <ExternalLink className="size-4" />

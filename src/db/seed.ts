@@ -4,8 +4,10 @@ import data from './seed.json';
 import { BASE_APP_CONTAINER, paths } from '@/api/paths';
 import {
   buildThing,
+  createContainerAt,
   createSolidDataset,
   createThing,
+  saveFileInContainer,
   saveSolidDatasetAt,
   setThing,
 } from '@inrupt/solid-client';
@@ -46,9 +48,22 @@ export async function seedDb(session: Session, pod: string) {
     data.map(async (type) => {
       type.data.map(async (entry) => {
         const id = crypto.randomUUID();
+
+        const path = `${pod}${BASE_APP_CONTAINER}/${type.category}/files/`;
+        await safeCall(createContainerAt(path, { fetch: session.fetch }));
+
+        const file = genereteMockCsv();
+        const fileName = file.name;
+        const renamedFile = new File([file], `${id}.csv`, { type: file.type });
+
+        await saveFileInContainer(path, renamedFile, {
+          fetch: session.fetch,
+        });
+
         const thing = buildThing(createThing({ name: id }))
           .addUrl(RDF.type, DATA_INFO_SCHEMA.type)
-          .addStringNoLocale(DATA_INFO_SCHEMA.fileUrl, entry.fileUrl)
+          .addStringNoLocale(DATA_INFO_SCHEMA.fileUrl, `${path}${id}.csv`)
+          .addStringNoLocale(DATA_INFO_SCHEMA.fileName, fileName)
           .addStringNoLocale(DATA_INFO_SCHEMA.webId, entry.uploadedBy.webId)
           .addStringNoLocale(DATA_INFO_SCHEMA.name, entry.uploadedBy.name)
           .addStringNoLocale(DATA_INFO_SCHEMA.uploadedAt, entry.uploadedAt)
@@ -59,9 +74,9 @@ export async function seedDb(session: Session, pod: string) {
         let dataset = createSolidDataset();
         dataset = setThing(dataset, thing);
 
-        const url = `${pod}${BASE_APP_CONTAINER}/${type.category}/`;
+        const url = `${pod}${BASE_APP_CONTAINER}/${type.category}/${id}`;
         const [error, _] = await safeCall(
-          saveSolidDatasetAt(`${url}/${id}`, dataset, { fetch: session.fetch })
+          saveSolidDatasetAt(url, dataset, { fetch: session.fetch })
         );
 
         if (error) {
@@ -70,6 +85,23 @@ export async function seedDb(session: Session, pod: string) {
       });
     })
   );
+}
+
+function genereteMockCsv(): File {
+  const data = [
+    { id: 1, name: 'John Doe', age: 25, city: 'New York' },
+    { id: 2, name: 'Jane Doe', age: 24, city: 'Los Angeles' },
+    { id: 3, name: 'John Smith', age: 30, city: 'Chicago' },
+  ];
+
+  const headers = Object.keys(data[0]).join(',');
+  const rows = data.map((row) => Object.values(row).join(',')).join('\n');
+
+  const csvContent = headers + rows;
+
+  const blob = new Blob([csvContent], { type: 'text/csv' });
+
+  return new File([blob], 'mock.csv', { type: 'text/csv' });
 }
 
 export async function seedDbDeprecated(_session: Session, _pod: string) {

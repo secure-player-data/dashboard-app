@@ -1,6 +1,9 @@
 export type DataInfo = {
   id: string;
-  fileUrl: string;
+  file: {
+    url: string;
+    name: string;
+  };
   uploader: {
     webId: string;
     name: string;

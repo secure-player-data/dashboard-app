@@ -69,7 +69,7 @@ export async function fetchData(
     fetch: session.fetch,
   });
   const things = getThingAll(dataset).filter(
-    (thing) => thing.url !== datasetUrl
+    (thing) => thing.url !== datasetUrl && !thing.url.endsWith('/files/')
   );
 
   return await Promise.all(
@@ -81,7 +81,10 @@ export async function fetchData(
 
       return {
         id: thing.url,
-        fileUrl: getStringNoLocale(innerThing, DATA_INFO_SCHEMA.fileUrl) ?? '',
+        file: {
+          url: getStringNoLocale(innerThing, DATA_INFO_SCHEMA.fileUrl) ?? '',
+          name: getStringNoLocale(innerThing, DATA_INFO_SCHEMA.fileName) ?? '',
+        },
         uploader: {
           webId: getStringNoLocale(innerThing, DATA_INFO_SCHEMA.webId) ?? '',
           name: getStringNoLocale(innerThing, DATA_INFO_SCHEMA.name) ?? '',

@@ -1,5 +1,4 @@
 import { useAuth } from '@/context/auth-context';
-import { useCreateTeam } from '@/use-cases/use-create-team';
 import { FormEvent, useState } from 'react';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -13,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from '../ui/card';
+import { useCreateTeam } from '@/use-cases/team';
 
 const createTeamSchema = z.object({
   teamName: z.string().nonempty({ message: 'Team Name is required' }),

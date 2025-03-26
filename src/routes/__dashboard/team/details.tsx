@@ -3,7 +3,7 @@ import JoinTeamForm from '@/components/forms/join-team-form';
 import Header from '@/components/pages/team-details/header';
 import MembersList from '@/components/pages/team-details/members-list';
 import { useAuth } from '@/context/auth-context';
-import { useGetProfile } from '@/use-cases/use-get-profile';
+import { useGetProfile } from '@/use-cases/profile';
 import { createFileRoute } from '@tanstack/react-router';
 import { Loader2 } from 'lucide-react';
 

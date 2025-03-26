@@ -20,8 +20,6 @@ import { useGetMembers } from '@/use-cases/use-get-members';
 import { useAuth } from '@/context/auth-context';
 import { Member } from '@/entities/data/member';
 import { Loader2 } from 'lucide-react';
-import { outsourcePlayerData } from '@/api/access-control/index';
-import { useGetProfile } from '@/use-cases/use-get-profile';
 import { useOutsourceData } from '@/use-cases/use-outsource-data';
 import { toast } from 'sonner';
 import {
@@ -32,6 +30,7 @@ import {
   PERSONAL_DATA,
   TRACKING_DATA,
 } from '@/api/paths';
+import { useGetProfile } from '@/use-cases/profile';
 
 const dataTypes = [
   {

@@ -20,7 +20,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/context/auth-context';
 import { DataInfo } from '@/entities/data-info';
 import { useGetData } from '@/use-cases/data';
-import { useGetProfile } from '@/use-cases/use-get-profile';
+import { useGetProfile } from '@/use-cases/profile';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import {
   Calendar,

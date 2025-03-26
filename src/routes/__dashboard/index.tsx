@@ -1,5 +1,5 @@
 import { useAuth } from '@/context/auth-context';
-import { useGetProfile } from '@/use-cases/use-get-profile';
+import { useGetProfile } from '@/use-cases/profile';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import {
   Activity,

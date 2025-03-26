@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import { useGetProfile } from '@/use-cases/use-get-profile';
 import { useAuth } from '@/context/auth-context';
 import { FormEvent, useRef, useState } from 'react';
 import { Button, ButtonWithLoader } from '../ui/button';
@@ -9,6 +8,7 @@ import { useUpdateTeam } from '@/use-cases/team';
 import { toast } from 'sonner';
 import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
 import { Upload } from 'lucide-react';
+import { useGetProfile } from '@/use-cases/profile';
 
 const teamSchema = z.object({
   name: z.string().nonempty({ message: 'Name is required' }),

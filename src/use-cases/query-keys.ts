@@ -1,7 +1,6 @@
 import { InboxItem } from '@/entities/inboxItem';
 
 export const queryKeys = {
-  profile: (sessionId: string) => ['profile', sessionId],
   data: (podUrl: string, subDir: string) => ['data', podUrl, subDir],
   file: (sessionId: string, url: string) => ['file', sessionId, url],
   members: {
@@ -23,7 +22,6 @@ export const queryKeys = {
     receiverWebId: string,
     accessRequest: InboxItem | undefined
   ) => ['accessRequest', sessionId, receiverPod, receiverWebId, accessRequest],
-  inbox: (sessionId: string) => ['inbox', sessionId],
   accessHistory: (sessionId: string) => ['accessHistory', sessionId],
   accessControl: {
     resourceList: (sessionId: string) => ['resourceList', sessionId],

@@ -27,10 +27,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { useGetProfile } from '@/use-cases/use-get-profile';
 import { NavGroup } from './nav-group';
 import { NavFooter } from './nav-footer';
 import { NavMain } from './nav-main';
+import { useGetProfile } from '@/use-cases/profile';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { session, pod } = useAuth();

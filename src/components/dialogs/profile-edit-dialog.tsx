@@ -8,15 +8,16 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Upload } from 'lucide-react';
 import { Profile } from '@/entities/data/profile';
-import { useUpdateAppProfile } from '@/use-cases/use-update-profile';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { toast } from 'sonner';
+import { useUpdateAppProfile } from '@/use-cases/profile';
 
 interface ProfileEditDialogProps {
   session: Session;
@@ -87,6 +88,7 @@ export function ProfileEditDialog({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Edit Profile</DialogTitle>
+          <DialogDescription>Edit your profile information</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="flex flex-col items-center gap-4">

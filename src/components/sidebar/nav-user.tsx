@@ -18,7 +18,7 @@ import {
 import { useAuth } from '@/context/auth-context';
 import type { Profile } from '@/entities/data/profile';
 import { useNavigate } from '@tanstack/react-router';
-import { useGetProfile } from '@/use-cases/use-get-profile';
+import { useGetProfile } from '@/use-cases/profile';
 
 export function NavUser({ user }: { user: Profile | null | undefined }) {
   const { isMobile } = useSidebar();

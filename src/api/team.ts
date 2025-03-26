@@ -340,11 +340,11 @@ export async function leaveTeam(session: Session | null, pod: string | null) {
 
   const containers = [
     paths.personalData(pod),
-    paths.footballData.root(pod),
-    paths.eventData.root(pod),
-    paths.trackingData.root(pod),
-    paths.biometricData.root(pod),
-    paths.healthData.root(pod),
+    paths.footballData(pod),
+    paths.eventData(pod),
+    paths.trackingData(pod),
+    paths.biometricData(pod),
+    paths.healthData(pod),
   ];
 
   await Promise.all(

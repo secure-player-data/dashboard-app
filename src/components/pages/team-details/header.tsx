@@ -2,7 +2,7 @@ import EditTeamDialog from '@/components/dialogs/edit-team-dialog';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAuth } from '@/context/auth-context';
 import { useGetMember } from '@/use-cases/members';
-import { useGetProfile } from '@/use-cases/use-get-profile';
+import { useGetProfile } from '@/use-cases/profile';
 import { Calendar, Pin, Trophy, Users } from 'lucide-react';
 
 export default function Header() {

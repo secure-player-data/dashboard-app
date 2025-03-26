@@ -1,6 +1,4 @@
 import { useAuth } from '@/context/auth-context';
-import { useGetProfile } from '@/use-cases/use-get-profile';
-import { useSendInvitation } from '@/use-cases/invitations/use-send-invitation';
 import { useNavigate } from '@tanstack/react-router';
 import { FormEvent, useState } from 'react';
 import { toast } from 'sonner';
@@ -16,6 +14,8 @@ import {
   CardHeader,
   CardTitle,
 } from '../ui/card';
+import { useGetProfile } from '@/use-cases/profile';
+import { useSendInvitation } from '@/use-cases/invitations';
 
 const joinTeamSchema = z.object({
   ownerPod: z.string().nonempty({ message: 'Owner Pod is required' }),

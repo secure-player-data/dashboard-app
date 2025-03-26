@@ -14,7 +14,6 @@ import {
   createContainerAt,
   deleteSolidDataset,
 } from '@inrupt/solid-client';
-import { uploadFile } from '@/api/utils';
 import { RDF } from '@inrupt/vocab-common-rdf';
 import { BASE_APP_CONTAINER, paths } from './paths';
 import {
@@ -30,6 +29,7 @@ import { logAccessRequest } from './access-history';
 import { setPublicAccess, updateAgentAccess } from './access-control';
 import { Permission } from '@/entities/permissions';
 import { PROFILE_SCHEMA } from '@/schemas/profile';
+import { uploadFile } from './data';
 
 function isEmptyOrSpaces(str: string | null) {
   return str === null || str.match(/^ *$/) !== null;
@@ -204,13 +204,11 @@ export async function initAppProfile(
     paths.inbox(pod),
     paths.accessHistory(pod),
     paths.personalData(pod),
-    paths.footballData.root(pod),
-    paths.eventData.root(pod),
-    paths.trackingData.root(pod),
-    paths.biometricData.root(pod),
-    paths.healthData.injuries.root(pod),
-    paths.healthData.medicalReports.root(pod),
-    paths.healthData.vaccinations.root(pod),
+    paths.footballData(pod),
+    paths.eventData(pod),
+    paths.trackingData(pod),
+    paths.biometricData(pod),
+    paths.healthData(pod),
   ];
 
   for await (const path of pathsToCreate) {

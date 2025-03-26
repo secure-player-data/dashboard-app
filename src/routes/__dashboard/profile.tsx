@@ -3,13 +3,13 @@ import { useAuth } from '@/context/auth-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Clipboard, Trash2, LogOut, SquarePen } from 'lucide-react';
+import { Clipboard, SquarePen } from 'lucide-react';
 import { toast } from 'sonner';
-import { useGetProfile } from '@/use-cases/use-get-profile';
 import { useGetMembers } from '@/use-cases/use-get-members';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ProfileEditDialog } from '@/components/dialogs/profile-edit-dialog';
 import { useMemo, useState } from 'react';
+import { useGetProfile } from '@/use-cases/profile';
 
 export const Route = createFileRoute('/__dashboard/profile')({
   component: RouteComponent,

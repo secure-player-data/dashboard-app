@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/sidebar';
 import { useEffect, useMemo } from 'react';
 import { isAuthenticated, useAuth } from '@/context/auth-context';
-import { useGetProfile } from '@/use-cases/use-get-profile';
 import {
   CredentialsNotSetException,
   ProfileDoesNotExistException,
@@ -22,6 +21,7 @@ import { useGetAccessPolicy } from '@/use-cases/access-controll';
 import { TriangleAlert, X } from 'lucide-react';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { Button } from '@/components/ui/button';
+import { useGetProfile } from '@/use-cases/profile';
 
 export const Route = createFileRoute('/__dashboard')({
   component: RouteComponent,

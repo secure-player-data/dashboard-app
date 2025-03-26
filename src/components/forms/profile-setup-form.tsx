@@ -13,8 +13,8 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/context/auth-context';
 import { useNavigate } from '@tanstack/react-router';
 import { Loader2 } from 'lucide-react';
-import { useInitProfile } from '@/use-cases/use-init-profile';
 import { z } from 'zod';
+import { useInitProfile } from '@/use-cases/profile';
 
 const profileSchema = z.object({
   firstName: z.string().nonempty(),

@@ -5,11 +5,8 @@ import { DialogFooter } from '@/components/ui/dialog';
 import type { InboxItem } from '@/entities/inboxItem';
 import type { Session } from '@inrupt/solid-client-authn-browser';
 import type { Row } from '@tanstack/react-table';
-import { useDeclineInvitation } from '@/use-cases/invitations/use-decline-invitation';
 import { toast } from 'sonner';
-import { useAcceptInvitation } from '@/use-cases/invitations/use-accept-invitation';
 import { useState } from 'react';
-import { useGetProfile } from '@/use-cases/use-get-profile';
 import {
   Select,
   SelectContent,
@@ -21,6 +18,11 @@ import {
 } from '../../ui/select';
 import { Label } from '../../ui/label';
 import { Invitation } from '@/entities/inboxItem';
+import {
+  useAcceptInvitation,
+  useDeclineInvitation,
+} from '@/use-cases/invitations';
+import { useGetProfile } from '@/use-cases/profile';
 
 interface InvitationDialogProps {
   session: Session;

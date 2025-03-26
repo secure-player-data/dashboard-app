@@ -1,4 +1,4 @@
-import { fetchDataByCategory, fetchFile } from '@/api/utils';
+import { fetchDataByCategory, fetchFile } from '@/api/data';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { useQuery } from '@tanstack/react-query';
 

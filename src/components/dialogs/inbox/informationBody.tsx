@@ -3,9 +3,9 @@ import { Button, ButtonWithLoader } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Calendar, User } from 'lucide-react';
 import { DialogFooter } from '@/components/ui/dialog';
-import { useDeclineInvitation } from '@/use-cases/invitations/use-decline-invitation';
 import { useAuth } from '@/context/auth-context';
 import { toast } from 'sonner';
+import { useDeclineInvitation } from '@/use-cases/invitations';
 
 interface InformationBodyProps {
   information: Information;

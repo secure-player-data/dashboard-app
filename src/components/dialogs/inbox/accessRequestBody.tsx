@@ -5,8 +5,8 @@ import { DialogFooter } from '@/components/ui/dialog';
 import type { AccessRequest, InboxItem } from '@/entities/inboxItem';
 import type { Session } from '@inrupt/solid-client-authn-browser';
 import type { Row } from '@tanstack/react-table';
-import { useDeclineInvitation } from '@/use-cases/invitations/use-decline-invitation';
 import { toast } from 'sonner';
+import { useDeclineInvitation } from '@/use-cases/invitations';
 
 interface accessRequestDialogProps {
   session: Session;

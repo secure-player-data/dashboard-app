@@ -1,6 +1,6 @@
 import type React from 'react';
 import { useState } from 'react';
-import TipTap from '../ui/tiptap';
+import TipTap from '../text-editor/tiptap';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';

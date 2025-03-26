@@ -403,6 +403,10 @@ export async function acceptInvitation({
   await declineInvitation(session, receiverPod, date);
 }
 
+export async function requestDataDeletion(session: Session | null) {
+  throw new Error('Not implemented');
+}
+
 function mapThingToInboxItem(thing: any): InboxItem {
   return {
     type: getStringNoLocale(thing, INBOX_ITEM_SCHEMA.type) ?? '',

@@ -1,6 +1,7 @@
 import { fetchDataByCategory, fetchFile } from '@/api/data';
+import { requestDataDeletion } from '@/api/inbox';
 import { Session } from '@inrupt/solid-client-authn-browser';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 const queryKeys = {
   allData: (pod: string, category: string) => ['data', pod, category],
@@ -23,5 +24,11 @@ export function useGetFile(session: Session | null, url: string) {
   return useQuery({
     queryKey: queryKeys.file(url),
     queryFn: async () => await fetchFile(session, url),
+  });
+}
+
+export function useDeleteData(session: Session | null) {
+  return useMutation({
+    mutationFn: async ({}) => await requestDataDeletion(session),
   });
 }

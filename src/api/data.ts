@@ -82,6 +82,40 @@ export async function fetchDataByCategory(
 }
 
 /**
+ * Demand the deletion of the data. Sends a request to the inbox of the team
+ * responsible to remove the data from third-party systems. Also deletes
+ * the data from the users pod if deleteFromPod is true
+ * @param session of the user requesting the deletion
+ * @param pod of the user to delete the data from
+ * @param data to be deleted
+ * @param deleteFromPod if true, deletes the data from the pod. If false, only
+ * send request to delete the data from third-party systems
+ */
+export async function deleteData(
+  session: Session | null,
+  pod: string | null,
+  data: DataInfo[],
+  deleteFromPod?: boolean
+) {
+  if (!session || !pod) {
+    throw new Error('Session and pod are required');
+  }
+
+  // await sendDeleteRequest();
+
+  if (deleteFromPod) {
+    await Promise.all(
+      data.map(async (item) => {
+        const fileUrl = item.file.url;
+
+        await deleteFile(session, fileUrl);
+        await deleteFile(session, item.id);
+      })
+    );
+  }
+}
+
+/**
  * Returns the content of a file as a JSON object
  * @param session of the requesting user
  * @param url to the file

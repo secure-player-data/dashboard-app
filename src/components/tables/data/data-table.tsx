@@ -21,6 +21,7 @@ import { Grid, List } from 'lucide-react';
 import { useLayout } from '@/context/layout-context';
 import { convertKebabCaseToString } from '@/utils';
 import { DeleteDataDialog } from '@/components/dialogs/delete-data-dialog';
+import { DataInfo } from '@/entities/data-info';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -52,9 +53,9 @@ export function DataTable<TData, TValue>({
     },
   });
 
-  const numberOfSelectedRows = useMemo(() => {
-    return Object.keys(rowSelection).length;
-  }, [rowSelection]);
+  function clearSelection() {
+    setRowSelection({});
+  }
 
   return (
     <div className="grid gap-4">
@@ -68,7 +69,12 @@ export function DataTable<TData, TValue>({
           </p>
         </div>
         <div className="flex gap-2">
-          <DeleteDataDialog numberOfSelected={numberOfSelectedRows} />
+          <DeleteDataDialog
+            selected={table
+              .getFilteredSelectedRowModel()
+              .rows.map((row) => row.original as DataInfo)}
+            onDelete={clearSelection}
+          />
           <div>
             <Button
               onClick={() => setLayout('list')}

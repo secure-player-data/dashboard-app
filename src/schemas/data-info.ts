@@ -1,9 +1,3 @@
-// Metadata for seperate datapoints of a match
-export const METADATA_SCHEMA = {
-  type: 'https://schema.org/Metadata',
-  match: 'https://schema.org/match',
-};
-
 export const DATA_INFO_SCHEMA = {
   type: 'https://schema.org/DataInfo',
   fileUrl: 'https://schema.org/fileUrl',

@@ -12,7 +12,7 @@ import {
 } from '@inrupt/solid-client';
 import { RDF } from '@inrupt/vocab-common-rdf';
 import { safeCall } from '@/utils';
-import { DATA_INFO_SCHEMA } from '@/schemas/metadata';
+import { DATA_INFO_SCHEMA } from '@/schemas/data-info';
 
 export async function seedDb(session: Session, pod: string) {
   await Promise.all(

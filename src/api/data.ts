@@ -1,7 +1,7 @@
 import { DataInfo } from '@/entities/data-info';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { BASE_APP_CONTAINER, DATA_CONTAINER, paths } from './paths';
-import { DATA_INFO_SCHEMA } from '@/schemas/metadata';
+import { DATA_INFO_SCHEMA } from '@/schemas/data-info';
 import { logAccessRequest } from './access-history';
 import {
   createContainerAt,

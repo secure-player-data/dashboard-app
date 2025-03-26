@@ -52,8 +52,8 @@ function RouteComponent() {
   }
 
   return (
-    <section className="flex flex-col pb-4 h-full">
-      <header className="flex items-center justify-between mb-4">
+    <section className="flex flex-col h-full space-y-4">
+      <div className="flex items-center justify-between">
         <Button onClick={goBack} variant="outline">
           <ChevronLeft className="size-4" />
           Back
@@ -64,16 +64,14 @@ function RouteComponent() {
             Export
           </a>
         </Button>
-      </header>
-      <Card className="flex-grow">
-        <CardHeader>
-          <CardTitle>{name.split('.').slice(0, -1)}</CardTitle>
-          <CardDescription>Content of the file '{name}'</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <FileRendrer blob={data.blob} name={name} mimeType={data.mimeType} />
-        </CardContent>
-      </Card>
+      </div>
+      <div>
+        <h1 className="font-bold text-2xl">{name.split('.').slice(0, -1)}</h1>
+        <p className="text-muted-foreground text-sm">
+          Content of the file '{name}'
+        </p>
+      </div>
+      <FileRendrer blob={data.blob} name={name} mimeType={data.mimeType} />
     </section>
   );
 }
@@ -119,28 +117,30 @@ function FileRendrer({
     }, [blob]);
 
     return (
-      <Table>
-        <TableHeader>
-          <TableRow>
+      <div className="border rounded-md h-full">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {text
+                ?.split('\n')[0]
+                .split(',')
+                .map((cell) => <TableHead key={cell}>{cell}</TableHead>)}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {text
-              ?.split('\n')[0]
-              .split(',')
-              .map((cell) => <TableHead key={cell}>{cell}</TableHead>)}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {text
-            ?.split('\n')
-            .slice(1)
-            .map((row) => (
-              <TableRow key={row}>
-                {row.split(',').map((cell) => (
-                  <TableCell key={cell}>{cell}</TableCell>
-                ))}
-              </TableRow>
-            ))}
-        </TableBody>
-      </Table>
+              ?.split('\n')
+              .slice(1)
+              .map((row) => (
+                <TableRow key={row}>
+                  {row.split(',').map((cell) => (
+                    <TableCell key={cell}>{cell}</TableCell>
+                  ))}
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </div>
     );
   }
 

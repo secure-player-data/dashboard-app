@@ -5,6 +5,7 @@ import {
   getSortedRowModel,
   SortingState,
   useReactTable,
+  Table as ITable,
 } from '@tanstack/react-table';
 
 import {
@@ -15,10 +16,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import React, { useEffect, useMemo } from 'react';
-import { Button, ButtonWithLoader } from '@/components/ui/button';
-import { Grid, List } from 'lucide-react';
-import { useLayout } from '@/context/layout-context';
+import React from 'react';
+import { Loader2 } from 'lucide-react';
 import { convertKebabCaseToString } from '@/utils';
 import { DeleteDataDialog } from '@/components/dialogs/delete-data-dialog';
 import { DataInfo } from '@/entities/data-info';
@@ -26,6 +25,8 @@ import { DataInfo } from '@/entities/data-info';
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  isLoading: boolean;
+  error: string | undefined;
   category: string;
   name: string;
 }
@@ -33,10 +34,11 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({
   columns,
   data,
+  isLoading,
+  error,
   category,
   name,
 }: DataTableProps<TData, TValue>) {
-  const { setLayout } = useLayout();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [rowSelection, setRowSelection] = React.useState({});
 
@@ -68,30 +70,12 @@ export function DataTable<TData, TValue>({
             Viewing {convertKebabCaseToString(category)} for {name}
           </p>
         </div>
-        <div className="flex gap-2">
-          <DeleteDataDialog
-            selected={table
-              .getFilteredSelectedRowModel()
-              .rows.map((row) => row.original as DataInfo)}
-            onDelete={clearSelection}
-          />
-          <div>
-            <Button
-              onClick={() => setLayout('list')}
-              variant="outline"
-              className="rounded-r-none"
-            >
-              <List />
-            </Button>
-            <Button
-              onClick={() => setLayout('grid')}
-              variant="outline"
-              className="rounded-l-none"
-            >
-              <Grid />
-            </Button>
-          </div>
-        </div>
+        <DeleteDataDialog
+          selected={table
+            .getFilteredSelectedRowModel()
+            .rows.map((row) => row.original as DataInfo)}
+          onDelete={clearSelection}
+        />
       </div>
       <div className="rounded-md border">
         <Table>
@@ -114,32 +98,12 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
+            <TableContent
+              columns={columns}
+              table={table}
+              isLoading={isLoading}
+              error={error}
+            />
           </TableBody>
         </Table>
       </div>
@@ -148,5 +112,65 @@ export function DataTable<TData, TValue>({
         {table.getFilteredRowModel().rows.length} row(s) selected.
       </div>
     </div>
+  );
+}
+
+function TableContent<TData, TValue>({
+  columns,
+  table,
+  isLoading,
+  error,
+}: {
+  columns: ColumnDef<TData, TValue>[];
+  table: ITable<TData>;
+  isLoading: boolean;
+  error: string | undefined;
+}) {
+  if (isLoading) {
+    return (
+      <TableRow>
+        <TableCell colSpan={columns.length} className="h-24">
+          <Loader2 className="animate-spin mx-auto" />
+        </TableCell>
+      </TableRow>
+    );
+  }
+
+  if (error) {
+    return (
+      <TableRow>
+        <TableCell colSpan={columns.length} className="h-24 text-center">
+          {error}
+        </TableCell>
+      </TableRow>
+    );
+  }
+
+  if (table.getRowModel().rows.length === 0) {
+    return (
+      <TableRow>
+        <TableCell colSpan={columns.length} className="h-24 text-center">
+          No results.
+        </TableCell>
+      </TableRow>
+    );
+  }
+
+  return table.getRowModel().rows?.length ? (
+    table.getRowModel().rows.map((row) => (
+      <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+        {row.getVisibleCells().map((cell) => (
+          <TableCell key={cell.id}>
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          </TableCell>
+        ))}
+      </TableRow>
+    ))
+  ) : (
+    <TableRow>
+      <TableCell colSpan={columns.length} className="h-24 text-center">
+        No results.
+      </TableCell>
+    </TableRow>
   );
 }

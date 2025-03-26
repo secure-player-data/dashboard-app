@@ -182,14 +182,16 @@ export const columns: ColumnDef<DataInfo>[] = [
       const file = row.original.file;
 
       return (
-        <Link
-          to="/file/$url"
-          params={{ url: file.url }}
-          search={{ name: file.name }}
-          className="flex items-center gap-2"
-        >
-          <Eye className="size-4" /> View
-        </Link>
+        <Button asChild variant="ghost" size="sm">
+          <Link
+            to="/file/$url"
+            params={{ url: file.url }}
+            search={{ name: file.name }}
+            className="flex items-center gap-2"
+          >
+            <Eye className="size-4" /> View
+          </Link>
+        </Button>
       );
     },
   },

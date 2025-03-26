@@ -41,7 +41,7 @@ function RouteComponent() {
         title: 'Event Data',
         description: 'Data related to events',
         icon: Calendar,
-        link: '/',
+        link: '/player/$pod/event-data',
         params: { pod: pod ?? 'unknown' },
       },
       {
@@ -55,7 +55,7 @@ function RouteComponent() {
         title: 'Biometric Data',
         description: 'Data related to biometrics',
         icon: Fingerprint,
-        link: '/',
+        link: '/player/$pod/biometric-data',
         params: { pod: pod ?? 'unknown' },
       },
       {

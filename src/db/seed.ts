@@ -52,7 +52,7 @@ export async function seedDb(session: Session, pod: string) {
         const path = `${pod}${BASE_APP_CONTAINER}/${type.category}/files/`;
         await safeCall(createContainerAt(path, { fetch: session.fetch }));
 
-        const file = genereteMockCsv();
+        const file = genereteMockCsv(entry.file);
         const fileName = file.name;
         const renamedFile = new File([file], `${id}.csv`, { type: file.type });
 
@@ -87,21 +87,20 @@ export async function seedDb(session: Session, pod: string) {
   );
 }
 
-function genereteMockCsv(): File {
-  const data = [
-    { id: 1, name: 'John Doe', age: 25, city: 'New York' },
-    { id: 2, name: 'Jane Doe', age: 24, city: 'Los Angeles' },
-    { id: 3, name: 'John Smith', age: 30, city: 'Chicago' },
-  ];
-
-  const headers = Object.keys(data[0]).join(',');
-  const rows = data.map((row) => Object.values(row).join(',')).join('\n');
+function genereteMockCsv(file: {
+  name: string;
+  content: Record<string, unknown>[];
+}): File {
+  const headers = Object.keys(file.content[0]).join(',');
+  const rows = file.content
+    .map((row) => Object.values(row).join(','))
+    .join('\n');
 
   const csvContent = `${headers}\n${rows}`;
 
   const blob = new Blob([csvContent], { type: 'text/csv' });
 
-  return new File([blob], 'mock.csv', { type: 'text/csv' });
+  return new File([blob], file.name, { type: 'text/csv' });
 }
 
 export async function seedDbDeprecated(_session: Session, _pod: string) {

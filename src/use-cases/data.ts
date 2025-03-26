@@ -1,4 +1,4 @@
-import { fetchData, fetchFile } from '@/api/utils';
+import { fetchDataByCategory, fetchFile } from '@/api/utils';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { useQuery } from '@tanstack/react-query';
 
@@ -14,7 +14,7 @@ export function useGetData(
 ) {
   return useQuery({
     queryKey: queryKeys.allData(pod!, category),
-    queryFn: async () => await fetchData(session, pod, category),
+    queryFn: async () => await fetchDataByCategory(session, pod, category),
     enabled: !!session || !!pod,
   });
 }

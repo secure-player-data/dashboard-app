@@ -46,12 +46,12 @@ export async function getPodUrl(session: Session): Promise<string> {
 }
 
 /**
- *
- * @param session
- * @param pod
- * @param categiry
+ * Fetches all data of a given category
+ * @param session of the user requesting the data
+ * @param pod of the user the data belongs to
+ * @param category of the data to fetch
  */
-export async function fetchData(
+export async function fetchDataByCategory(
   session: Session | null,
   pod: string | null,
   category: string
@@ -64,7 +64,7 @@ export async function fetchData(
     throw new Error('Not a supported category');
   }
 
-  const datasetUrl = `${pod}${BASE_APP_CONTAINER}/${category}/`;
+  const datasetUrl = `${paths.root(pod)}${category}/`;
   const dataset = await getSolidDataset(datasetUrl, {
     fetch: session.fetch,
   });

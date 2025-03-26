@@ -13,6 +13,7 @@ import { Link } from '@tanstack/react-router';
 import { ColumnDef } from '@tanstack/react-table';
 import {
   Activity,
+  Calendar,
   Eye,
   Fingerprint,
   Locate,
@@ -46,32 +47,55 @@ export const columns: ColumnDef<Member>[] = [
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
-                <Link to="/player/$pod/personal-data" params={{ pod: pod }}>
+                <Link
+                  to="/player/$pod/$category"
+                  params={{ pod: pod, category: 'personal-data' }}
+                >
                   <User />
                   Player Data
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/player/$pod/football-data" params={{ pod: pod }}>
+                <Link
+                  to="/player/$pod/$category"
+                  params={{ pod: pod, category: 'football-data' }}
+                >
                   <Volleyball />
                   Football Data
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/player/$pod/tracking-data" params={{ pod: pod }}>
+                <Link
+                  to="/player/$pod/$category"
+                  params={{ pod: pod, category: 'event-data' }}
+                >
+                  <Calendar />
+                  Event Data
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link
+                  to="/player/$pod/$category"
+                  params={{ pod: pod, category: 'tracking-data' }}
+                >
                   <Locate />
                   Tracking Data
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                {/* TODO: Update link when biometric data is implemented */}
-                <Link to="/" search={{ player: pod }}>
+                <Link
+                  to="/player/$pod/$category"
+                  params={{ pod: pod, category: 'biometric-data' }}
+                >
                   <Fingerprint />
                   Biometric Data
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/player/$pod/health-data" params={{ pod: pod }}>
+                <Link
+                  to="/player/$pod/$category"
+                  params={{ pod: pod, category: 'health-data' }}
+                >
                   <Activity />
                   Health Data
                 </Link>

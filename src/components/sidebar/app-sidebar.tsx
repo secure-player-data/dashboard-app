@@ -62,7 +62,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             },
             {
               title: 'Event Data',
-              url: '/',
+              url: '/player/$pod/event-data',
               params: { pod: pod ?? 'unknown' },
               icon: Calendar,
             },
@@ -74,7 +74,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             },
             {
               title: 'Biometric Data',
-              url: '/',
+              url: '/player/$pod/biometric-data',
               params: { pod: pod ?? 'unknown' },
               icon: Fingerprint,
             },

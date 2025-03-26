@@ -1,14 +1,16 @@
-import SeasonsOverview from '@/components/pages/football-data/seasons-overview';
-import { SeasonsList } from '@/components/pages/football-data/seasons-list';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { createFileRoute } from '@tanstack/react-router';
+import SeasonsOverview from '@/components/pages/football-data/seasons-overview'
+import { SeasonsList } from '@/components/pages/football-data/seasons-list'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/__dashboard/player/$pod/football-data')({
+export const Route = createFileRoute(
+  '/__dashboard/deprecated/player/$pod/football-data',
+)({
   component: RouteComponent,
-});
+})
 
 function RouteComponent() {
-  const { pod } = Route.useParams();
+  const { pod } = Route.useParams()
 
   return (
     <Tabs defaultValue="club">
@@ -25,5 +27,5 @@ function RouteComponent() {
         <SeasonsList pod={pod} type="nation" />
       </TabsContent>
     </Tabs>
-  );
+  )
 }

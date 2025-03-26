@@ -2,7 +2,7 @@ import {
   fetchInjuries,
   fetchMedicalReports,
   fetchVaccinations,
-} from '@/api/data/health-data';
+} from '@/api/deprecated/health-data';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { useQuery } from '@tanstack/react-query';
 

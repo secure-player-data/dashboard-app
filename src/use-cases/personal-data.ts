@@ -1,6 +1,7 @@
+import { fetchPersonalData } from '@/api/deprecated/personal-data';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { useQuery } from '@tanstack/react-query';
-import { fetchPersonalData } from '@/api/personal-data';
+
 export const queryKeys = {
   peronalData: (pod: string) => ['personal-data', pod],
 };

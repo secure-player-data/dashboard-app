@@ -1,7 +1,7 @@
 import {
   fetchAggregatedEventData,
   fetchEventsForMatch,
-} from '@/api/data/event-data';
+} from '@/api/deprecated/event-data';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { useQuery } from '@tanstack/react-query';
 

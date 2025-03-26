@@ -13,7 +13,6 @@ import {
   setStringNoLocale,
   createContainerAt,
   deleteSolidDataset,
-  saveFileInContainer,
 } from '@inrupt/solid-client';
 import { uploadFile } from '@/api/utils';
 import { RDF } from '@inrupt/vocab-common-rdf';
@@ -204,14 +203,11 @@ export async function initAppProfile(
   const pathsToCreate = [
     paths.inbox(pod),
     paths.accessHistory(pod),
-    paths.footballData.club.root(pod),
-    paths.footballData.national.root(pod),
-    paths.eventData.club.root(pod),
-    paths.eventData.national.root(pod),
-    paths.trackingData.matches.root(pod),
-    paths.trackingData.training.root(pod),
-    paths.biometricData.matches.root(pod),
-    paths.biometricData.training.root(pod),
+    paths.personalData(pod),
+    paths.footballData.root(pod),
+    paths.eventData.root(pod),
+    paths.trackingData.root(pod),
+    paths.biometricData.root(pod),
     paths.healthData.injuries.root(pod),
     paths.healthData.medicalReports.root(pod),
     paths.healthData.vaccinations.root(pod),

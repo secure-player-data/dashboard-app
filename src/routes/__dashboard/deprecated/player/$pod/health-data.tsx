@@ -1,17 +1,19 @@
-import HealthReports from '@/components/pages/health-data/health-reports';
-import Injuries from '@/components/pages/health-data/injuries';
-import Vaccinations from '@/components/pages/health-data/vaccinations';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { TabsContent } from '@radix-ui/react-tabs';
-import { createFileRoute } from '@tanstack/react-router';
-import { Activity, FileText, Syringe } from 'lucide-react';
+import HealthReports from '@/components/pages/health-data/health-reports'
+import Injuries from '@/components/pages/health-data/injuries'
+import Vaccinations from '@/components/pages/health-data/vaccinations'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { TabsContent } from '@radix-ui/react-tabs'
+import { createFileRoute } from '@tanstack/react-router'
+import { Activity, FileText, Syringe } from 'lucide-react'
 
-export const Route = createFileRoute('/__dashboard/player/$pod/health-data')({
+export const Route = createFileRoute(
+  '/__dashboard/deprecated/player/$pod/health-data',
+)({
   component: RouteComponent,
-});
+})
 
 function RouteComponent() {
-  const { pod } = Route.useParams();
+  const { pod } = Route.useParams()
 
   return (
     <div className="h-full">
@@ -41,5 +43,5 @@ function RouteComponent() {
         </TabsContent>
       </Tabs>
     </div>
-  );
+  )
 }

@@ -1,12 +1,13 @@
 import { Session } from '@inrupt/solid-client-authn-browser';
+import deprecatedData from './deprecated-seed.json';
 import data from './seed.json';
-import { uploadFile } from '@/api/utils';
-import { setPublicAccess } from '@/api/access-control';
-import { paths } from '@/api/paths';
+import { BASE_APP_CONTAINER, paths } from '@/api/paths';
 import {
   buildThing,
+  createContainerAt,
   createSolidDataset,
   createThing,
+  saveFileInContainer,
   saveSolidDatasetAt,
   setThing,
 } from '@inrupt/solid-client';
@@ -18,7 +19,7 @@ import {
   FOOTBALL_DATA_SCHEMA,
   SEASON_INFO_SCHEMA,
 } from '@/schemas/football';
-import { METADATA_SCHEMA } from '@/schemas/metadata';
+import { DATA_INFO_SCHEMA, METADATA_SCHEMA } from '@/schemas/metadata';
 import { EVENT_AGGREGATION_SCHEMA, EVENT_DATA_SCHEMA } from '@/schemas/event';
 import { EventAggregation } from '@/entities/data/event-data';
 import { TRACKING_DATA_SCHEMA } from '@/schemas/tracking-data';
@@ -31,7 +32,7 @@ import {
   VACCINATION_SCHEMA,
 } from '@/schemas/health-data';
 
-type TData = typeof data;
+type TData = typeof deprecatedData;
 type TPersonal = TData['personal'];
 type TSeason = TData['seasons'][0];
 type TMatch = TSeason['club']['matches'][0];
@@ -42,26 +43,86 @@ type TVaccination = TData['vaccinations'][0];
 let session: Session;
 let pod: string;
 
-export async function seedDb(_session: Session, _pod: string) {
+export async function seedDb(session: Session, pod: string) {
+  await Promise.all(
+    data.map(async (type) => {
+      type.data.map(async (entry) => {
+        const id = crypto.randomUUID();
+
+        const path = `${pod}${BASE_APP_CONTAINER}/${type.category}/files/`;
+        await safeCall(createContainerAt(path, { fetch: session.fetch }));
+
+        const file = genereteMockCsv(entry.file);
+        const fileName = file.name;
+        const renamedFile = new File([file], `${id}.csv`, { type: file.type });
+
+        await saveFileInContainer(path, renamedFile, {
+          fetch: session.fetch,
+        });
+
+        const thing = buildThing(createThing({ name: id }))
+          .addUrl(RDF.type, DATA_INFO_SCHEMA.type)
+          .addStringNoLocale(DATA_INFO_SCHEMA.fileUrl, `${path}${id}.csv`)
+          .addStringNoLocale(DATA_INFO_SCHEMA.fileName, fileName)
+          .addStringNoLocale(DATA_INFO_SCHEMA.webId, entry.uploadedBy.webId)
+          .addStringNoLocale(DATA_INFO_SCHEMA.name, entry.uploadedBy.name)
+          .addDate(DATA_INFO_SCHEMA.uploadedAt, new Date(entry.uploadedAt))
+          .addStringNoLocale(DATA_INFO_SCHEMA.reason, entry.reason)
+          .addStringNoLocale(DATA_INFO_SCHEMA.location, entry.location)
+          .build();
+
+        let dataset = createSolidDataset();
+        dataset = setThing(dataset, thing);
+
+        const url = `${pod}${BASE_APP_CONTAINER}/${type.category}/${id}`;
+        const [error, _] = await safeCall(
+          saveSolidDatasetAt(url, dataset, { fetch: session.fetch })
+        );
+
+        if (error) {
+          console.error(error);
+        }
+      });
+    })
+  );
+}
+
+function genereteMockCsv(file: {
+  name: string;
+  content: Record<string, unknown>[];
+}): File {
+  const headers = Object.keys(file.content[0]).join(',');
+  const rows = file.content
+    .map((row) => Object.values(row).join(','))
+    .join('\n');
+
+  const csvContent = `${headers}\n${rows}`;
+
+  const blob = new Blob([csvContent], { type: 'text/csv' });
+
+  return new File([blob], file.name, { type: 'text/csv' });
+}
+
+export async function seedDbDeprecated(_session: Session, _pod: string) {
   session = _session;
   pod = _pod;
 
   await Promise.all([
-    seedPersonalData(data.personal),
-    seedInjuries(data.injuries),
-    seedMedicalReports(data.medicalReports),
-    seedVaccinations(data.vaccinations),
-    data.seasons.map(seedSeason),
+    seedPersonalData(deprecatedData.personal),
+    seedInjuries(deprecatedData.injuries),
+    seedMedicalReports(deprecatedData.medicalReports),
+    seedVaccinations(deprecatedData.vaccinations),
+    deprecatedData.seasons.map(seedSeason),
   ]);
 
   // Club aggregatinos
   await seedFootballAggregation(
     {
-      matches: data.seasons.reduce(
+      matches: deprecatedData.seasons.reduce(
         (acc, season) => acc + season.club.matches.length,
         0
       ),
-      minutesPlayed: data.seasons.reduce(
+      minutesPlayed: deprecatedData.seasons.reduce(
         (acc, season) =>
           acc +
           season.club.matches.reduce((acc, match) => acc + match.playTime, 0),
@@ -71,18 +132,20 @@ export async function seedDb(_session: Session, _pod: string) {
     paths.footballData.club.aggregation(pod)
   );
   await seedEventAggregation(
-    getEventAggregation(data.seasons.flatMap((season) => season.club.matches)),
+    getEventAggregation(
+      deprecatedData.seasons.flatMap((season) => season.club.matches)
+    ),
     paths.eventData.club.aggregation(pod)
   );
 
   // Nation aggregation
   await seedFootballAggregation(
     {
-      matches: data.seasons.reduce(
+      matches: deprecatedData.seasons.reduce(
         (acc, season) => acc + season.nation.matches.length,
         0
       ),
-      minutesPlayed: data.seasons.reduce(
+      minutesPlayed: deprecatedData.seasons.reduce(
         (acc, season) =>
           acc +
           season.nation.matches.reduce((acc, match) => acc + match.playTime, 0),
@@ -93,7 +156,7 @@ export async function seedDb(_session: Session, _pod: string) {
   );
   await seedEventAggregation(
     getEventAggregation(
-      data.seasons.flatMap((season) => season.nation.matches)
+      deprecatedData.seasons.flatMap((season) => season.nation.matches)
     ),
     paths.eventData.national.aggregation(pod)
   );

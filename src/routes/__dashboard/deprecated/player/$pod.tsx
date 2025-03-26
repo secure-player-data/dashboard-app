@@ -1,19 +1,19 @@
-import { Badge } from '@/components/ui/badge';
-import { useAuth } from '@/context/auth-context';
-import { useGetPersonalData } from '@/use-cases/personal-data';
-import { useGetProfile } from '@/use-cases/use-get-profile';
-import { createFileRoute, Outlet } from '@tanstack/react-router';
-import { Dot } from 'lucide-react';
+import { Badge } from '@/components/ui/badge'
+import { useAuth } from '@/context/auth-context'
+import { useGetPersonalData } from '@/use-cases/personal-data'
+import { useGetProfile } from '@/use-cases/use-get-profile'
+import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { Dot } from 'lucide-react'
 
-export const Route = createFileRoute('/__dashboard/player/$pod')({
+export const Route = createFileRoute('/__dashboard/deprecated/player/$pod')({
   component: RouteComponent,
-});
+})
 
 function RouteComponent() {
-  const { pod } = Route.useParams();
-  const { session } = useAuth();
-  const { data } = useGetPersonalData(session, pod);
-  const { data: profile } = useGetProfile(session, pod);
+  const { pod } = Route.useParams()
+  const { session } = useAuth()
+  const { data } = useGetPersonalData(session, pod)
+  const { data: profile } = useGetProfile(session, pod)
 
   return (
     <div className="flex flex-col h-full">
@@ -36,5 +36,5 @@ function RouteComponent() {
         <Outlet />
       </div>
     </div>
-  );
+  )
 }

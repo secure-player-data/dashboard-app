@@ -11,6 +11,9 @@ import {
   deleteSolidDataset,
   getStringNoLocale,
   Thing,
+  getThing,
+  setStringNoLocale,
+  saveSolidDatasetAt,
 } from '@inrupt/solid-client';
 import { RDF } from '@inrupt/vocab-common-rdf';
 import { BASE_APP_CONTAINER, INBOX_CONTAINER } from './paths';
@@ -27,11 +30,14 @@ import {
   INBOX_ITEM_SCHEMA,
   INVITATION_SCHEMA,
   INFORMATION_SCHEMA,
+  DELETE_DATA_REQUEST_SCHEMA,
 } from '@/schemas/InboxItems';
 import { fetchProfileData, updateAppProfile } from './profile';
-import { addMemberToTeam, fetchTeamUrl } from './team';
+import { addMemberToTeam, fetchTeamOwner, fetchTeamUrl } from './team';
 import { setPublicAccess, updateAgentAccess } from './access-control';
 import { sendAcceptMail, sendInvitationMail } from './email';
+import { DataInfo } from '@/entities/data-info';
+import { DATA_INFO_SCHEMA } from '@/schemas/data-info';
 
 /**
  * Fetches the inbox of a user
@@ -216,7 +222,6 @@ async function sendToInbox(
 
 /**
  * Sends an access request to a pod
- * // TODO: MOVE THIS INTO NEW PROJECT FOR THIRD PARTY ACCESS
  * @param session of the user that sends the request
  * @param receiverPod the pod of the receiver that the sender wishes to request access to
  * @param receiverWebId the webID of the receiver
@@ -401,6 +406,80 @@ export async function acceptInvitation({
     team: teamName,
   });
   await declineInvitation(session, receiverPod, date);
+}
+
+/**
+ * Send a request to demand the deletion of the data. Sends a request
+ * to the inbox of the team responsible to remove the data from
+ * third-party systems. If deleteFromPod is true, the data will be
+ * deleted from the pod when the request is confirmed.
+ * @param session of the user requesting the deletion
+ * @param pod of the user to delete the data from
+ * @param data to be deleted
+ * @param deleteFromPod if true, deletes the data from the pod opon
+ * confirmation of the request.
+ */
+export async function sendDataDeletionRequest(
+  session: Session | null,
+  pod: string | null,
+  data: DataInfo[],
+  deleteFromPod?: boolean
+) {
+  if (!session || !pod) {
+    throw new Error('Session and pod are required');
+  }
+
+  const teamOwner = await fetchTeamOwner(session, pod);
+
+  const thing = buildThing(createThing({ name: '#data-deletion-request' }))
+    .addUrl(RDF.type, DELETE_DATA_REQUEST_SCHEMA.inboxItem)
+    .addStringNoLocale(DELETE_DATA_REQUEST_SCHEMA.type, 'Data Deletion Request')
+    .addStringNoLocale(DELETE_DATA_REQUEST_SCHEMA.name, 'Sender name')
+    .addStringNoLocale(
+      DELETE_DATA_REQUEST_SCHEMA.webId,
+      session.info.webId ?? ''
+    )
+    .addStringNoLocale(DELETE_DATA_REQUEST_SCHEMA.podUrl, pod)
+    .addStringNoLocale(
+      DELETE_DATA_REQUEST_SCHEMA.time,
+      new Date().toISOString()
+    )
+    .addStringNoLocale(DELETE_DATA_REQUEST_SCHEMA.organization, 'Organization')
+    .addStringNoLocale(
+      DELETE_DATA_REQUEST_SCHEMA.data,
+      data
+        .filter((d) => d.status !== 'Deletion Requested')
+        .map((d) => d.location)
+        .join(',')
+    )
+    .addBoolean(
+      DELETE_DATA_REQUEST_SCHEMA.deleteFromPod,
+      deleteFromPod ?? false
+    )
+    .build();
+
+  await sendToInbox(session, teamOwner.pod, thing);
+
+  // Update status of each data item to 'Deletion Requested'
+  await Promise.all(
+    data.map(async (item) => {
+      // TODO: Give owner write and control access to the data, so they can
+      // update status or delete it from the pod
+      let dataset = await getSolidDataset(item.id, { fetch: session.fetch });
+      let thing = getThingAll(dataset)[0];
+
+      if (!thing) return;
+
+      thing = setStringNoLocale(
+        thing,
+        DATA_INFO_SCHEMA.status,
+        'Deletion Requested'
+      );
+      dataset = setThing(dataset, thing);
+
+      await saveSolidDatasetAt(item.id, dataset, { fetch: session.fetch });
+    })
+  );
 }
 
 function mapThingToInboxItem(thing: any): InboxItem {

@@ -1,4 +1,5 @@
-import { deleteData, fetchDataByCategory, fetchFile } from '@/api/data';
+import { fetchDataByCategory, fetchFile } from '@/api/data';
+import { sendDataDeletionRequest } from '@/api/inbox';
 import { DataInfo } from '@/entities/data-info';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -27,7 +28,7 @@ export function useGetFile(session: Session | null, url: string) {
   });
 }
 
-export function useDeleteData(
+export function useSendDataSeletionRequest(
   session: Session | null,
   pod: string | null,
   category: string
@@ -41,7 +42,7 @@ export function useDeleteData(
     }: {
       data: DataInfo[];
       deleteFromPod?: boolean;
-    }) => await deleteData(session, pod, data, deleteFromPod),
+    }) => await sendDataDeletionRequest(session, pod, data, deleteFromPod),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.allData(pod!, category),

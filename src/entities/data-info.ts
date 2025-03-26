@@ -1,3 +1,5 @@
+export type DataInfoStatus = '' | 'Deletion Requested' | 'Deletion Confirmed';
+
 export type DataInfo = {
   id: string;
   file: {
@@ -11,4 +13,5 @@ export type DataInfo = {
   uploadedAt: Date;
   reason: string;
   location: string;
+  status: DataInfoStatus;
 };

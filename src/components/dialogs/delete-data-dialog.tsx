@@ -1,6 +1,6 @@
 import { AlertCircle, Trash } from 'lucide-react';
 import { Button, ButtonWithLoader } from '../ui/button';
-import { useDeleteData } from '@/use-cases/data';
+import { useSendDataSeletionRequest } from '@/use-cases/data';
 import { useAuth } from '@/context/auth-context';
 import {
   Dialog,
@@ -18,6 +18,7 @@ import { toast } from 'sonner';
 import { log } from '@/lib/log';
 import { Route } from '@/routes/__dashboard/player/$pod/$category';
 import { DataInfo } from '@/entities/data-info';
+import { TeamNotFoundException } from '@/exceptions/team-exceptions';
 
 export function DeleteDataDialog({
   selected,
@@ -32,7 +33,7 @@ export function DeleteDataDialog({
   const [open, setOpen] = useState(false);
   const [deleteFromPod, setDeleteFromPod] = useState(false);
 
-  const mutation = useDeleteData(session, pod, category);
+  const mutation = useSendDataSeletionRequest(session, pod, category);
 
   const numberOfSelected = useMemo(() => {
     return Object.keys(selected).length;
@@ -63,9 +64,15 @@ export function DeleteDataDialog({
             message: error.message,
             obj: error,
           });
-          toast.error(
-            'An error occurred while deleting the data, please try again!'
-          );
+          if (error instanceof TeamNotFoundException) {
+            toast.error(
+              'You are not part of a team. Cannot send deletion request.'
+            );
+          } else {
+            toast.error(
+              'An error occurred while deleting the data, please try again!'
+            );
+          }
         },
       }
     );

@@ -1,3 +1,4 @@
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DataInfo } from '@/entities/data-info';
@@ -7,7 +8,10 @@ import {
   ArrowDown,
   ArrowUp,
   Calendar,
+  Check,
+  Clock,
   Eye,
+  Info,
   Locate,
   MessageSquareMore,
   Play,
@@ -130,6 +134,41 @@ export const columns: ColumnDef<DataInfo>[] = [
           ) : null}
         </Button>
       );
+    },
+  },
+  {
+    accessorKey: 'status',
+    header: () => (
+      <div className="flex items-center gap-2">
+        <Info className="size-4" /> Status
+      </div>
+    ),
+    cell: ({ row }) => {
+      const status = row.original.status;
+
+      if (status === 'Deletion Requested') {
+        return (
+          <Badge
+            variant="outline"
+            className="bg-yellow-50 text-yellow-700 border-yellow-200"
+          >
+            <Clock className="h-3 w-3 mr-1" />
+            Deletion Requested
+          </Badge>
+        );
+      }
+
+      if (status === 'Deletion Confirmed') {
+        return (
+          <Badge
+            variant="outline"
+            className="bg-green-50 text-green-700 border-green-200"
+          >
+            <Check className="h-3 w-3 mr-1" />
+            Deletion Confirmed
+          </Badge>
+        );
+      }
     },
   },
   {

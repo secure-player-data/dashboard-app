@@ -1,9 +1,13 @@
 import { deleteData, fetchDataByCategory, fetchFile } from '@/api/data';
-import { sendDataDeletionRequest } from '@/api/inbox';
+import {
+  sendDataDeletionConfirmation,
+  sendDataDeletionRequest,
+} from '@/api/inbox';
 import { DataInfo } from '@/entities/data-info';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { queryKeys as inboxQueryKeys } from './invitations';
+import { DataDeletionNotification } from '@/entities/inboxItem';
 
 const queryKeys = {
   allData: (pod: string, category: string) => ['data', pod, category],
@@ -85,7 +89,13 @@ export function useConfirmDataDeletion(session: Session | null) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({}) => {},
+    mutationFn: async ({
+      notification,
+      name,
+    }: {
+      notification: DataDeletionNotification;
+      name: string;
+    }) => sendDataDeletionConfirmation(session, name, notification),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: inboxQueryKeys.inbox(session?.info.webId ?? ''),

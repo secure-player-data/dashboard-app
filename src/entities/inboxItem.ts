@@ -6,7 +6,7 @@ export type InboxItem = {
   email: string;
   webId: string;
   podUrl: string;
-  date?: string;
+  date: string;
   organization?: string;
 };
 
@@ -21,6 +21,7 @@ export type Information = InboxItem & {
   informationBody: string;
 };
 
-export type DataDeletionRequest = InboxItem & {
+export type DataDeletionNotification = InboxItem & {
   data: DataInfo[];
+  deletionRequestUrl: string;
 };

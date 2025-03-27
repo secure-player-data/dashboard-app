@@ -24,7 +24,8 @@ export const ACCESS_REQUEST_SCHEMA = {
   accessReason: 'https://schema.org/requestReason',
 };
 
-export const DELETE_DATA_REQUEST_SCHEMA = {
+export const DELETE_DATA_NOTIFICATION_SCHEMA = {
   ...INBOX_ITEM_SCHEMA,
+  deletionRequestUrl: 'https://schema.org/deletionRequestUrl',
   data: 'https://schema.org/data',
 };

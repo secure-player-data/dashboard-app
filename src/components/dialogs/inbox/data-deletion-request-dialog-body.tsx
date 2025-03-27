@@ -9,17 +9,32 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useAuth } from '@/context/auth-context';
-import { DataDeletionRequest } from '@/entities/inboxItem';
+import { DataDeletionNotification } from '@/entities/inboxItem';
 import { useConfirmDataDeletion } from '@/use-cases/data';
+import { useGetProfile } from '@/use-cases/profile';
 import { Building2, CircleAlert, User } from 'lucide-react';
 
 export function DataDeletionRequestDialogBody({
   request,
+  closeDialog,
 }: {
-  request: DataDeletionRequest;
+  request: DataDeletionNotification;
+  closeDialog: () => void;
 }) {
-  const { session } = useAuth();
+  const { session, pod } = useAuth();
+  const { data: profile } = useGetProfile(session, pod);
   const mutation = useConfirmDataDeletion(session);
+
+  function handleConfirm() {
+    mutation.mutate(
+      { notification: request, name: profile?.name ?? '' },
+      {
+        onSuccess: () => {
+          closeDialog();
+        },
+      }
+    );
+  }
 
   return (
     <div className="grid">
@@ -54,8 +69,10 @@ export function DataDeletionRequestDialogBody({
         </div>
         <Table className="border rounded-md">
           <TableHeader>
-            <TableHead>Id</TableHead>
-            <TableHead>Location</TableHead>
+            <TableRow>
+              <TableHead>Id</TableHead>
+              <TableHead>Location</TableHead>
+            </TableRow>
           </TableHeader>
           <TableBody>
             {request.data.map((item, i) => (
@@ -78,7 +95,9 @@ export function DataDeletionRequestDialogBody({
           </AlertDescription>
         </div>
       </Alert>
-      <ButtonWithLoader isLoading={false}>Confirm Deletion</ButtonWithLoader>
+      <ButtonWithLoader isLoading={mutation.isPending} onClick={handleConfirm}>
+        Confirm Deletion
+      </ButtonWithLoader>
     </div>
   );
 }

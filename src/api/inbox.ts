@@ -14,9 +14,10 @@ import {
   getThing,
   setStringNoLocale,
   saveSolidDatasetAt,
+  setDatetime,
 } from '@inrupt/solid-client';
 import { RDF } from '@inrupt/vocab-common-rdf';
-import { BASE_APP_CONTAINER, INBOX_CONTAINER } from './paths';
+import { BASE_APP_CONTAINER, INBOX_CONTAINER, paths } from './paths';
 import { safeCall } from '@/utils';
 import { InboxDoesNotExistException } from '@/exceptions/inbox-exceptions';
 import {
@@ -24,21 +25,25 @@ import {
   Invitation,
   Information,
   AccessRequest,
-  DataDeletionRequest,
+  DataDeletionNotification,
 } from '@/entities/inboxItem';
 import {
   ACCESS_REQUEST_SCHEMA,
   INBOX_ITEM_SCHEMA,
   INVITATION_SCHEMA,
   INFORMATION_SCHEMA,
-  DELETE_DATA_REQUEST_SCHEMA,
+  DELETE_DATA_NOTIFICATION_SCHEMA,
 } from '@/schemas/InboxItems';
 import { fetchProfileData, updateAppProfile } from './profile';
 import { addMemberToTeam, fetchTeamOwner, fetchTeamUrl } from './team';
 import { setPublicAccess, updateAgentAccess } from './access-control';
 import { sendAcceptMail, sendInvitationMail } from './email';
 import { DataInfo } from '@/entities/data-info';
-import { DATA_INFO_SCHEMA } from '@/schemas/data-info';
+import {
+  DATA_DELETION_REQUEST_SCHEMA,
+  DATA_INFO_SCHEMA,
+} from '@/schemas/data-info';
+import { SessionNotSetException } from '@/exceptions/session-exceptions';
 
 /**
  * Fetches the inbox of a user
@@ -92,7 +97,7 @@ export async function fetchInbox(
             return mapThingToAccessRequest(item, baseInboxItem);
           case 'Information':
             return mapThingToInformation(item, baseInboxItem);
-          case 'Data Deletion Request':
+          case 'Data Deletion Notification':
             return mapThingToDeletionRequest(item, baseInboxItem);
           default:
             return baseInboxItem;
@@ -436,30 +441,79 @@ export async function sendDataDeletionRequest(
 
   const teamOwner = await fetchTeamOwner(session, pod);
 
-  const thing = buildThing(createThing({ name: '#data-deletion-request' }))
-    .addUrl(RDF.type, DELETE_DATA_REQUEST_SCHEMA.inboxItem)
-    .addStringNoLocale(DELETE_DATA_REQUEST_SCHEMA.type, 'Data Deletion Request')
-    .addStringNoLocale(DELETE_DATA_REQUEST_SCHEMA.name, request.sender.name)
+  // Create request thing to store in the user's pod
+  const requestId = crypto.randomUUID();
+  let dataset = createSolidDataset();
+  const requestThing = buildThing(
+    createThing({ name: 'data-deletion-request' })
+  )
+    .addUrl(RDF.type, DATA_DELETION_REQUEST_SCHEMA.type)
     .addStringNoLocale(
-      DELETE_DATA_REQUEST_SCHEMA.webId,
+      DATA_DELETION_REQUEST_SCHEMA.senderName,
+      request.sender.name
+    )
+    .addStringNoLocale(
+      DATA_DELETION_REQUEST_SCHEMA.senderWebId,
       session.info.webId ?? ''
     )
-    .addStringNoLocale(DELETE_DATA_REQUEST_SCHEMA.podUrl, pod)
+    .addDatetime(DATA_DELETION_REQUEST_SCHEMA.sentAt, new Date())
+    .addStringNoLocale(DATA_DELETION_REQUEST_SCHEMA.status, 'Requested')
     .addStringNoLocale(
-      DELETE_DATA_REQUEST_SCHEMA.time,
+      DATA_DELETION_REQUEST_SCHEMA.dataOrigins,
+      JSON.stringify(request.data.map((d) => d.location))
+    )
+    .build();
+  dataset = setThing(dataset, requestThing);
+  const datasetUrl = `${paths.deletionRequests(pod)}${requestId}`;
+  await saveSolidDatasetAt(datasetUrl, dataset, { fetch: session.fetch });
+  // Give team owner permission to update this file when confirming the deletion
+  await updateAgentAccess({
+    session,
+    containerUrl: datasetUrl,
+    agentWebId: teamOwner.webId,
+    modes: ['Read', 'Write'],
+  });
+
+  // Create notification to send to team owner
+  const requestNotificationThing = buildThing(
+    createThing({ name: 'data-deletion-notification' })
+  )
+    .addUrl(RDF.type, DELETE_DATA_NOTIFICATION_SCHEMA.inboxItem)
+    .addStringNoLocale(
+      DELETE_DATA_NOTIFICATION_SCHEMA.type,
+      'Data Deletion Notification'
+    )
+    .addStringNoLocale(
+      DELETE_DATA_NOTIFICATION_SCHEMA.name,
+      request.sender.name
+    )
+    .addStringNoLocale(
+      DELETE_DATA_NOTIFICATION_SCHEMA.webId,
+      session.info.webId ?? ''
+    )
+    .addStringNoLocale(DELETE_DATA_NOTIFICATION_SCHEMA.podUrl, pod)
+    .addStringNoLocale(
+      DELETE_DATA_NOTIFICATION_SCHEMA.time,
       new Date().toISOString()
     )
     .addStringNoLocale(
-      DELETE_DATA_REQUEST_SCHEMA.organization,
+      DELETE_DATA_NOTIFICATION_SCHEMA.organization,
       request.sender.organization
     )
     .addStringNoLocale(
-      DELETE_DATA_REQUEST_SCHEMA.data,
-      JSON.stringify(request.data.filter((d) => d.status !== 'Requested'))
+      DELETE_DATA_NOTIFICATION_SCHEMA.data,
+      JSON.stringify(
+        request.data.filter(
+          (d) => d.status !== 'Requested' && d.status !== 'Confirmed'
+        )
+      )
+    )
+    .addStringNoLocale(
+      DELETE_DATA_NOTIFICATION_SCHEMA.deletionRequestUrl,
+      datasetUrl
     )
     .build();
-
-  await sendToInbox(session, teamOwner.pod, thing);
+  await sendToInbox(session, teamOwner.pod, requestNotificationThing);
 
   // Update status of each data item to 'Deletion Requested'
   await Promise.all(
@@ -473,8 +527,94 @@ export async function sendDataDeletionRequest(
       dataset = setThing(dataset, thing);
 
       await saveSolidDatasetAt(item.id, dataset, { fetch: session.fetch });
+      // Give team owner permission to update the status when confirming the
+      // deletion
+      await updateAgentAccess({
+        session,
+        containerUrl: item.id,
+        agentWebId: teamOwner.webId,
+        modes: ['Read', 'Write'],
+      });
     })
   );
+}
+
+/**
+ * Confirm the deletion of the data. Sends a confirmation notification
+ * to the user that requested the deletion and updates the status of
+ * the request
+ * @param session of the user confirming the deletion
+ * @param name of the user confirming the deletion
+ * @param notification the deletion request notifiction
+ */
+export async function sendDataDeletionConfirmation(
+  session: Session | null,
+  name: string,
+  notification: DataDeletionNotification
+) {
+  if (!session) {
+    throw new SessionNotSetException('Session not available');
+  }
+
+  // Update status in the deletion request
+  let dataset = await getSolidDataset(notification.deletionRequestUrl, {
+    fetch: session.fetch,
+  });
+  let thing = getThingAll(dataset)[0];
+  thing = setStringNoLocale(
+    thing,
+    DATA_DELETION_REQUEST_SCHEMA.status,
+    'Confirmed'
+  );
+  thing = setStringNoLocale(
+    thing,
+    DATA_DELETION_REQUEST_SCHEMA.confirmerName,
+    name
+  );
+  thing = setStringNoLocale(
+    thing,
+    DATA_DELETION_REQUEST_SCHEMA.confirmerWebId,
+    session.info.webId ?? ''
+  );
+  thing = setDatetime(
+    thing,
+    DATA_DELETION_REQUEST_SCHEMA.confirmedAt,
+    new Date()
+  );
+  dataset = setThing(dataset, thing);
+  await saveSolidDatasetAt(notification.deletionRequestUrl, dataset, {
+    fetch: session.fetch,
+  });
+
+  // Remove users access from the deletion request
+  await updateAgentAccess({
+    session,
+    containerUrl: notification.deletionRequestUrl,
+    agentWebId: session.info.webId ?? '',
+    modes: [],
+  });
+
+  // Update status in each data item
+  await Promise.all(
+    notification.data.map(async (item) => {
+      let dataset = await getSolidDataset(item.id, { fetch: session.fetch });
+      let thing = getThingAll(dataset)[0];
+      thing = setStringNoLocale(thing, DATA_INFO_SCHEMA.status, 'Confirmed');
+      dataset = setThing(dataset, thing);
+      await saveSolidDatasetAt(item.id, dataset, { fetch: session.fetch });
+
+      // Remove users access from each data item
+      await updateAgentAccess({
+        session,
+        containerUrl: item.id,
+        agentWebId: session.info.webId ?? '',
+        modes: [],
+      });
+    })
+  );
+
+  // Delete notification from inbox
+  await deleteInboxItem(session, notification.podUrl, notification.date);
 }
 
 function mapThingToInboxItem(thing: any): InboxItem {
@@ -528,8 +668,11 @@ function mapThingToInformation(
 function mapThingToDeletionRequest(
   thing: any,
   baseInboxItem: InboxItem
-): DataDeletionRequest {
-  const dataStr = getStringNoLocale(thing, DELETE_DATA_REQUEST_SCHEMA.data);
+): DataDeletionNotification {
+  const dataStr = getStringNoLocale(
+    thing,
+    DELETE_DATA_NOTIFICATION_SCHEMA.data
+  );
   let data: DataInfo[] = [];
 
   if (dataStr && dataStr !== '') {
@@ -539,5 +682,10 @@ function mapThingToDeletionRequest(
   return {
     ...baseInboxItem,
     data,
+    deletionRequestUrl:
+      getStringNoLocale(
+        thing,
+        DELETE_DATA_NOTIFICATION_SCHEMA.deletionRequestUrl
+      ) ?? '',
   };
 }

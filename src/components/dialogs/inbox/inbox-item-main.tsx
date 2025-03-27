@@ -96,7 +96,7 @@ export function InboxTableRowDialog({
                   <div>Information about an action on your pod.</div>
                 </div>
               )}
-              {row.original.type === 'Data Deletion Request' && (
+              {row.original.type === 'Data Deletion Notification' && (
                 <div>Player has demanded to have their data deleted.</div>
               )}
             </div>
@@ -128,8 +128,11 @@ export function InboxTableRowDialog({
             closeDialog={closeDialog}
           ></InvitationDialogBody>
         )}
-        {row.original.type === 'Data Deletion Request' && (
-          <DataDeletionRequestDialogBody request={row.original} />
+        {row.original.type === 'Data Deletion Notification' && (
+          <DataDeletionRequestDialogBody
+            request={row.original}
+            closeDialog={closeDialog}
+          />
         )}
       </DialogContent>
     </Dialog>

@@ -15,3 +15,18 @@ export type DataInfo = {
   location: string;
   status: DataInfoStatus;
 };
+
+export type DataDeletionRequest = {
+  id: string;
+  sender: {
+    name: string;
+    webId: string;
+  };
+  sentAt: Date;
+  confirmer?: {
+    name: string;
+    webId: string;
+  };
+  confirmedAt?: Date;
+  status: DataInfoStatus;
+};

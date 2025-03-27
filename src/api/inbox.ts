@@ -411,19 +411,21 @@ export async function acceptInvitation({
 /**
  * Send a request to demand the deletion of the data. Sends a request
  * to the inbox of the team responsible to remove the data from
- * third-party systems. If deleteFromPod is true, the data will be
- * deleted from the pod when the request is confirmed.
+ * third-party systems.
  * @param session of the user requesting the deletion
  * @param pod of the user to delete the data from
  * @param data to be deleted
- * @param deleteFromPod if true, deletes the data from the pod opon
- * confirmation of the request.
  */
 export async function sendDataDeletionRequest(
   session: Session | null,
   pod: string | null,
-  data: DataInfo[],
-  deleteFromPod?: boolean
+  request: {
+    sender: {
+      name: string;
+      organization: string;
+    };
+    data: DataInfo[];
+  }
 ) {
   if (!session || !pod) {
     throw new Error('Session and pod are required');
@@ -434,7 +436,7 @@ export async function sendDataDeletionRequest(
   const thing = buildThing(createThing({ name: '#data-deletion-request' }))
     .addUrl(RDF.type, DELETE_DATA_REQUEST_SCHEMA.inboxItem)
     .addStringNoLocale(DELETE_DATA_REQUEST_SCHEMA.type, 'Data Deletion Request')
-    .addStringNoLocale(DELETE_DATA_REQUEST_SCHEMA.name, 'Sender name')
+    .addStringNoLocale(DELETE_DATA_REQUEST_SCHEMA.name, request.sender.name)
     .addStringNoLocale(
       DELETE_DATA_REQUEST_SCHEMA.webId,
       session.info.webId ?? ''
@@ -444,17 +446,16 @@ export async function sendDataDeletionRequest(
       DELETE_DATA_REQUEST_SCHEMA.time,
       new Date().toISOString()
     )
-    .addStringNoLocale(DELETE_DATA_REQUEST_SCHEMA.organization, 'Organization')
+    .addStringNoLocale(
+      DELETE_DATA_REQUEST_SCHEMA.organization,
+      request.sender.organization
+    )
     .addStringNoLocale(
       DELETE_DATA_REQUEST_SCHEMA.data,
-      data
-        .filter((d) => d.status !== 'Deletion Requested')
+      request.data
+        .filter((d) => d.status !== 'Requested')
         .map((d) => d.location)
         .join(',')
-    )
-    .addBoolean(
-      DELETE_DATA_REQUEST_SCHEMA.deleteFromPod,
-      deleteFromPod ?? false
     )
     .build();
 
@@ -462,19 +463,13 @@ export async function sendDataDeletionRequest(
 
   // Update status of each data item to 'Deletion Requested'
   await Promise.all(
-    data.map(async (item) => {
-      // TODO: Give owner write and control access to the data, so they can
-      // update status or delete it from the pod
+    request.data.map(async (item) => {
       let dataset = await getSolidDataset(item.id, { fetch: session.fetch });
       let thing = getThingAll(dataset)[0];
 
       if (!thing) return;
 
-      thing = setStringNoLocale(
-        thing,
-        DATA_INFO_SCHEMA.status,
-        'Deletion Requested'
-      );
+      thing = setStringNoLocale(thing, DATA_INFO_SCHEMA.status, 'Requested');
       dataset = setThing(dataset, thing);
 
       await saveSolidDatasetAt(item.id, dataset, { fetch: session.fetch });
@@ -494,6 +489,7 @@ function mapThingToInboxItem(thing: any): InboxItem {
       getStringNoLocale(thing, INBOX_ITEM_SCHEMA.organization) ?? '',
   };
 }
+
 function mapThingToAccessRequest(
   thing: any,
   baseInboxItem: InboxItem
@@ -510,6 +506,7 @@ function mapThingToAccessRequest(
       getStringNoLocale(thing, ACCESS_REQUEST_SCHEMA.accessReason) ?? '',
   };
 }
+
 function mapThingToInformation(
   thing: any,
   baseInboxItem: InboxItem

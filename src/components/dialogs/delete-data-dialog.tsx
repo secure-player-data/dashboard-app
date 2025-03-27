@@ -1,6 +1,5 @@
-import { AlertCircle, Trash } from 'lucide-react';
+import { Trash } from 'lucide-react';
 import { Button, ButtonWithLoader } from '../ui/button';
-import { useSendDataSeletionRequest } from '@/use-cases/data';
 import { useAuth } from '@/context/auth-context';
 import {
   Dialog,
@@ -11,14 +10,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '../ui/dialog';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
-import { Checkbox } from '../ui/checkbox';
-import { toast } from 'sonner';
-import { log } from '@/lib/log';
 import { Route } from '@/routes/__dashboard/player/$pod/$category';
 import { DataInfo } from '@/entities/data-info';
-import { TeamNotFoundException } from '@/exceptions/team-exceptions';
+import {
+  useSendDeletionRequest,
+  useSendDeletionRequestAndDeleteData,
+} from '@/use-cases/data';
+import { toast } from 'sonner';
+import { useGetProfile } from '@/use-cases/profile';
 
 export function DeleteDataDialog({
   selected,
@@ -31,48 +32,65 @@ export function DeleteDataDialog({
   const { pod, category } = Route.useParams();
 
   const [open, setOpen] = useState(false);
-  const [deleteFromPod, setDeleteFromPod] = useState(false);
 
-  const mutation = useSendDataSeletionRequest(session, pod, category);
+  const { data: profile } = useGetProfile(session, pod);
+
+  const requestMutation = useSendDeletionRequest(session, pod, category);
+  const requestAndDeleteMutation = useSendDeletionRequestAndDeleteData(
+    session,
+    pod,
+    category
+  );
 
   const numberOfSelected = useMemo(() => {
     return Object.keys(selected).length;
   }, [selected]);
 
-  function handleDelete() {
-    mutation.mutate(
-      { data: selected, deleteFromPod },
+  const showOptionOne = useMemo(() => {
+    return selected.some((data) => data.status === '');
+  }, [selected]);
+
+  const showWarning = useMemo(() => {
+    return (
+      selected.some(
+        (data) => data.status === 'Requested' || data.status === 'Confirmed'
+      ) && selected.some((data) => data.status === '')
+    );
+  }, [selected]);
+
+  function handleDeletionRequest() {
+    requestMutation.mutate(
+      {
+        data: selected,
+        sender: {
+          name: profile?.name ?? '',
+          organization: profile?.team?.name ?? '',
+        },
+      },
       {
         onSuccess: () => {
           setOpen(false);
-          setDeleteFromPod(false);
           onDelete();
-          if (deleteFromPod) {
-            toast.success(
-              'Data has been deleted from your pod and a request has been sent to delete the data from third-party systems.'
-            );
-          } else {
-            toast.success(
-              'A request has been sent to delete the data from third-party systems.'
-            );
-          }
+          toast.success('Deletion request sent');
         },
-        onError: (error) => {
-          log({
-            type: 'error',
-            label: 'DeleteDataDialog',
-            message: error.message,
-            obj: error,
-          });
-          if (error instanceof TeamNotFoundException) {
-            toast.error(
-              'You are not part of a team. Cannot send deletion request.'
-            );
-          } else {
-            toast.error(
-              'An error occurred while deleting the data, please try again!'
-            );
-          }
+      }
+    );
+  }
+
+  function handleDeletionRequestAndDelete() {
+    requestAndDeleteMutation.mutate(
+      {
+        data: selected,
+        sender: {
+          name: profile?.name ?? '',
+          organization: profile?.team?.name ?? '',
+        },
+      },
+      {
+        onSuccess: () => {
+          setOpen(false);
+          onDelete();
+          toast.success('Deletion request sent and data deleted');
         },
       }
     );
@@ -85,46 +103,75 @@ export function DeleteDataDialog({
           <Trash /> Delete selected
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-w-[900px]">
         <DialogHeader>
           <DialogTitle>Delete data</DialogTitle>
           <DialogDescription>
-            This will send a request to delete the selected Data from
-            third-party systems.
+            Choose how you want to delete the selected data:
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4 py-4">
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Important</AlertTitle>
-            <AlertDescription>
-              By continuing, a request will be sent to the team owner to delete
-              the selected data from third-party systems.
-            </AlertDescription>
-          </Alert>
-
-          <p className="text-sm text-muted-foreground">
-            You will receive a notification when the deletion process has been
-            completed.
-          </p>
-
-          <div className="flex items-start space-x-2 pt-2">
-            <Checkbox
-              id="delete-main"
-              checked={deleteFromPod}
-              onCheckedChange={(checked) => setDeleteFromPod(checked === true)}
-            />
-            <div className="grid gap-1.5 leading-none">
-              <label htmlFor="delete-main" className="text-sm">
-                <p className="font-medium leading-none mb-1 peer-disabled:cursor-no-allowed peer-disabled:opacity-70">
-                  Also delete from pod
+        <div
+          className={`grid gap-4 ${showOptionOne ? 'grid-cols-2' : 'grid-cols-1'}`}
+        >
+          {showOptionOne && (
+            <div className="flex flex-col border p-4 rounded-md">
+              <div className="flex-grow">
+                <h2 className="font-semibold text-xl mb-2">
+                  Option 1: Request deletion from origin
+                </h2>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Request deletion from the third-party system. You will be
+                  notified upon confirmation.
                 </p>
-                <p className="text-muted-foreground">
-                  When checked, the data will also be deleted from your pod in
-                  addition to the third-party request.
-                </p>
-              </label>
+                {showWarning && (
+                  <Alert className="mb-4 border-yellow-500 text-yellow-700">
+                    <AlertTitle>Note</AlertTitle>
+                    <AlertDescription>
+                      This will only affect items that haven't already had a
+                      deletion requests send!
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </div>
+              <ButtonWithLoader
+                variant="destructive"
+                className="w-full"
+                isLoading={requestMutation.isPending}
+                onClick={handleDeletionRequest}
+              >
+                Request External Deletion Only
+              </ButtonWithLoader>
             </div>
+          )}
+          <div className="flex flex-col border p-4 rounded-md">
+            <div className="flex-grow">
+              <h2 className="font-semibold text-xl mb-2">
+                {showOptionOne && 'Option 2: '}Complete deletion
+              </h2>
+              <p className="text-sm text-muted-foreground mb-4">
+                Request deletion from the third-party system AND immediately
+                delete data from our system. You will be notified upon
+                third-party confirmation.
+              </p>
+              {showWarning && (
+                <Alert className="mb-4 border-yellow-500 text-yellow-700">
+                  <AlertTitle>Note</AlertTitle>
+                  <AlertDescription>
+                    Items with pending deletion requests will be removed from
+                    you pod immediately. You will still receive a notification
+                    when upon third-party confirmation in your inbox.
+                  </AlertDescription>
+                </Alert>
+              )}
+            </div>
+            <ButtonWithLoader
+              variant="destructive"
+              className="w-full"
+              isLoading={requestAndDeleteMutation.isPending}
+              onClick={handleDeletionRequestAndDelete}
+            >
+              Request External Deletion Only
+            </ButtonWithLoader>
           </div>
         </div>
         <DialogFooter className="sm:justify-end">
@@ -135,14 +182,6 @@ export function DeleteDataDialog({
           >
             Cancel
           </Button>
-          <ButtonWithLoader
-            type="button"
-            variant="destructive"
-            onClick={handleDelete}
-            isLoading={mutation.isPending}
-          >
-            Confirm Deletion
-          </ButtonWithLoader>
         </DialogFooter>
       </DialogContent>
     </Dialog>

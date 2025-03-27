@@ -146,26 +146,26 @@ export const columns: ColumnDef<DataInfo>[] = [
     cell: ({ row }) => {
       const status = row.original.status;
 
-      if (status === 'Deletion Requested') {
+      if (status === 'Requested') {
         return (
           <Badge
             variant="outline"
             className="bg-yellow-50 text-yellow-700 border-yellow-200"
           >
             <Clock className="h-3 w-3 mr-1" />
-            Deletion Requested
+            Requested
           </Badge>
         );
       }
 
-      if (status === 'Deletion Confirmed') {
+      if (status === 'Confirmed') {
         return (
           <Badge
             variant="outline"
             className="bg-green-50 text-green-700 border-green-200"
           >
             <Check className="h-3 w-3 mr-1" />
-            Deletion Confirmed
+            Confirmed
           </Badge>
         );
       }

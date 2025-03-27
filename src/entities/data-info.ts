@@ -1,4 +1,4 @@
-export type DataInfoStatus = '' | 'Deletion Requested' | 'Deletion Confirmed';
+export type DataInfoStatus = '' | 'Requested' | 'Confirmed';
 
 export type DataInfo = {
   id: string;

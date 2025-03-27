@@ -1,4 +1,4 @@
-import { fetchDataByCategory, fetchFile } from '@/api/data';
+import { deleteData, fetchDataByCategory, fetchFile } from '@/api/data';
 import { sendDataDeletionRequest } from '@/api/inbox';
 import { DataInfo } from '@/entities/data-info';
 import { Session } from '@inrupt/solid-client-authn-browser';
@@ -28,7 +28,7 @@ export function useGetFile(session: Session | null, url: string) {
   });
 }
 
-export function useSendDataSeletionRequest(
+export function useSendDeletionRequest(
   session: Session | null,
   pod: string | null,
   category: string
@@ -38,11 +38,40 @@ export function useSendDataSeletionRequest(
   return useMutation({
     mutationFn: async ({
       data,
-      deleteFromPod,
+      sender,
     }: {
       data: DataInfo[];
-      deleteFromPod?: boolean;
-    }) => await sendDataDeletionRequest(session, pod, data, deleteFromPod),
+      sender: { name: string; organization: string };
+    }) => await sendDataDeletionRequest(session, pod, { data, sender }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.allData(pod!, category),
+      });
+    },
+  });
+}
+
+export function useSendDeletionRequestAndDeleteData(
+  session: Session | null,
+  pod: string | null,
+  category: string
+) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      data,
+      sender,
+    }: {
+      data: DataInfo[];
+      sender: { name: string; organization: string };
+    }) => {
+      await sendDataDeletionRequest(session, pod, {
+        data: data.filter((d) => d.status === ''),
+        sender,
+      });
+      await deleteData(session, pod, data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.allData(pod!, category),

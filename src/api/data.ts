@@ -6,6 +6,7 @@ import { logAccessRequest } from './access-history';
 import {
   createContainerAt,
   deleteContainer,
+  deleteSolidDataset,
   getDate,
   getFile,
   getSolidDataset,
@@ -17,7 +18,6 @@ import {
 } from '@inrupt/solid-client';
 import { SessionNotSetException } from '@/exceptions/session-exceptions';
 import { safeCall } from '@/utils';
-import { sendDataDeletionRequest } from './inbox';
 
 const categories = [
   'personal-data',
@@ -80,6 +80,38 @@ export async function fetchDataByCategory(
         status: (getStringNoLocale(innerThing, DATA_INFO_SCHEMA.status) ??
           '') as DataInfoStatus,
       };
+    })
+  );
+}
+
+/**
+ * Deletes data from a pod
+ * @param session of the user requesting the deletion
+ * @param pod of the user where the data is stored
+ * @param data the data to be deleted
+ */
+export async function deleteData(
+  session: Session | null,
+  pod: string | null,
+  data: DataInfo[]
+) {
+  if (!session || !pod) {
+    throw new SessionNotSetException('Session and pod are required');
+  }
+
+  await Promise.all(
+    data.map(async (item) => {
+      const [fileError] = await safeCall(deleteFile(session, item.file.url));
+      const [datasetError] = await safeCall(
+        deleteSolidDataset(item.id, { fetch: session.fetch })
+      );
+
+      if (fileError) {
+        console.error('Error deleting file', fileError);
+      }
+      if (datasetError) {
+        console.error('Error deleting file info', datasetError);
+      }
     })
   );
 }

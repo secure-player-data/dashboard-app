@@ -27,5 +27,4 @@ export const ACCESS_REQUEST_SCHEMA = {
 export const DELETE_DATA_REQUEST_SCHEMA = {
   ...INBOX_ITEM_SCHEMA,
   data: 'https://schema.org/data',
-  deleteFromPod: 'https://schema.org/deleteFromPod',
 };

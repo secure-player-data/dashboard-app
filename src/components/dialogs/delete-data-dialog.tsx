@@ -115,16 +115,16 @@ export function DeleteDataDialog({
         >
           {showOptionOne && (
             <div className="flex flex-col border p-4 rounded-md">
-              <div className="flex-grow">
-                <h2 className="font-semibold text-xl mb-2">
-                  Option 1: Request deletion from origin
-                </h2>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Request deletion from the third-party system. You will be
-                  notified upon confirmation.
-                </p>
+              <h2 className="font-semibold text-xl mb-2">
+                Option 1: Request deletion from origin
+              </h2>
+              <p className="text-sm text-muted-foreground mb-4">
+                Request deletion from the third-party system. You will be
+                notified upon confirmation.
+              </p>
+              <div className="flex-grow flex items-center">
                 {showWarning && (
-                  <Alert className="mb-4 border-warning bg-warning/10 text-warning">
+                  <Alert className="mb-4 border-warning text-warning">
                     <AlertTitle>Note</AlertTitle>
                     <AlertDescription>
                       This will only affect items that haven't already had a
@@ -154,7 +154,7 @@ export function DeleteDataDialog({
                 confirmation.
               </p>
               {showWarning && (
-                <Alert className="mb-4 border-warning bg-warning/10 text-warning">
+                <Alert className="mb-4 border-warning text-warning">
                   <AlertTitle>Note</AlertTitle>
                   <AlertDescription>
                     Items with pending deletion requests will be removed from

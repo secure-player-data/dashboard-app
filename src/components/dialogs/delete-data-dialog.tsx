@@ -124,7 +124,7 @@ export function DeleteDataDialog({
                   notified upon confirmation.
                 </p>
                 {showWarning && (
-                  <Alert className="mb-4 border-yellow-500 text-yellow-700">
+                  <Alert className="mb-4 border-warning bg-warning/10 text-warning">
                     <AlertTitle>Note</AlertTitle>
                     <AlertDescription>
                       This will only affect items that haven't already had a
@@ -150,11 +150,11 @@ export function DeleteDataDialog({
               </h2>
               <p className="text-sm text-muted-foreground mb-4">
                 Request deletion from the third-party system AND immediately
-                delete data from our system. You will be notified upon
-                third-party confirmation.
+                delete data from your pod. You will be notified upon third-party
+                confirmation.
               </p>
               {showWarning && (
-                <Alert className="mb-4 border-yellow-500 text-yellow-700">
+                <Alert className="mb-4 border-warning bg-warning/10 text-warning">
                   <AlertTitle>Note</AlertTitle>
                   <AlertDescription>
                     Items with pending deletion requests will be removed from
@@ -170,7 +170,7 @@ export function DeleteDataDialog({
               isLoading={requestAndDeleteMutation.isPending}
               onClick={handleDeletionRequestAndDelete}
             >
-              Request External Deletion Only
+              Delete Completely
             </ButtonWithLoader>
           </div>
         </div>

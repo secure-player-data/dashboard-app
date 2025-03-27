@@ -24,6 +24,7 @@ import {
   Invitation,
   Information,
   AccessRequest,
+  DataDeletionRequest,
 } from '@/entities/inboxItem';
 import {
   ACCESS_REQUEST_SCHEMA,
@@ -91,6 +92,8 @@ export async function fetchInbox(
             return mapThingToAccessRequest(item, baseInboxItem);
           case 'Information':
             return mapThingToInformation(item, baseInboxItem);
+          case 'Data Deletion Request':
+            return mapThingToDeletionRequest(item, baseInboxItem);
           default:
             return baseInboxItem;
         }
@@ -452,10 +455,7 @@ export async function sendDataDeletionRequest(
     )
     .addStringNoLocale(
       DELETE_DATA_REQUEST_SCHEMA.data,
-      request.data
-        .filter((d) => d.status !== 'Requested')
-        .map((d) => d.location)
-        .join(',')
+      JSON.stringify(request.data.filter((d) => d.status !== 'Requested'))
     )
     .build();
 
@@ -522,5 +522,22 @@ function mapThingToInformation(
       getStringNoLocale(thing, INFORMATION_SCHEMA.informationHeader) ?? '',
     informationBody:
       getStringNoLocale(thing, INFORMATION_SCHEMA.informationBody) ?? '',
+  };
+}
+
+function mapThingToDeletionRequest(
+  thing: any,
+  baseInboxItem: InboxItem
+): DataDeletionRequest {
+  const dataStr = getStringNoLocale(thing, DELETE_DATA_REQUEST_SCHEMA.data);
+  let data: DataInfo[] = [];
+
+  if (dataStr && dataStr !== '') {
+    data = JSON.parse(dataStr) as DataInfo[];
+  }
+
+  return {
+    ...baseInboxItem,
+    data,
   };
 }

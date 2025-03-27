@@ -1,3 +1,5 @@
+import { DataInfo } from './data-info';
+
 export type InboxItem = {
   type: string;
   senderName: string;
@@ -17,4 +19,8 @@ export type AccessRequest = InboxItem & {
 export type Information = InboxItem & {
   informationHeader: string;
   informationBody: string;
+};
+
+export type DataDeletionRequest = InboxItem & {
+  data: DataInfo[];
 };

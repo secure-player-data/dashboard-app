@@ -17,6 +17,7 @@ import { useState } from 'react';
 import { InformationDialogBody } from './informationBody';
 import { AccessRequestDialogBody } from './accessRequestBody';
 import { InvitationDialogBody } from './invitationBody';
+import { DataDeletionRequestDialogBody } from './data-deletion-request-dialog-body';
 
 interface InboxTableRowDialog {
   session: Session;
@@ -73,8 +74,7 @@ export function InboxTableRowDialog({
               {row.original.type === 'Access Request' && (
                 <div>
                   <div>
-                    {row.original.organization} asking for access to your
-                    data.{' '}
+                    {row.original.organization} asking for access to your data.{' '}
                   </div>
                   <div>
                     If you choose to accept you will grant them access to your
@@ -95,6 +95,9 @@ export function InboxTableRowDialog({
                 <div>
                   <div>Information about an action on your pod.</div>
                 </div>
+              )}
+              {row.original.type === 'Data Deletion Request' && (
+                <div>Player has demanded to have their data deleted.</div>
               )}
             </div>
           </DialogDescription>{' '}
@@ -124,6 +127,9 @@ export function InboxTableRowDialog({
             row={row}
             closeDialog={closeDialog}
           ></InvitationDialogBody>
+        )}
+        {row.original.type === 'Data Deletion Request' && (
+          <DataDeletionRequestDialogBody request={row.original} />
         )}
       </DialogContent>
     </Dialog>

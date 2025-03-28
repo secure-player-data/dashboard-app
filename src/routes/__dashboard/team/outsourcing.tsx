@@ -174,7 +174,7 @@ function RouteComponent() {
     }
   };
   return (
-    <div className="flex flex-col gap-6 px-6">
+    <div className="flex flex-col gap-6">
       <div className="flex-grow grid content-center @container ">
         <form onSubmit={handleSubmit}>
           <div className="grid gap-6 md:grid-cols-2">

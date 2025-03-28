@@ -62,7 +62,7 @@ export async function fetchDataByCategory(
       const innerThing = getThingAll(innerDataset)[0];
 
       return {
-        id: thing.url,
+        url: thing.url,
         file: {
           url: getStringNoLocale(innerThing, DATA_INFO_SCHEMA.fileUrl) ?? '',
           name: getStringNoLocale(innerThing, DATA_INFO_SCHEMA.fileName) ?? '',

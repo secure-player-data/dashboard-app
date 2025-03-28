@@ -1,5 +1,5 @@
 export type DataInfo = {
-  id: string;
+  url: string;
   file: {
     url: string;
     name: string;

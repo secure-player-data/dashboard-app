@@ -26,6 +26,8 @@ import { useAuth } from '@/context/auth-context';
 import { useGetMembers } from '@/use-cases/use-get-members';
 import { useGetResourceList } from '@/use-cases/use-get-resource-list';
 import { toast } from 'sonner';
+import { useGetProfile } from '@/use-cases/profile';
+import { useUploadData } from '@/use-cases/use-upload-data';
 
 type DataEntry = {
   id: string;
@@ -40,6 +42,7 @@ export default function UploadDataForm() {
   const [reason, setReason] = useState<string>('');
   const [location, setLocation] = useState<string>('');
   const [dataEntries, setDataEntries] = useState<DataEntry[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [textContent, setTextContent] = useState<string>('');
   const [hasTextEntry, setHasTextEntry] = useState<boolean>(false);
   const { session, pod } = useAuth();
@@ -48,18 +51,53 @@ export default function UploadDataForm() {
 
   const { data: resourceList } = useGetResourceList(session, pod);
 
+  const { data: profile } = useGetProfile(session, pod);
+
+  const uploadPlayerData = useUploadData(session, pod);
+
+  const resetForm = () => {
+    setDataEntries([]);
+    setUploadedFiles([]);
+    setTextContent('');
+    setDataType('');
+    setReason('');
+    setLocation('');
+    setPlayer('');
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const newEntry: DataEntry = {
-        id: Date.now().toString(),
-        type: 'file',
-        content: URL.createObjectURL(file),
-        fileName: file.name,
-      };
-      setDataEntries([...dataEntries, newEntry]);
-      e.target.value = '';
-    }
+    if (!e.target.files) return;
+
+    const files = Array.from(e.target.files);
+    setUploadedFiles((prevFiles) => {
+      const newFiles = files.filter(
+        (file) =>
+          !prevFiles.some(
+            (existingFile) =>
+              existingFile.name === file.name && existingFile.size === file.size
+          )
+      );
+
+      console.log('New unique files:', newFiles);
+      return [...prevFiles, ...newFiles];
+    });
+
+    setDataEntries((prevEntries) => {
+      const newEntries = files
+        .filter(
+          (file) => !prevEntries.some((entry) => entry.fileName === file.name)
+        )
+        .map((file) => ({
+          id: Date.now().toString(),
+          type: 'file' as 'file',
+          content: URL.createObjectURL(file),
+          fileName: file.name,
+        }));
+
+      return [...prevEntries, ...newEntries];
+    });
+
+    e.target.value = '';
   };
 
   const addTextEntry = () => {
@@ -92,22 +130,41 @@ export default function UploadDataForm() {
     setDataEntries(dataEntries.filter((entry) => entry.id !== id));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const formData = {
-      dataType,
-      player,
-      reason,
-      location,
-      dataEntries: dataEntries.map((entry) => ({
-        type: entry.type,
-        content: entry.type === 'text' ? entry.content : entry.fileName,
-      })),
-    };
+    let playerPod = '';
 
-    console.log('Form submitted:', formData);
-    toast('Form submitted successfully!');
+    if (members) {
+      const member = members.filter((member) => member.name == player);
+      playerPod = member[0].pod;
+    }
+
+    if (!session || !pod) {
+      throw new Error('Missing pod or session');
+    }
+
+    uploadPlayerData.mutate(
+      {
+        session: session,
+        uploadedFile: uploadedFiles,
+        senderPod: pod,
+        uploader: { webId: session?.info.webId!, name: profile?.name! },
+        reason: reason,
+        location: location,
+        category: dataType,
+        receiverPod: playerPod,
+      },
+      {
+        onError: (error) => {
+          toast.error(`An error occured: ${error.message}`);
+        },
+        onSuccess: () => {
+          resetForm();
+          toast('Form submitted successfully!');
+        },
+      }
+    );
   };
 
   const showMemberList = () => {
@@ -193,7 +250,7 @@ export default function UploadDataForm() {
             <Label htmlFor="location">Location of Collected Data</Label>
             <Input
               id="location"
-              placeholder="Where is this data stored?"
+              placeholder="Application > Player > Training > date"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               required
@@ -220,6 +277,7 @@ export default function UploadDataForm() {
                     type="file"
                     className="absolute inset-0 opacity-0 cursor-pointer"
                     onChange={handleFileChange}
+                    multiple
                   />
                   <Button type="button" variant="outline" size="sm">
                     <Upload className="h-4 w-4 mr-2" />
@@ -231,7 +289,9 @@ export default function UploadDataForm() {
 
             {hasTextEntry && (
               <div className="mb-4 border rounded-md">
-                <div className="p-1">{<TipTap />}</div>
+                <div className="p-1">
+                  {<TipTap callback={updateTextEntry()} />}
+                </div>
               </div>
             )}
 
@@ -255,7 +315,7 @@ export default function UploadDataForm() {
                   </TableRow>
                 ) : (
                   dataEntries.map((entry) => (
-                    <TableRow key={entry.id}>
+                    <TableRow key={entry.fileName}>
                       <TableCell>
                         {entry.type === 'file' ? 'File' : 'Text'}
                       </TableCell>

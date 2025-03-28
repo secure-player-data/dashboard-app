@@ -85,7 +85,10 @@ export function useSendDeletionRequestAndDeleteData(
   });
 }
 
-export function useConfirmDataDeletion(session: Session | null) {
+export function useConfirmDataDeletion(
+  session: Session | null,
+  pod: string | null
+) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -95,7 +98,7 @@ export function useConfirmDataDeletion(session: Session | null) {
     }: {
       notification: DataDeletionNotification;
       name: string;
-    }) => sendDataDeletionConfirmation(session, name, notification),
+    }) => sendDataDeletionConfirmation(session, pod, name, notification),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: inboxQueryKeys.inbox(session?.info.webId ?? ''),

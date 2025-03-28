@@ -12,6 +12,7 @@ export const DATA_INFO_SCHEMA = {
 
 export const DATA_DELETION_REQUEST_SCHEMA = {
   type: 'https://schema.org/DataDeletionRequest',
+  id: 'https://schema.org/id',
   senderName: 'https://schema.org/senderName',
   senderWebId: 'https://schema.org/senderWebId',
   sentAt: 'https://schema.org/sentAt',

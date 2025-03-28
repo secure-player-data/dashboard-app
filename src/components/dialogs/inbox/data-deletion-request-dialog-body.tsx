@@ -23,7 +23,7 @@ export function DataDeletionRequestDialogBody({
 }) {
   const { session, pod } = useAuth();
   const { data: profile } = useGetProfile(session, pod);
-  const mutation = useConfirmDataDeletion(session);
+  const mutation = useConfirmDataDeletion(session, pod);
 
   function handleConfirm() {
     mutation.mutate(

@@ -15,6 +15,7 @@ import {
   setStringNoLocale,
   saveSolidDatasetAt,
   setDatetime,
+  addStringNoLocale,
 } from '@inrupt/solid-client';
 import { RDF } from '@inrupt/vocab-common-rdf';
 import { BASE_APP_CONTAINER, INBOX_CONTAINER, paths } from './paths';
@@ -448,6 +449,7 @@ export async function sendDataDeletionRequest(
     createThing({ name: 'data-deletion-request' })
   )
     .addUrl(RDF.type, DATA_DELETION_REQUEST_SCHEMA.type)
+    .addStringNoLocale(DATA_DELETION_REQUEST_SCHEMA.id, requestId)
     .addStringNoLocale(
       DATA_DELETION_REQUEST_SCHEMA.senderName,
       request.sender.name
@@ -471,7 +473,7 @@ export async function sendDataDeletionRequest(
     session,
     containerUrl: datasetUrl,
     agentWebId: teamOwner.webId,
-    modes: ['Read', 'Write'],
+    modes: ['Read', 'Write', 'Control'],
   });
 
   // Create notification to send to team owner
@@ -533,7 +535,7 @@ export async function sendDataDeletionRequest(
         session,
         containerUrl: item.id,
         agentWebId: teamOwner.webId,
-        modes: ['Read', 'Write'],
+        modes: ['Read', 'Write', 'Control'],
       });
     })
   );
@@ -544,15 +546,17 @@ export async function sendDataDeletionRequest(
  * to the user that requested the deletion and updates the status of
  * the request
  * @param session of the user confirming the deletion
+ * @param pod of the user confirming the deletion
  * @param name of the user confirming the deletion
  * @param notification the deletion request notifiction
  */
 export async function sendDataDeletionConfirmation(
   session: Session | null,
+  pod: string | null,
   name: string,
   notification: DataDeletionNotification
 ) {
-  if (!session) {
+  if (!session || !pod) {
     throw new SessionNotSetException('Session not available');
   }
 
@@ -561,6 +565,7 @@ export async function sendDataDeletionConfirmation(
     fetch: session.fetch,
   });
   let thing = getThingAll(dataset)[0];
+  const requestId = getStringNoLocale(thing, DATA_DELETION_REQUEST_SCHEMA.id);
   thing = setStringNoLocale(
     thing,
     DATA_DELETION_REQUEST_SCHEMA.status,
@@ -613,8 +618,16 @@ export async function sendDataDeletionConfirmation(
     })
   );
 
+  // Send confirmation notification to the user that requested the deletion
+  await sendInformation(
+    session,
+    pod,
+    notification.podUrl,
+    'Data Deletion Confirmed',
+    `Your data deletion request with the id ${requestId} has been confirmed. This data has now been deleted. You can view details about the request in the Deletion Request page.`
+  );
   // Delete notification from inbox
-  await deleteInboxItem(session, notification.podUrl, notification.date);
+  await deleteInboxItem(session, pod, notification.date);
 }
 
 function mapThingToInboxItem(thing: any): InboxItem {

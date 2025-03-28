@@ -1,17 +1,53 @@
 import { RequestOverviewDialog } from '@/components/dialogs/request-overview-dialog';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { DataDeletionRequest } from '@/entities/data-info';
 import { ColumnDef } from '@tanstack/react-table';
-import { Check, Clock } from 'lucide-react';
+import { ArrowDown, ArrowUp, Check, Clock, Info } from 'lucide-react';
 
 export const columns: ColumnDef<DataDeletionRequest>[] = [
   {
     accessorKey: 'id',
-    header: 'Id',
+    header: ({ column }) => {
+      const sortDirection = column.getIsSorted();
+      return (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full justify-start"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          ID
+          {sortDirection === 'asc' ? (
+            <ArrowDown />
+          ) : sortDirection === 'desc' ? (
+            <ArrowUp />
+          ) : null}
+        </Button>
+      );
+    },
   },
   {
     accessorKey: 'status',
-    header: 'Status',
+    header: ({ column }) => {
+      const sortDirection = column.getIsSorted();
+      return (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full justify-start"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          <Info />
+          Status
+          {sortDirection === 'asc' ? (
+            <ArrowDown />
+          ) : sortDirection === 'desc' ? (
+            <ArrowUp />
+          ) : null}
+        </Button>
+      );
+    },
     cell: ({ row }) => {
       const status = row.original.status;
 

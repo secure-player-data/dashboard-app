@@ -1,4 +1,4 @@
-import { DataInfo } from '@/entities/data-info';
+import { DataInfo, DataInfoStatus } from '@/entities/data-info';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { BASE_APP_CONTAINER, DATA_CONTAINER, paths } from './paths';
 import { DATA_INFO_SCHEMA } from '@/schemas/data-info';
@@ -6,6 +6,7 @@ import { logAccessRequest } from './access-history';
 import {
   createContainerAt,
   deleteContainer,
+  deleteSolidDataset,
   getDate,
   getFile,
   getSolidDataset,
@@ -76,7 +77,41 @@ export async function fetchDataByCategory(
         reason: getStringNoLocale(innerThing, DATA_INFO_SCHEMA.reason) ?? '',
         location:
           getStringNoLocale(innerThing, DATA_INFO_SCHEMA.location) ?? '',
+        status: (getStringNoLocale(innerThing, DATA_INFO_SCHEMA.status) ??
+          '') as DataInfoStatus,
       };
+    })
+  );
+}
+
+/**
+ * Deletes data from a pod
+ * @param session of the user requesting the deletion
+ * @param pod of the user where the data is stored
+ * @param data the data to be deleted
+ */
+export async function deleteData(
+  session: Session | null,
+  pod: string | null,
+  data: DataInfo[]
+) {
+  if (!session || !pod) {
+    throw new SessionNotSetException('Session and pod are required');
+  }
+
+  await Promise.all(
+    data.map(async (item) => {
+      const [fileError] = await safeCall(deleteFile(session, item.file.url));
+      const [datasetError] = await safeCall(
+        deleteSolidDataset(item.id, { fetch: session.fetch })
+      );
+
+      if (fileError) {
+        console.error('Error deleting file', fileError);
+      }
+      if (datasetError) {
+        console.error('Error deleting file info', datasetError);
+      }
     })
   );
 }

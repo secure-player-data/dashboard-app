@@ -1,10 +1,12 @@
+import { DataInfo } from './data-info';
+
 export type InboxItem = {
   type: string;
   senderName: string;
   email: string;
   webId: string;
   podUrl: string;
-  date?: string;
+  date: string;
   organization?: string;
 };
 
@@ -17,4 +19,9 @@ export type AccessRequest = InboxItem & {
 export type Information = InboxItem & {
   informationHeader: string;
   informationBody: string;
+};
+
+export type DataDeletionNotification = InboxItem & {
+  data: DataInfo[];
+  deletionRequestUrl: string;
 };

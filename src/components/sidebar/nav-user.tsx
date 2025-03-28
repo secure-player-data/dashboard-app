@@ -20,7 +20,7 @@ import type { Profile } from '@/entities/data/profile';
 import { useNavigate } from '@tanstack/react-router';
 import { useGetProfile } from '@/use-cases/profile';
 
-export function NavUser({ user }: { user: Profile | null | undefined }) {
+export function NavUser() {
   const { isMobile } = useSidebar();
   const { signOut, session, pod } = useAuth();
   const navigate = useNavigate();
@@ -32,7 +32,9 @@ export function NavUser({ user }: { user: Profile | null | undefined }) {
 
   const showProfilePicture = () => {
     if (profilePending) {
-      return <Loader2 className="animate-spin" />;
+      return (
+        <div className="animate-pulse bg-muted-foreground/30 w-full h-full" />
+      );
     }
 
     return (
@@ -56,10 +58,23 @@ export function NavUser({ user }: { user: Profile | null | undefined }) {
                 {showProfilePicture()}
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">
-                  {user?.name ?? session?.info.webId}
-                </span>
-                <span className="truncate text-xs">{session?.info.webId}</span>
+                {profilePending ? (
+                  <div className="grid bg-muted-foreground/30 text-transparent rounded-md animate-pulse">
+                    <span className="truncate font-semibold">
+                      Unauthenticated
+                    </span>
+                    <span className="truncate text-xs">Log back in</span>
+                  </div>
+                ) : (
+                  <>
+                    <span className="truncate font-semibold">
+                      {profile?.name ?? session?.info.webId}
+                    </span>
+                    <span className="truncate text-xs">
+                      {session?.info.webId}
+                    </span>
+                  </>
+                )}
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -77,7 +92,7 @@ export function NavUser({ user }: { user: Profile | null | undefined }) {
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">
-                    {user?.name ?? session?.info.webId}
+                    {profile?.name ?? session?.info.webId}
                   </span>
                   <span className="truncate text-xs">
                     {session?.info.webId}

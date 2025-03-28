@@ -17,7 +17,12 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import React from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, RefreshCcw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys as dataQueryKeys } from '@/use-cases/data';
+import { useAuth } from '@/context/auth-context';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -32,6 +37,8 @@ export function DataTable<TData, TValue>({
   isLoading,
   error,
 }: DataTableProps<TData, TValue>) {
+  const queryClient = useQueryClient();
+  const { pod } = useAuth();
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const table = useReactTable({
@@ -45,6 +52,20 @@ export function DataTable<TData, TValue>({
     },
   });
 
+  async function refreshData() {
+    if (!pod) {
+      toast.error(
+        'Failed to refresh data: Pod not found. Please try again later.'
+      );
+      return;
+    }
+
+    await queryClient.invalidateQueries({
+      queryKey: dataQueryKeys.deletionRequests(pod),
+    });
+    toast.info('Data refreshed');
+  }
+
   return (
     <div className="grid gap-4">
       <div className="flex justify-between w-full">
@@ -54,6 +75,14 @@ export function DataTable<TData, TValue>({
             Overview with status for all sent data deletion requests.
           </p>
         </div>
+        <Button
+          variant="outline"
+          title="Refresh data"
+          aria-label="Refresh data"
+          onClick={refreshData}
+        >
+          <RefreshCcw />
+        </Button>
       </div>
       <div className="rounded-md border">
         <Table>

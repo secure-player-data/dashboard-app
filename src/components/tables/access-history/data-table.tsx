@@ -14,7 +14,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Loader2 } from 'lucide-react';
+import { Loader2, RefreshCcw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/use-cases/query-keys';
+import { useAuth } from '@/context/auth-context';
+import { toast } from 'sonner';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -29,14 +34,46 @@ export function DataTable<TData, TValue>({
   isLoading,
   error,
 }: DataTableProps<TData, TValue>) {
+  const queryClient = useQueryClient();
+  const { pod } = useAuth();
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
 
+  async function refreshHistory() {
+    if (!pod) {
+      toast.error(
+        'Failed to refresh access history: Pod not found. Please try again later.'
+      );
+      return;
+    }
+
+    await queryClient.invalidateQueries({
+      queryKey: queryKeys.accessHistory(pod),
+    });
+    toast.info('Access history refreshed');
+  }
+
   return (
-    <div>
+    <div className="grid gap-4">
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <h1 className="font-bold text-2xl">Access History</h1>
+          <p className="text-muted-foreground">
+            View users that have accessed your data
+          </p>
+        </div>
+        <Button
+          variant="outline"
+          title="Refresh history"
+          aria-label="Refresh history"
+          onClick={refreshHistory}
+        >
+          <RefreshCcw />
+        </Button>
+      </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>

@@ -119,7 +119,11 @@ export default function PermissionDetails({
   };
 
   if (permissionsPending) {
-    return <Loader2 className="size-4 animate-spin" />;
+    return (
+      <div className="grid place-items-center h-full">
+        <Loader2 className="size-4 animate-spin" />
+      </div>
+    );
   }
 
   const autoCompleteMembers = () => {

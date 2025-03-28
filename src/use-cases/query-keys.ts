@@ -22,7 +22,7 @@ export const queryKeys = {
     receiverWebId: string,
     accessRequest: InboxItem | undefined
   ) => ['accessRequest', sessionId, receiverPod, receiverWebId, accessRequest],
-  accessHistory: (sessionId: string) => ['accessHistory', sessionId],
+  accessHistory: (pod: string) => ['accessHistory', pod],
   accessControl: {
     resourceList: (sessionId: string) => ['resourceList', sessionId],
     permissionDetails: (sessionId: string, url: string) => [

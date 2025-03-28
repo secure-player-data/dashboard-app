@@ -203,6 +203,7 @@ export async function initAppProfile(
   const pathsToCreate = [
     paths.inbox(pod),
     paths.accessHistory(pod),
+    paths.deletionRequests(pod),
     paths.personalData(pod),
     paths.footballData(pod),
     paths.eventData(pod),

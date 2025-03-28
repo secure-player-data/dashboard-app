@@ -1,13 +1,21 @@
-import { DataInfo, DataInfoStatus } from '@/entities/data-info';
+import {
+  DataDeletionRequest,
+  DataInfo,
+  DataInfoStatus,
+} from '@/entities/data-info';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { BASE_APP_CONTAINER, DATA_CONTAINER, paths } from './paths';
-import { DATA_INFO_SCHEMA } from '@/schemas/data-info';
+import {
+  DATA_DELETION_REQUEST_SCHEMA,
+  DATA_INFO_SCHEMA,
+} from '@/schemas/data-info';
 import { logAccessRequest } from './access-history';
 import {
   createContainerAt,
   deleteContainer,
   deleteSolidDataset,
   getDate,
+  getDatetime,
   getFile,
   getSolidDataset,
   getStringNoLocale,
@@ -112,6 +120,37 @@ export async function deleteData(
       if (datasetError) {
         console.error('Error deleting file info', datasetError);
       }
+    })
+  );
+}
+
+/**
+ * Fetches all deletion requests for a user
+ * @param session of the user requesting the requests
+ * @param pod of the user where the requests are stored
+ */
+export async function fetchDeletionRequests(
+  session: Session | null,
+  pod: string | null
+): Promise<DataDeletionRequest[]> {
+  if (!session || !pod) {
+    throw new SessionNotSetException('Session and pod are required');
+  }
+
+  const datasetUrl = paths.deletionRequests(pod);
+  const dataset = await getSolidDataset(datasetUrl, {
+    fetch: session.fetch,
+  });
+  const things = getThingAll(dataset).filter(
+    (thing) => thing.url !== datasetUrl
+  );
+
+  return await Promise.all(
+    things.map(async (thing) => {
+      const url = thing.url;
+      const dataset = await getSolidDataset(url, { fetch: session.fetch });
+      const deletionRequestThing = getThingAll(dataset)[0];
+      return mapThingToDeletionRequest(deletionRequestThing);
     })
   );
 }
@@ -271,4 +310,42 @@ export async function deleteFolder(session: Session | null, url: string) {
  */
 function isFolder(thing: Thing) {
   return thing.url.endsWith('/');
+}
+
+function mapThingToDeletionRequest(thing: Thing): DataDeletionRequest {
+  const confirmerName = getStringNoLocale(
+    thing,
+    DATA_DELETION_REQUEST_SCHEMA.senderName
+  );
+  const confirmerWebId = getStringNoLocale(
+    thing,
+    DATA_DELETION_REQUEST_SCHEMA.senderWebId
+  );
+  const confirmer =
+    confirmerName && confirmerWebId
+      ? { name: confirmerName, webId: confirmerWebId }
+      : undefined;
+
+  return {
+    id: getStringNoLocale(thing, DATA_DELETION_REQUEST_SCHEMA.id) ?? '',
+    sender: {
+      name:
+        getStringNoLocale(thing, DATA_DELETION_REQUEST_SCHEMA.senderName) ?? '',
+      webId:
+        getStringNoLocale(thing, DATA_DELETION_REQUEST_SCHEMA.senderWebId) ??
+        '',
+    },
+    sentAt:
+      getDatetime(thing, DATA_DELETION_REQUEST_SCHEMA.sentAt) ?? new Date(),
+    confirmer,
+    confirmedAt:
+      getDatetime(thing, DATA_DELETION_REQUEST_SCHEMA.confirmedAt) ?? undefined,
+    status: getStringNoLocale(
+      thing,
+      DATA_DELETION_REQUEST_SCHEMA.status
+    ) as DataInfoStatus,
+    dataOrigins: JSON.parse(
+      getStringNoLocale(thing, DATA_DELETION_REQUEST_SCHEMA.dataOrigins) ?? '[]'
+    ),
+  };
 }

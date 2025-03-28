@@ -19,6 +19,7 @@ import { Route as AuthConfirmationImport } from './routes/auth/confirmation'
 import { Route as AuthCallbackImport } from './routes/auth/callback'
 import { Route as AuthSetupImport } from './routes/auth/_setup'
 import { Route as dashboardSettingsImport } from './routes/__dashboard/settings'
+import { Route as dashboardRequestOverviewImport } from './routes/__dashboard/request-overview'
 import { Route as dashboardProfileImport } from './routes/__dashboard/profile'
 import { Route as dashboardInboxImport } from './routes/__dashboard/inbox'
 import { Route as dashboardAccessHistoryImport } from './routes/__dashboard/access-history'
@@ -75,6 +76,12 @@ const AuthSetupRoute = AuthSetupImport.update({
 const dashboardSettingsRoute = dashboardSettingsImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => dashboardRoute,
+} as any)
+
+const dashboardRequestOverviewRoute = dashboardRequestOverviewImport.update({
+  id: '/request-overview',
+  path: '/request-overview',
   getParentRoute: () => dashboardRoute,
 } as any)
 
@@ -184,6 +191,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof dashboardProfileImport
+      parentRoute: typeof dashboardImport
+    }
+    '/__dashboard/request-overview': {
+      id: '/__dashboard/request-overview'
+      path: '/request-overview'
+      fullPath: '/request-overview'
+      preLoaderRoute: typeof dashboardRequestOverviewImport
       parentRoute: typeof dashboardImport
     }
     '/__dashboard/settings': {
@@ -312,6 +326,7 @@ interface dashboardRouteChildren {
   dashboardAccessHistoryRoute: typeof dashboardAccessHistoryRoute
   dashboardInboxRoute: typeof dashboardInboxRoute
   dashboardProfileRoute: typeof dashboardProfileRoute
+  dashboardRequestOverviewRoute: typeof dashboardRequestOverviewRoute
   dashboardSettingsRoute: typeof dashboardSettingsRoute
   dashboardIndexRoute: typeof dashboardIndexRoute
   dashboardFileUrlRoute: typeof dashboardFileUrlRoute
@@ -325,6 +340,7 @@ const dashboardRouteChildren: dashboardRouteChildren = {
   dashboardAccessHistoryRoute: dashboardAccessHistoryRoute,
   dashboardInboxRoute: dashboardInboxRoute,
   dashboardProfileRoute: dashboardProfileRoute,
+  dashboardRequestOverviewRoute: dashboardRequestOverviewRoute,
   dashboardSettingsRoute: dashboardSettingsRoute,
   dashboardIndexRoute: dashboardIndexRoute,
   dashboardFileUrlRoute: dashboardFileUrlRoute,
@@ -344,6 +360,7 @@ export interface FileRoutesByFullPath {
   '/access-history': typeof dashboardAccessHistoryRoute
   '/inbox': typeof dashboardInboxRoute
   '/profile': typeof dashboardProfileRoute
+  '/request-overview': typeof dashboardRequestOverviewRoute
   '/settings': typeof dashboardSettingsRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/confirmation': typeof AuthConfirmationRoute
@@ -363,6 +380,7 @@ export interface FileRoutesByTo {
   '/access-history': typeof dashboardAccessHistoryRoute
   '/inbox': typeof dashboardInboxRoute
   '/profile': typeof dashboardProfileRoute
+  '/request-overview': typeof dashboardRequestOverviewRoute
   '/settings': typeof dashboardSettingsRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/confirmation': typeof AuthConfirmationRoute
@@ -384,6 +402,7 @@ export interface FileRoutesById {
   '/__dashboard/access-history': typeof dashboardAccessHistoryRoute
   '/__dashboard/inbox': typeof dashboardInboxRoute
   '/__dashboard/profile': typeof dashboardProfileRoute
+  '/__dashboard/request-overview': typeof dashboardRequestOverviewRoute
   '/__dashboard/settings': typeof dashboardSettingsRoute
   '/auth/_setup': typeof AuthSetupRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
@@ -407,6 +426,7 @@ export interface FileRouteTypes {
     | '/access-history'
     | '/inbox'
     | '/profile'
+    | '/request-overview'
     | '/settings'
     | '/auth/callback'
     | '/auth/confirmation'
@@ -425,6 +445,7 @@ export interface FileRouteTypes {
     | '/access-history'
     | '/inbox'
     | '/profile'
+    | '/request-overview'
     | '/settings'
     | '/auth/callback'
     | '/auth/confirmation'
@@ -444,6 +465,7 @@ export interface FileRouteTypes {
     | '/__dashboard/access-history'
     | '/__dashboard/inbox'
     | '/__dashboard/profile'
+    | '/__dashboard/request-overview'
     | '/__dashboard/settings'
     | '/auth/_setup'
     | '/auth/callback'
@@ -499,6 +521,7 @@ export const routeTree = rootRoute
         "/__dashboard/access-history",
         "/__dashboard/inbox",
         "/__dashboard/profile",
+        "/__dashboard/request-overview",
         "/__dashboard/settings",
         "/__dashboard/",
         "/__dashboard/file/$url",
@@ -521,6 +544,10 @@ export const routeTree = rootRoute
     },
     "/__dashboard/profile": {
       "filePath": "__dashboard/profile.tsx",
+      "parent": "/__dashboard"
+    },
+    "/__dashboard/request-overview": {
+      "filePath": "__dashboard/request-overview.tsx",
       "parent": "/__dashboard"
     },
     "/__dashboard/settings": {

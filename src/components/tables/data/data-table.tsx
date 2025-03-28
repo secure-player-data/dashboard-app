@@ -66,6 +66,7 @@ export function DataTable<TData, TValue>({
     await queryClient.invalidateQueries({
       queryKey: dataQueryKeys.allData(pod, category),
     });
+    clearSelection();
     toast.info(`${convertKebabCaseToString(category)} refreshed`);
   }
 

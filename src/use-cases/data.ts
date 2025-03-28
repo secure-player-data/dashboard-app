@@ -17,7 +17,7 @@ import { DataDeletionNotification } from '@/entities/inboxItem';
 export const queryKeys = {
   allData: (pod: string, category: string) => ['data', pod, category],
   file: (url: string) => ['file', url],
-  deletionRequests: (postMessage: string) => ['deletionRequests', postMessage],
+  deletionRequests: (pod: string) => ['deletionRequests', pod],
 };
 
 export function useGetData(

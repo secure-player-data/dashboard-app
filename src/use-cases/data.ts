@@ -1,4 +1,9 @@
-import { deleteData, fetchDataByCategory, fetchFile } from '@/api/data';
+import {
+  deleteData,
+  fetchDataByCategory,
+  fetchDeletionRequests,
+  fetchFile,
+} from '@/api/data';
 import {
   sendDataDeletionConfirmation,
   sendDataDeletionRequest,
@@ -12,6 +17,7 @@ import { DataDeletionNotification } from '@/entities/inboxItem';
 const queryKeys = {
   allData: (pod: string, category: string) => ['data', pod, category],
   file: (url: string) => ['file', url],
+  deletionRequests: (postMessage: string) => ['deletionRequests', postMessage],
 };
 
 export function useGetData(
@@ -104,5 +110,15 @@ export function useConfirmDataDeletion(
         queryKey: inboxQueryKeys.inbox(session?.info.webId ?? ''),
       });
     },
+  });
+}
+
+export function useGetDeletionRequests(
+  session: Session | null,
+  pod: string | null
+) {
+  return useQuery({
+    queryKey: queryKeys.deletionRequests(pod!),
+    queryFn: async () => await fetchDeletionRequests(session, pod),
   });
 }

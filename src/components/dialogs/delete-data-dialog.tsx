@@ -20,6 +20,7 @@ import {
 } from '@/use-cases/data';
 import { toast } from 'sonner';
 import { useGetProfile } from '@/use-cases/profile';
+import { TeamNotFoundException } from '@/exceptions/team-exceptions';
 
 export function DeleteDataDialog({
   selected,
@@ -72,6 +73,13 @@ export function DeleteDataDialog({
           setOpen(false);
           onDelete();
           toast.success('Deletion request sent');
+        },
+        onError: (error) => {
+          if (error instanceof TeamNotFoundException) {
+            toast.error(error.message);
+          } else {
+            toast.error('Something went wrong, please try again later');
+          }
         },
       }
     );

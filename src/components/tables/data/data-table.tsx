@@ -17,10 +17,14 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import React from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, RefreshCcw } from 'lucide-react';
 import { convertKebabCaseToString } from '@/utils';
 import { DeleteDataDialog } from '@/components/dialogs/delete-data-dialog';
 import { DataInfo } from '@/entities/data-info';
+import { Button } from '@/components/ui/button';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys as dataQueryKeys } from '@/use-cases/data';
+import { toast } from 'sonner';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -28,6 +32,7 @@ interface DataTableProps<TData, TValue> {
   isLoading: boolean;
   error: string | undefined;
   category: string;
+  pod: string;
   name: string;
 }
 
@@ -37,8 +42,10 @@ export function DataTable<TData, TValue>({
   isLoading,
   error,
   category,
+  pod,
   name,
 }: DataTableProps<TData, TValue>) {
+  const queryClient = useQueryClient();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [rowSelection, setRowSelection] = React.useState({});
 
@@ -55,6 +62,13 @@ export function DataTable<TData, TValue>({
     },
   });
 
+  async function refreshData() {
+    await queryClient.invalidateQueries({
+      queryKey: dataQueryKeys.allData(pod, category),
+    });
+    toast.info(`${convertKebabCaseToString(category)} refreshed`);
+  }
+
   function clearSelection() {
     setRowSelection({});
   }
@@ -70,12 +84,22 @@ export function DataTable<TData, TValue>({
             Viewing {convertKebabCaseToString(category)} for {name}
           </p>
         </div>
-        <DeleteDataDialog
-          selected={table
-            .getFilteredSelectedRowModel()
-            .rows.map((row) => row.original as DataInfo)}
-          onDelete={clearSelection}
-        />
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            title="Refresh data"
+            aria-label="Refresh data"
+            onClick={refreshData}
+          >
+            <RefreshCcw />
+          </Button>
+          <DeleteDataDialog
+            selected={table
+              .getFilteredSelectedRowModel()
+              .rows.map((row) => row.original as DataInfo)}
+            onDelete={clearSelection}
+          />
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>

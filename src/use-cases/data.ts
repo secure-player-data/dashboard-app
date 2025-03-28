@@ -14,7 +14,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { queryKeys as inboxQueryKeys } from './invitations';
 import { DataDeletionNotification } from '@/entities/inboxItem';
 
-const queryKeys = {
+export const queryKeys = {
   allData: (pod: string, category: string) => ['data', pod, category],
   file: (url: string) => ['file', url],
   deletionRequests: (postMessage: string) => ['deletionRequests', postMessage],

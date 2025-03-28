@@ -4,7 +4,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { DataTable } from '@/components/tables/inbox-table/data-table';
 import { useGetInbox } from '@/use-cases/invitations';
 import { Button } from '@/components/ui/button';
-import { RefreshCcw } from 'lucide-react';
+import { Loader2, RefreshCcw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys as inboxQueryKeys } from '@/use-cases/invitations';
 import { toast } from 'sonner';
@@ -19,8 +19,13 @@ function RouteComponent() {
   const queryClient = useQueryClient();
 
   if (isPending) {
-    return <div>Loading</div>;
+    return (
+      <div className="grid place-items-center h-full">
+        <Loader2 className="animate-spin" />
+      </div>
+    );
   }
+
   if (error) {
     return <div>{error.message}</div>;
   }

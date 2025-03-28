@@ -53,7 +53,12 @@ export function DataTable<TData, TValue>({
   });
 
   async function refreshData() {
-    if (!pod) return;
+    if (!pod) {
+      toast.error(
+        'Failed to refresh data: Pod not found. Please try again later.'
+      );
+      return;
+    }
 
     await queryClient.invalidateQueries({
       queryKey: dataQueryKeys.deletionRequests(pod),

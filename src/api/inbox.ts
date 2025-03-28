@@ -78,16 +78,26 @@ export async function fetchInbox(
     throw new InboxDoesNotExistException('Inbox thing was not found');
   }
 
-  let inbox = await Promise.all(
+  const inbox = await Promise.all(
     inboxThings
       .filter((item) => item.url.split('inbox/')[1]?.length > 0)
-      .map(
-        async (item) =>
-          await getSolidDataset(item.url, { fetch: session.fetch })
-      )
+      .map(async (item) => {
+        const [error, dataset] = await safeCall(
+          getSolidDataset(item.url, { fetch: session.fetch })
+        );
+
+        if (error) {
+          console.error(error);
+          return null;
+        }
+
+        return dataset;
+      })
   );
 
-  const inboxItems: InboxItem[] = inbox
+  const filteredInbox = inbox.filter((item) => item !== null);
+
+  const inboxItems: InboxItem[] = filteredInbox
     .map((dataset) => {
       const inboxThings = getThingAll(dataset);
       return inboxThings.map((item) => {
@@ -602,11 +612,21 @@ export async function sendDataDeletionConfirmation(
   // Update status in each data item
   await Promise.all(
     notification.data.map(async (item) => {
-      let dataset = await getSolidDataset(item.id, { fetch: session.fetch });
+      const [error, dataset] = await safeCall(
+        getSolidDataset(item.id, { fetch: session.fetch })
+      );
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
       let thing = getThingAll(dataset)[0];
       thing = setStringNoLocale(thing, DATA_INFO_SCHEMA.status, 'Confirmed');
-      dataset = setThing(dataset, thing);
-      await saveSolidDatasetAt(item.id, dataset, { fetch: session.fetch });
+      const updatedDataset = setThing(dataset, thing);
+      await saveSolidDatasetAt(item.id, updatedDataset, {
+        fetch: session.fetch,
+      });
 
       // Remove users access from each data item
       await updateAgentAccess({

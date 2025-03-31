@@ -52,21 +52,23 @@ export function RequestOverviewDialog({ data }: { data: DataDeletionRequest }) {
             <div>
               <h2 className="font-semibold">Data</h2>
               <p className="text-muted-foreground text-sm">
-                List of locations for the data requested to be deleted
+                List of the data entries that are requested to be deleted
               </p>
             </div>
             <div className="border rounde-md">
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead>File</TableHead>
                     <TableHead>Location</TableHead>
                     <TableHead>Status</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {data.dataOrigins.map((origin, i) => (
+                  {data.data.map((origin, i) => (
                     <TableRow key={i}>
-                      <TableCell>{origin}</TableCell>
+                      <TableCell>{origin.file}</TableCell>
+                      <TableCell>{origin.location}</TableCell>
                       <TableCell>
                         {data.status === 'Requested' ? (
                           <Badge

@@ -450,6 +450,10 @@ export async function sendDataDeletionRequest(
     throw new Error('Session and pod are required');
   }
 
+  if (request.data.length === 0) {
+    throw new Error('No data to delete');
+  }
+
   const teamOwner = await fetchTeamOwner(session, pod);
 
   // Create request thing to store in the user's pod
@@ -471,8 +475,10 @@ export async function sendDataDeletionRequest(
     .addDatetime(DATA_DELETION_REQUEST_SCHEMA.sentAt, new Date())
     .addStringNoLocale(DATA_DELETION_REQUEST_SCHEMA.status, 'Requested')
     .addStringNoLocale(
-      DATA_DELETION_REQUEST_SCHEMA.dataOrigins,
-      JSON.stringify(request.data.map((d) => d.location))
+      DATA_DELETION_REQUEST_SCHEMA.data,
+      JSON.stringify(
+        request.data.map((d) => ({ location: d.location, file: d.file.name }))
+      )
     )
     .build();
   dataset = setThing(dataset, requestThing);

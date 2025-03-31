@@ -29,5 +29,5 @@ export type DataDeletionRequest = {
   };
   confirmedAt?: Date;
   status: DataInfoStatus;
-  dataOrigins: string[];
+  data: { location: string; file: string }[];
 };

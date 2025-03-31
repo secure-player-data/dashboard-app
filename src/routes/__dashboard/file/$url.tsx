@@ -14,11 +14,20 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/context/auth-context';
-import { useGetFile } from '@/use-cases/data';
+import { useGetData, useGetFile } from '@/use-cases/data';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { zodValidator } from '@tanstack/zod-adapter';
-import { ChevronLeft, FileDown, Loader2 } from 'lucide-react';
+import {
+  Calendar,
+  ChevronLeft,
+  FileDown,
+  Loader2,
+  Locate,
+  User,
+  File,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
 
@@ -37,18 +46,35 @@ function RouteComponent() {
   const { name } = Route.useSearch();
   const router = useRouter();
 
-  const { data, isPending, error } = useGetFile(session, url);
+  const {
+    data: meta,
+    isPending: metaPending,
+    error: metaError,
+  } = useGetData(session, url);
+  const {
+    data: file,
+    isPending: filePending,
+    error: fileError,
+  } = useGetFile(session, meta?.file.url);
 
   function goBack() {
     router.history.back();
   }
 
-  if (isPending) {
-    return <Loader2 className="size-4 animate-spin" />;
+  if (metaPending || filePending) {
+    return (
+      <div className="grid place-items-center h-full">
+        <Loader2 className="animate-spin" />
+      </div>
+    );
   }
 
-  if (error) {
-    return <p>Error: {error.message}</p>;
+  if (metaError) {
+    return <p>Error: {metaError.message}</p>;
+  }
+
+  if (fileError) {
+    return <p>Error: {fileError.message}</p>;
   }
 
   return (
@@ -59,19 +85,71 @@ function RouteComponent() {
           Back
         </Button>
         <Button variant="outline" asChild>
-          <a href={URL.createObjectURL(data.blob)} download={data.name}>
+          <a href={URL.createObjectURL(file.blob)} download={file.name}>
             <FileDown className="size-4" />
             Export
           </a>
         </Button>
       </div>
-      <div>
-        <h1 className="font-bold text-2xl">{name.split('.').slice(0, -1)}</h1>
-        <p className="text-muted-foreground text-sm">
-          Content of the file '{name}'
-        </p>
-      </div>
-      <FileRendrer blob={data.blob} name={name} mimeType={data.mimeType} />
+      <Card>
+        <CardHeader>
+          <CardTitle>File Info</CardTitle>
+          <CardDescription>Information about the file</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 grid-cols-2">
+            <div className="flex gap-2 items-center">
+              <File />
+              <div>
+                <p className="text-sm text-muted-foreground">Name</p>
+                <p>{meta.file.name}</p>
+              </div>
+            </div>
+            <div className="flex gap-2 items-center">
+              <Locate />
+              <div>
+                <p className="text-sm text-muted-foreground">Location</p>
+                <p>{meta.location}</p>
+              </div>
+            </div>
+            <div className="flex gap-2 items-center">
+              <User />
+              <div>
+                <p className="text-sm text-muted-foreground">Uploaded By</p>
+                <p>{meta.uploader.name}</p>
+              </div>
+            </div>
+            <div className="flex gap-2 items-center">
+              <Calendar />
+              <div>
+                <p className="text-sm text-muted-foreground">Uploaded At</p>
+                <p>
+                  {meta.uploadedAt.toLocaleDateString('en-UK', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: 'numeric',
+                  })}
+                </p>
+              </div>
+            </div>
+            <div className="col-span-2">
+              <p className="text-sm text-muted-foreground">Reason</p>
+              <Textarea value={meta.reason} readOnly />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      <Card className="h-full">
+        <CardHeader>
+          <CardTitle>Content</CardTitle>
+          <CardDescription>Content of the file '{name}'</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <FileRendrer blob={file.blob} name={name} mimeType={file.mimeType} />
+        </CardContent>
+      </Card>
     </section>
   );
 }

@@ -1,5 +1,6 @@
 import {
   deleteData,
+  fetchData,
   fetchDataByCategory,
   fetchDeletionRequests,
   fetchFile,
@@ -16,11 +17,12 @@ import { DataDeletionNotification } from '@/entities/inboxItem';
 
 export const queryKeys = {
   allData: (pod: string, category: string) => ['data', pod, category],
+  data: (url: string) => ['data', url],
   file: (url: string) => ['file', url],
   deletionRequests: (pod: string) => ['deletionRequests', pod],
 };
 
-export function useGetData(
+export function useGetDataByCategory(
   session: Session | null,
   pod: string | null,
   category: string
@@ -32,10 +34,19 @@ export function useGetData(
   });
 }
 
-export function useGetFile(session: Session | null, url: string) {
+export function useGetData(session: Session | null, url: string) {
   return useQuery({
-    queryKey: queryKeys.file(url),
-    queryFn: async () => await fetchFile(session, url),
+    queryKey: queryKeys.data(url),
+    queryFn: async () => await fetchData(session, url),
+    enabled: !!session,
+  });
+}
+
+export function useGetFile(session: Session | null, url: string | undefined) {
+  return useQuery({
+    queryKey: queryKeys.file(url!),
+    queryFn: async () => await fetchFile(session, url!),
+    enabled: !!session && !!url,
   });
 }
 
@@ -77,10 +88,13 @@ export function useSendDeletionRequestAndDeleteData(
       data: DataInfo[];
       sender: { name: string; organization: string };
     }) => {
-      await sendDataDeletionRequest(session, pod, {
-        data: data.filter((d) => d.status === ''),
-        sender,
-      });
+      const dataToDelete = data.filter((d) => d.status === '');
+      if (dataToDelete.length > 0) {
+        await sendDataDeletionRequest(session, pod, {
+          data: dataToDelete,
+          sender,
+        });
+      }
       await deleteData(session, pod, data);
     },
     onSuccess: () => {

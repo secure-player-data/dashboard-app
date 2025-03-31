@@ -1,7 +1,7 @@
 import { DataTable } from '@/components/tables/data/data-table';
 import { columns } from '@/components/tables/data/columns';
 import { useAuth } from '@/context/auth-context';
-import { useGetData } from '@/use-cases/data';
+import { useGetDataByCategory } from '@/use-cases/data';
 import { useGetProfile } from '@/use-cases/profile';
 import { createFileRoute } from '@tanstack/react-router';
 
@@ -13,7 +13,11 @@ function RouteComponent() {
   const { category, pod } = Route.useParams();
   const { session } = useAuth();
   const { data: profile } = useGetProfile(session, pod);
-  const { data, isPending, error } = useGetData(session, pod, category);
+  const { data, isPending, error } = useGetDataByCategory(
+    session,
+    pod,
+    category
+  );
 
   return (
     <DataTable

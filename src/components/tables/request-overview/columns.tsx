@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DataDeletionRequest } from '@/entities/data-info';
 import { ColumnDef } from '@tanstack/react-table';
-import { ArrowDown, ArrowUp, Check, Clock, Info } from 'lucide-react';
+import { ArrowDown, ArrowUp, Check, Clock, Info, File } from 'lucide-react';
 
 export const columns: ColumnDef<DataDeletionRequest>[] = [
   {
@@ -25,6 +25,19 @@ export const columns: ColumnDef<DataDeletionRequest>[] = [
           ) : null}
         </Button>
       );
+    },
+  },
+  {
+    accessorKey: 'file',
+    header: () => (
+      <div className="flex items-center gap-2">
+        <File className="size-4" /> Files
+      </div>
+    ),
+    cell: ({ row }) => {
+      const files = row.original.data.map((d) => d.file).join(', ');
+
+      return <p>{files}</p>;
     },
   },
   {

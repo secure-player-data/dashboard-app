@@ -16,7 +16,7 @@ export default function Header() {
         <img
           src={profile?.team?.img || '/placeholder.svg'}
           alt="Placeholder"
-          className="size-56 rounded-md object-cover"
+          className="size-56 rounded-md object-contain"
         />
       ) : (
         <div className="size-56 flex items-center justify-center rounnded-md bg-muted">

@@ -1,5 +1,5 @@
 import type React from 'react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import TipTap from '../text-editor/tiptap';
 import { Button, ButtonWithLoader } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -46,6 +46,7 @@ export default function UploadDataForm() {
   const [textContent, setTextContent] = useState<string>('');
   const [hasTextEntry, setHasTextEntry] = useState<boolean>(false);
   const { session, pod } = useAuth();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: members } = useGetMembers(session, pod);
 
@@ -277,11 +278,17 @@ export default function UploadDataForm() {
                 <div className="relative">
                   <Input
                     type="file"
-                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    className="hidden"
                     onChange={handleFileChange}
+                    ref={fileInputRef}
                     multiple
                   />
-                  <Button type="button" variant="outline" size="sm">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
                     <Upload className="h-4 w-4 mr-2" />
                     Upload File
                   </Button>

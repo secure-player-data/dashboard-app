@@ -8,7 +8,7 @@ import { InboxItem } from '@/entities/inboxItem';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-const queryKeys = {
+export const queryKeys = {
   inbox: (webId: string) => ['inbox', webId],
 };
 

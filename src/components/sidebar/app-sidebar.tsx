@@ -16,6 +16,7 @@ import {
   Locate,
   Fingerprint,
   Activity,
+  PanelsTopLeft,
 } from 'lucide-react';
 
 import { NavUser } from '@/components/sidebar/nav-user';
@@ -91,6 +92,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           title: 'Inbox',
           url: '/inbox',
           icon: InboxIcon,
+        },
+        {
+          title: 'Request Overview',
+          url: '/request-overview',
+          icon: PanelsTopLeft,
         },
         {
           title: 'Access Control',
@@ -175,7 +181,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter>
         <NavFooter items={data.footer} className="mt-auto" />
-        <NavUser user={user} />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   );

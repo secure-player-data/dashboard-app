@@ -9,6 +9,7 @@ export const BIOMETRIC_DATA = 'biometric-data';
 export const HEALTH_DATA = 'health-data';
 
 export const INBOX_CONTAINER = 'inbox';
+export const DELETION_REQUESTS = 'deletion-requests';
 export const ACCESS_HISTORY_CONTAINER = 'access-history';
 
 export const paths = {
@@ -17,6 +18,8 @@ export const paths = {
   personalData: (pod: string) =>
     `${pod}${BASE_APP_CONTAINER}/${PERSONAL_DATA}/`,
   inbox: (pod: string) => `${pod}${BASE_APP_CONTAINER}/${INBOX_CONTAINER}/`,
+  deletionRequests: (pod: string) =>
+    `${pod}${BASE_APP_CONTAINER}/${DELETION_REQUESTS}/`,
   team: {
     root: (pod: string) => `${pod}${BASE_APP_CONTAINER}/team/`,
   },

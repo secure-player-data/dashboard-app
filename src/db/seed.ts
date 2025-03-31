@@ -40,6 +40,7 @@ export async function seedDb(session: Session, pod: string) {
           .addDate(DATA_INFO_SCHEMA.uploadedAt, new Date(entry.uploadedAt))
           .addStringNoLocale(DATA_INFO_SCHEMA.reason, entry.reason)
           .addStringNoLocale(DATA_INFO_SCHEMA.location, entry.location)
+          .addStringNoLocale(DATA_INFO_SCHEMA.status, '')
           .build();
 
         let dataset = createSolidDataset();

@@ -8,7 +8,7 @@ export function useGetAccessHistory(
   pod: string | null
 ) {
   return useQuery({
-    queryKey: queryKeys.accessHistory(session?.info.webId!),
+    queryKey: queryKeys.accessHistory(pod!),
     queryFn: () => fetchAccessHistory(session, pod),
     enabled: !!session && !!pod,
   });

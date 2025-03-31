@@ -104,6 +104,34 @@ export async function fetchTeamUrl(
 }
 
 /**
+ * Returns the webId and the pod url of the team owner
+ * @param session of the user requesting the team owner
+ * @param pod of the user to get the team owner of
+ * @returns { webId, pod } of the team owner
+ */
+export async function fetchTeamOwner(
+  session: Session | null,
+  pod: string | null
+) {
+  if (!session || !pod) {
+    throw new Error('session was not found');
+  }
+
+  const teamUrl = await fetchTeamUrl(session, pod);
+  const teamDataset = await getSolidDataset(teamUrl, { fetch: session.fetch });
+  const teamThing = getThing(teamDataset, `${teamUrl}#owner`);
+
+  if (!teamThing) {
+    throw new TeamNotFoundException('User is not in a team');
+  }
+
+  return {
+    webId: getStringNoLocale(teamThing, TEAM_MEMBER_SCHEMA.webId) ?? '',
+    pod: getStringNoLocale(teamThing, TEAM_MEMBER_SCHEMA.pod) ?? '',
+  };
+}
+
+/**
  * Creates a new team at the requesting user's pod
  * @param name of the team
  * @param tag of the team (RBK, LSK, etc...)

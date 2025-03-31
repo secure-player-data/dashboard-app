@@ -24,3 +24,10 @@ export function birthdateToAge(birthdate: Date): number {
   const ageDate = new Date(ageDiffMs);
   return Math.abs(ageDate.getUTCFullYear() - 1970);
 }
+
+export function convertKebabCaseToString(str: string) {
+  return str
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}

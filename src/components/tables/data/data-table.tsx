@@ -2,6 +2,8 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
   useReactTable,
   Table as ITable,
 } from '@tanstack/react-table';
@@ -14,11 +16,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import React from 'react';
 import { Loader2, RefreshCcw } from 'lucide-react';
+import { convertKebabCaseToString } from '@/utils';
+import { DeleteDataDialog } from '@/components/dialogs/delete-data-dialog';
+import { DataInfo } from '@/entities/data-info';
 import { Button } from '@/components/ui/button';
 import { useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '@/use-cases/query-keys';
-import { useAuth } from '@/context/auth-context';
+import { queryKeys as dataQueryKeys } from '@/use-cases/data';
 import { toast } from 'sonner';
 
 interface DataTableProps<TData, TValue> {
@@ -26,6 +31,9 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   isLoading: boolean;
   error: string | undefined;
+  category: string;
+  pod: string;
+  name: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -33,46 +41,66 @@ export function DataTable<TData, TValue>({
   data,
   isLoading,
   error,
+  category,
+  pod,
+  name,
 }: DataTableProps<TData, TValue>) {
   const queryClient = useQueryClient();
-  const { pod } = useAuth();
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [rowSelection, setRowSelection] = React.useState({});
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    onRowSelectionChange: setRowSelection,
+    state: {
+      sorting,
+      rowSelection,
+    },
   });
 
-  async function refreshHistory() {
-    if (!pod) {
-      toast.error(
-        'Failed to refresh access history: Pod not found. Please try again later.'
-      );
-      return;
-    }
-
+  async function refreshData() {
     await queryClient.invalidateQueries({
-      queryKey: queryKeys.accessHistory(pod),
+      queryKey: dataQueryKeys.allData(pod, category),
     });
-    toast.info('Access history refreshed');
+    clearSelection();
+    toast.info(`${convertKebabCaseToString(category)} refreshed`);
+  }
+
+  function clearSelection() {
+    setRowSelection({});
   }
 
   return (
     <div className="grid gap-4">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex justify-between w-full">
         <div>
-          <h1 className="font-bold text-2xl">Access History</h1>
+          <h1 className="font-bold text-2xl">
+            {convertKebabCaseToString(category)}
+          </h1>
           <p className="text-muted-foreground">
-            View users that have accessed your data
+            Viewing {convertKebabCaseToString(category)} for {name}
           </p>
         </div>
-        <Button
-          variant="outline"
-          title="Refresh history"
-          aria-label="Refresh history"
-          onClick={refreshHistory}
-        >
-          <RefreshCcw />
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            title="Refresh data"
+            aria-label="Refresh data"
+            onClick={refreshData}
+          >
+            <RefreshCcw />
+          </Button>
+          <DeleteDataDialog
+            selected={table
+              .getFilteredSelectedRowModel()
+              .rows.map((row) => row.original as DataInfo)}
+            onDelete={clearSelection}
+          />
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>
@@ -104,9 +132,10 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <p className="text-sm text-muted-foreground text-center my-2">
-        All agents that have accessed some of your resources.
-      </p>
+      <div className="flex-1 text-sm text-muted-foreground">
+        {table.getFilteredSelectedRowModel().rows.length} of{' '}
+        {table.getFilteredRowModel().rows.length} row(s) selected.
+      </div>
     </div>
   );
 }
@@ -152,16 +181,21 @@ function TableContent<TData, TValue>({
     );
   }
 
-  return table.getRowModel().rows.map((row) => (
-    <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-      {row.getVisibleCells().map((cell) => (
-        <TableCell
-          key={cell.id}
-          width={cell.id.endsWith('permissions') ? '370px' : undefined}
-        >
-          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-        </TableCell>
-      ))}
+  return table.getRowModel().rows?.length ? (
+    table.getRowModel().rows.map((row) => (
+      <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+        {row.getVisibleCells().map((cell) => (
+          <TableCell key={cell.id}>
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          </TableCell>
+        ))}
+      </TableRow>
+    ))
+  ) : (
+    <TableRow>
+      <TableCell colSpan={columns.length} className="h-24 text-center">
+        No results.
+      </TableCell>
     </TableRow>
-  ));
+  );
 }

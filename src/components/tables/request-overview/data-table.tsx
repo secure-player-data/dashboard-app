@@ -2,6 +2,8 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
   useReactTable,
   Table as ITable,
 } from '@tanstack/react-table';
@@ -14,12 +16,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import React from 'react';
 import { Loader2, RefreshCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '@/use-cases/query-keys';
-import { useAuth } from '@/context/auth-context';
 import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys as dataQueryKeys } from '@/use-cases/data';
+import { useAuth } from '@/context/auth-context';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -36,40 +39,47 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const queryClient = useQueryClient();
   const { pod } = useAuth();
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting,
+    },
   });
 
-  async function refreshHistory() {
+  async function refreshData() {
     if (!pod) {
       toast.error(
-        'Failed to refresh access history: Pod not found. Please try again later.'
+        'Failed to refresh data: Pod not found. Please try again later.'
       );
       return;
     }
 
     await queryClient.invalidateQueries({
-      queryKey: queryKeys.accessHistory(pod),
+      queryKey: dataQueryKeys.deletionRequests(pod),
     });
-    toast.info('Access history refreshed');
+    toast.info('Data refreshed');
   }
 
   return (
     <div className="grid gap-4">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex justify-between w-full">
         <div>
-          <h1 className="font-bold text-2xl">Access History</h1>
+          <h1 className="font-bold text-2xl">Request Overview</h1>
           <p className="text-muted-foreground">
-            View users that have accessed your data
+            Overview with status for all sent data deletion requests.
           </p>
         </div>
         <Button
           variant="outline"
-          title="Refresh history"
-          aria-label="Refresh history"
-          onClick={refreshHistory}
+          title="Refresh data"
+          aria-label="Refresh data"
+          onClick={refreshData}
         >
           <RefreshCcw />
         </Button>
@@ -104,9 +114,6 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <p className="text-sm text-muted-foreground text-center my-2">
-        All agents that have accessed some of your resources.
-      </p>
     </div>
   );
 }
@@ -152,16 +159,21 @@ function TableContent<TData, TValue>({
     );
   }
 
-  return table.getRowModel().rows.map((row) => (
-    <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-      {row.getVisibleCells().map((cell) => (
-        <TableCell
-          key={cell.id}
-          width={cell.id.endsWith('permissions') ? '370px' : undefined}
-        >
-          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-        </TableCell>
-      ))}
+  return table.getRowModel().rows?.length ? (
+    table.getRowModel().rows.map((row) => (
+      <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+        {row.getVisibleCells().map((cell) => (
+          <TableCell key={cell.id}>
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          </TableCell>
+        ))}
+      </TableRow>
+    ))
+  ) : (
+    <TableRow>
+      <TableCell colSpan={columns.length} className="h-24 text-center">
+        No results.
+      </TableCell>
     </TableRow>
-  ));
+  );
 }

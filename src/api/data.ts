@@ -344,8 +344,8 @@ function mapThingToDeletionRequest(thing: Thing): DataDeletionRequest {
       thing,
       DATA_DELETION_REQUEST_SCHEMA.status
     ) as DataInfoStatus,
-    dataOrigins: JSON.parse(
-      getStringNoLocale(thing, DATA_DELETION_REQUEST_SCHEMA.dataOrigins) ?? '[]'
-    ),
+    data: JSON.parse(
+      getStringNoLocale(thing, DATA_DELETION_REQUEST_SCHEMA.data) ?? '[]'
+    ) as { location: string; file: string }[],
   };
 }

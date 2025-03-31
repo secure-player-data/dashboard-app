@@ -471,8 +471,10 @@ export async function sendDataDeletionRequest(
     .addDatetime(DATA_DELETION_REQUEST_SCHEMA.sentAt, new Date())
     .addStringNoLocale(DATA_DELETION_REQUEST_SCHEMA.status, 'Requested')
     .addStringNoLocale(
-      DATA_DELETION_REQUEST_SCHEMA.dataOrigins,
-      JSON.stringify(request.data.map((d) => d.location))
+      DATA_DELETION_REQUEST_SCHEMA.data,
+      JSON.stringify(
+        request.data.map((d) => ({ location: d.location, file: d.file.name }))
+      )
     )
     .build();
   dataset = setThing(dataset, requestThing);

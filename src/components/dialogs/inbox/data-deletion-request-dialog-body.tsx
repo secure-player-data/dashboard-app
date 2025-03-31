@@ -71,6 +71,7 @@ export function DataDeletionRequestDialogBody({
           <TableHeader>
             <TableRow>
               <TableHead>Id</TableHead>
+              <TableHead>File</TableHead>
               <TableHead>Location</TableHead>
             </TableRow>
           </TableHeader>
@@ -78,6 +79,7 @@ export function DataDeletionRequestDialogBody({
             {request.data.map((item, i) => (
               <TableRow key={item.id}>
                 <TableCell>{i + 1}</TableCell>
+                <TableCell>{item.file.name}</TableCell>
                 <TableCell>{item.location}</TableCell>
               </TableRow>
             ))}

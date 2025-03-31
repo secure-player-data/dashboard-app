@@ -59,14 +59,16 @@ export function RequestOverviewDialog({ data }: { data: DataDeletionRequest }) {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead>File</TableHead>
                     <TableHead>Location</TableHead>
                     <TableHead>Status</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {data.dataOrigins.map((origin, i) => (
+                  {data.data.map((origin, i) => (
                     <TableRow key={i}>
-                      <TableCell>{origin}</TableCell>
+                      <TableCell>{origin.file}</TableCell>
+                      <TableCell>{origin.location}</TableCell>
                       <TableCell>
                         {data.status === 'Requested' ? (
                           <Badge

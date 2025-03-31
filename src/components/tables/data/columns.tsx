@@ -16,6 +16,7 @@ import {
   MessageSquareMore,
   Play,
   User,
+  File,
 } from 'lucide-react';
 
 export const columns: ColumnDef<DataInfo>[] = [
@@ -40,6 +41,19 @@ export const columns: ColumnDef<DataInfo>[] = [
     ),
     enableSorting: false,
     enableHiding: false,
+  },
+  {
+    accessorKey: 'file',
+    header: () => (
+      <div className="flex items-center gap-2">
+        <File className="size-4" /> File
+      </div>
+    ),
+    cell: ({ row }) => {
+      const file = row.original.file;
+
+      return <p>{file.name}</p>;
+    },
   },
   {
     accessorKey: 'uploadedBy',
@@ -116,26 +130,26 @@ export const columns: ColumnDef<DataInfo>[] = [
       );
     },
   },
-  {
-    accessorKey: 'reason',
-    header: ({ column }) => {
-      const sortDirection = column.getIsSorted();
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          <MessageSquareMore />
-          Reason
-          {sortDirection === 'asc' ? (
-            <ArrowDown />
-          ) : sortDirection === 'desc' ? (
-            <ArrowUp />
-          ) : null}
-        </Button>
-      );
-    },
-  },
+  // {
+  //   accessorKey: 'reason',
+  //   header: ({ column }) => {
+  //     const sortDirection = column.getIsSorted();
+  //     return (
+  //       <Button
+  //         variant="ghost"
+  //         onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+  //       >
+  //         <MessageSquareMore />
+  //         Reason
+  //         {sortDirection === 'asc' ? (
+  //           <ArrowDown />
+  //         ) : sortDirection === 'desc' ? (
+  //           <ArrowUp />
+  //         ) : null}
+  //       </Button>
+  //     );
+  //   },
+  // },
   {
     accessorKey: 'status',
     header: () => (

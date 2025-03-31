@@ -20,5 +20,5 @@ export const DATA_DELETION_REQUEST_SCHEMA = {
   confirmerWebId: 'https://schema.org/confirmerWebId',
   confirmedAt: 'https://schema.org/confirmedAt',
   status: 'https://schema.org/status',
-  dataOrigins: 'https://schema.org/dataOrigins',
+  data: 'https://schema.org/data',
 };

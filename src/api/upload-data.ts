@@ -85,6 +85,6 @@ export async function uploadPlayerData(
     senderPod,
     receiverPod,
     'Data was Uploaded to your pod',
-    `You have new data in your pod. Visit ${category} to view more information ; ${category} ; ${reason}`
+    `You have new data in your pod. Visit ${category} to view more information`
   );
 }

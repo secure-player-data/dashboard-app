@@ -31,7 +31,7 @@ export const columns: ColumnDef<DataDeletionRequest>[] = [
     accessorKey: 'file',
     header: () => (
       <div className="flex items-center gap-2">
-        <File className="size-4" /> File
+        <File className="size-4" /> Files
       </div>
     ),
     cell: ({ row }) => {

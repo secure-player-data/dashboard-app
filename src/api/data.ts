@@ -70,26 +70,26 @@ export async function fetchDataByCategory(
       });
       const innerThing = getThingAll(innerDataset)[0];
 
-      return {
-        id: thing.url,
-        file: {
-          url: getStringNoLocale(innerThing, DATA_INFO_SCHEMA.fileUrl) ?? '',
-          name: getStringNoLocale(innerThing, DATA_INFO_SCHEMA.fileName) ?? '',
-        },
-        uploader: {
-          webId: getStringNoLocale(innerThing, DATA_INFO_SCHEMA.webId) ?? '',
-          name: getStringNoLocale(innerThing, DATA_INFO_SCHEMA.name) ?? '',
-        },
-        uploadedAt:
-          getDate(innerThing, DATA_INFO_SCHEMA.uploadedAt) ?? new Date(),
-        reason: getStringNoLocale(innerThing, DATA_INFO_SCHEMA.reason) ?? '',
-        location:
-          getStringNoLocale(innerThing, DATA_INFO_SCHEMA.location) ?? '',
-        status: (getStringNoLocale(innerThing, DATA_INFO_SCHEMA.status) ??
-          '') as DataInfoStatus,
-      };
+      return mapThingToDataInfo(innerThing);
     })
   );
+}
+
+/**
+ *
+ */
+export async function fetchData(
+  session: Session | null,
+  url: string
+): Promise<DataInfo> {
+  if (!session) {
+    throw new SessionNotSetException('User is not logged in');
+  }
+
+  const dataset = await getSolidDataset(url, { fetch: session.fetch });
+  const thing = getThingAll(dataset)[0];
+
+  return mapThingToDataInfo(thing);
 }
 
 /**
@@ -310,6 +310,25 @@ export async function deleteFolder(session: Session | null, url: string) {
  */
 function isFolder(thing: Thing) {
   return thing.url.endsWith('/');
+}
+
+function mapThingToDataInfo(thing: Thing): DataInfo {
+  return {
+    id: thing.url,
+    file: {
+      url: getStringNoLocale(thing, DATA_INFO_SCHEMA.fileUrl) ?? '',
+      name: getStringNoLocale(thing, DATA_INFO_SCHEMA.fileName) ?? '',
+    },
+    uploader: {
+      webId: getStringNoLocale(thing, DATA_INFO_SCHEMA.webId) ?? '',
+      name: getStringNoLocale(thing, DATA_INFO_SCHEMA.name) ?? '',
+    },
+    uploadedAt: getDate(thing, DATA_INFO_SCHEMA.uploadedAt) ?? new Date(),
+    reason: getStringNoLocale(thing, DATA_INFO_SCHEMA.reason) ?? '',
+    location: getStringNoLocale(thing, DATA_INFO_SCHEMA.location) ?? '',
+    status: (getStringNoLocale(thing, DATA_INFO_SCHEMA.status) ??
+      '') as DataInfoStatus,
+  };
 }
 
 function mapThingToDeletionRequest(thing: Thing): DataDeletionRequest {

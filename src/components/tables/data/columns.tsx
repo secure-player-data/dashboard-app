@@ -199,7 +199,7 @@ export const columns: ColumnDef<DataInfo>[] = [
         <Button asChild variant="ghost" size="sm">
           <Link
             to="/file/$url"
-            params={{ url: file.url }}
+            params={{ url: row.original.id }}
             search={{ name: file.name }}
             className="flex items-center gap-2"
           >

@@ -1,17 +1,12 @@
-import {
-  createFileRoute,
-  Outlet,
-  redirect,
-  useNavigate,
-} from '@tanstack/react-router';
+import { createFileRoute, Outlet, useNavigate } from '@tanstack/react-router';
 import { AppSidebar } from '@/components/sidebar/app-sidebar';
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { useEffect, useMemo } from 'react';
-import { isAuthenticated, useAuth } from '@/context/auth-context';
+import { useEffect } from 'react';
+import { useAuth } from '@/context/auth-context';
 import {
   CredentialsNotSetException,
   ProfileDoesNotExistException,
@@ -25,11 +20,6 @@ import { useGetProfile } from '@/use-cases/profile';
 
 export const Route = createFileRoute('/__dashboard')({
   component: RouteComponent,
-  beforeLoad: () => {
-    if (!isAuthenticated()) {
-      throw redirect({ to: '/auth/login' });
-    }
-  },
 });
 
 function RouteComponent() {

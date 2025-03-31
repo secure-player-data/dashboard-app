@@ -1,15 +1,10 @@
 import { Button } from '@/components/ui/button';
-import { isAuthenticated, useAuth } from '@/context/auth-context';
-import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
+import { useAuth } from '@/context/auth-context';
+import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { LogOut } from 'lucide-react';
 
 export const Route = createFileRoute('/auth/_setup')({
   component: RouteComponent,
-  beforeLoad: () => {
-    if (!isAuthenticated()) {
-      throw redirect({ to: '/auth/login' });
-    }
-  },
 });
 
 function RouteComponent() {

@@ -1,3 +1,4 @@
+import AuthLoading from '@/components/auth-loading';
 import { useAuth } from '@/context/auth-context';
 import {
   getDefaultSession,
@@ -20,7 +21,7 @@ function RouteComponent() {
 
       const session = getDefaultSession();
       if (session.info.isLoggedIn) {
-        localStorage.setItem('isAuthenticated', 'true');
+        // localStorage.setItem('isAuthenticated', 'true');
         await onAuthCallback();
       } else {
         navigate({ to: '/auth/login' });
@@ -30,5 +31,5 @@ function RouteComponent() {
     handleRedirectAfterLogin();
   }, []);
 
-  return <p>Signing in...</p>;
+  return <AuthLoading />;
 }

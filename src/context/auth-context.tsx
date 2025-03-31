@@ -9,6 +9,7 @@ import {
 } from '@inrupt/solid-client-authn-browser';
 import { useNavigate } from '@tanstack/react-router';
 import { getPodUrl } from '@/api/utils';
+import AuthLoading from '@/components/auth-loading';
 
 interface IAuthContext {
   session: Session | null;
@@ -28,20 +29,28 @@ const initialValue: IAuthContext = {
 
 const AuthContext = React.createContext<IAuthContext>(initialValue);
 
-const LOCAL_STORAGE_KEY = 'isAuthenticated';
-
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = React.useState<Session | null>(
     initialValue.session
   );
   const [pod, setPod] = React.useState<string | null>(initialValue.pod);
+  const [isLoading, setIsLoading] = React.useState(true);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     if (session) {
       // Refresh session on page load
-      handleIncomingRedirect({ restorePreviousSession: true });
+      handleIncomingRedirect({ restorePreviousSession: true })
+        .then((data) => {
+          if (!data?.isLoggedIn) {
+            clear();
+            navigate({ to: '/auth/login' });
+          }
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
   }, []);
 
@@ -60,11 +69,14 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, [session]);
 
-  const onLogin = () => {
+  const onLogin = async () => {
+    await updateState();
     navigate({ to: '/' });
   };
 
-  const onSessionRestored = (url: string) => {
+  const onSessionRestored = async (url: string) => {
+    await updateState();
+
     const parts = url.split('/').filter((part) => part !== '');
     const relative = parts.slice(2).join('/');
     navigate({ to: relative === '' ? '/' : `/${relative}` });
@@ -83,22 +95,36 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     await logout({
       logoutType: 'app',
     });
-    localStorage.removeItem('isAuthenticated');
-    setSession(null);
+    clear();
     navigate({ to: '/auth/login' });
   };
 
   const onAuthCallback = async () => {
+    await updateState();
+  };
+
+  const updateState = async () => {
     const session = getDefaultSession();
-    setSession(session);
-    setPod(await getPodUrl(session));
+    if (session.info.isLoggedIn) {
+      setSession(session);
+      setPod(await getPodUrl(session));
+    } else {
+      clear();
+      navigate({ to: '/auth/login' });
+    }
+    setIsLoading(false);
+  };
+
+  const clear = () => {
+    setSession(null);
+    setPod(null);
   };
 
   return (
     <AuthContext.Provider
       value={{ session, pod, signIn, signOut, onAuthCallback }}
     >
-      {children}
+      {isLoading ? <AuthLoading /> : children}
     </AuthContext.Provider>
   );
 };
@@ -109,10 +135,6 @@ export const useAuth = () => {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-};
-
-export const isAuthenticated = () => {
-  return localStorage.getItem(LOCAL_STORAGE_KEY) === 'true';
 };
 
 export default AuthProvider;

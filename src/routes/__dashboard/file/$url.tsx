@@ -32,9 +32,10 @@ import {
   Loader2,
   Locate,
   User,
-  File,
+  File as FileIcon,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 const searchParams = z.object({
@@ -91,7 +92,7 @@ function RouteComponent() {
           Back
         </Button>
         <Button variant="outline" asChild>
-          <a href={URL.createObjectURL(file.blob)} download={file.name}>
+          <a href={URL.createObjectURL(file.blob)} download={meta.file.name}>
             <FileDown className="size-4" />
             Export
           </a>
@@ -105,7 +106,7 @@ function RouteComponent() {
         <CardContent>
           <div className="grid gap-4 grid-cols-2">
             <div className="flex gap-2 items-center">
-              <File />
+              <FileIcon />
               <div>
                 <p className="text-sm text-muted-foreground">Name</p>
                 <p>{meta.file.name}</p>

@@ -1,3 +1,4 @@
+import TiptapEditor, { TiptapPreview } from '@/components/text-editor/tiptap';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -19,6 +20,11 @@ import { useAuth } from '@/context/auth-context';
 import { useGetData, useGetFile } from '@/use-cases/data';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { zodValidator } from '@tanstack/zod-adapter';
+import Color from '@tiptap/extension-color';
+import ListItem from '@tiptap/extension-list-item';
+import TextStyle from '@tiptap/extension-text-style';
+import { EditorProvider } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
 import {
   Calendar,
   ChevronLeft,
@@ -175,6 +181,10 @@ function FileRendrer({
 
   if (mimeType.startsWith('audio/')) {
     return <audio controls src={fileUrl} />;
+  }
+
+  if (mimeType === 'text/html') {
+    return <TiptapPreview blob={blob} />;
   }
 
   if (mimeType === 'application/pdf') {

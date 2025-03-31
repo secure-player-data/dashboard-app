@@ -14,7 +14,9 @@ import {
   Undo,
   Redo,
   Minus,
+  Loader2,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 const MenuBar = () => {
   const { editor } = useCurrentEditor();
@@ -139,6 +141,33 @@ const TiptapEditor = ({ onChange }: { onChange: (hmtl: string) => void }) => {
         },
       }}
       onUpdate={(e) => onChange(e.editor.getHTML())}
+    ></EditorProvider>
+  );
+};
+
+export const TiptapPreview = ({ blob }: { blob: Blob }) => {
+  const [content, setContent] = useState<string>('');
+  const [showEditor, setShowEditor] = useState<boolean>(false);
+
+  useEffect(() => {
+    const loadContent = async () => {
+      const text = await blob.text();
+      setContent(text);
+      setShowEditor(true);
+    };
+
+    loadContent();
+  }, [blob]);
+
+  if (!showEditor) {
+    return <Loader2 className="size-4 animate-spin" />;
+  }
+
+  return (
+    <EditorProvider
+      extensions={extensions}
+      editable={false}
+      content={content}
     ></EditorProvider>
   );
 };

@@ -69,18 +69,8 @@ export function DeleteDataDialog({
         },
       },
       {
-        onSuccess: () => {
-          setOpen(false);
-          onDelete();
-          toast.success('Deletion request sent');
-        },
-        onError: (error) => {
-          if (error instanceof TeamNotFoundException) {
-            toast.error(error.message);
-          } else {
-            toast.error('Something went wrong, please try again later');
-          }
-        },
+        onSuccess: () => handleSuccess('Deletion request sent'),
+        onError: handleError,
       }
     );
   }
@@ -95,13 +85,25 @@ export function DeleteDataDialog({
         },
       },
       {
-        onSuccess: () => {
-          setOpen(false);
-          onDelete();
-          toast.success('Deletion request sent and data deleted');
-        },
+        onSuccess: () =>
+          handleSuccess('Deletion request sent and data deleted'),
+        onError: handleError,
       }
     );
+  }
+
+  function handleSuccess(msg: string) {
+    setOpen(false);
+    onDelete();
+    toast.success(msg);
+  }
+
+  function handleError(error: Error) {
+    if (error instanceof TeamNotFoundException) {
+      toast.error(error.message);
+    } else {
+      toast.error('Something went wrong, please try again later');
+    }
   }
 
   return (

@@ -450,6 +450,10 @@ export async function sendDataDeletionRequest(
     throw new Error('Session and pod are required');
   }
 
+  if (request.data.length === 0) {
+    throw new Error('No data to delete');
+  }
+
   const teamOwner = await fetchTeamOwner(session, pod);
 
   // Create request thing to store in the user's pod

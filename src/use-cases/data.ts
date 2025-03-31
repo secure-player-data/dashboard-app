@@ -88,10 +88,13 @@ export function useSendDeletionRequestAndDeleteData(
       data: DataInfo[];
       sender: { name: string; organization: string };
     }) => {
-      await sendDataDeletionRequest(session, pod, {
-        data: data.filter((d) => d.status === ''),
-        sender,
-      });
+      const dataToDelete = data.filter((d) => d.status === '');
+      if (dataToDelete.length > 0) {
+        await sendDataDeletionRequest(session, pod, {
+          data: dataToDelete,
+          sender,
+        });
+      }
       await deleteData(session, pod, data);
     },
     onSuccess: () => {

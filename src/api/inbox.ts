@@ -650,7 +650,7 @@ export async function sendDataDeletionConfirmation(
     pod,
     notification.podUrl,
     'Data Deletion Confirmed',
-    `Your data deletion request with the id ${requestId} has been confirmed. This data has now been deleted. You can view details about the request in the Deletion Request page.`
+    `Request confirmed! Your data deletion request (${requestId}) has been confirmed. This data has been removed from third-party systems. Go to 'Request Overview' to see the status of your requests.`
   );
   // Delete notification from inbox
   await deleteInboxItem(session, pod, notification.date);

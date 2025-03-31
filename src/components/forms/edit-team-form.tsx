@@ -89,7 +89,7 @@ export default function EditTeamForm({ onSuccess }: { onSuccess: () => void }) {
           <AvatarImage
             src={avatarPreview}
             alt="Team logo"
-            className="object-cover"
+            className="object-contain"
           />
           <AvatarFallback className="text-lg text-muted-foreground">
             {tag}

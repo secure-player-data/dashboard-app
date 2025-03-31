@@ -7,12 +7,7 @@ import {
   logout,
   Session,
 } from '@inrupt/solid-client-authn-browser';
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useRouter,
-} from '@tanstack/react-router';
+import { Link, useLocation, useNavigate } from '@tanstack/react-router';
 import { getPodUrl } from '@/api/utils';
 import {
   Card,
@@ -22,7 +17,8 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { AlertCircle, LogIn } from 'lucide-react';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
+import AuthLoading from '@/components/auth-loading';
 
 interface IAuthContext {
   session: Session | null;
@@ -50,12 +46,20 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = React.useState(true);
 
   const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
     if (session) {
       // Refresh session on page load
-      handleIncomingRedirect({ restorePreviousSession: true });
+      handleIncomingRedirect({ restorePreviousSession: true })
+        .then((data) => {
+          if (!data?.isLoggedIn) {
+            clear();
+            navigate({ to: '/auth/login' });
+          }
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
   }, []);
 
@@ -75,13 +79,11 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [session]);
 
   const onLogin = async () => {
-    console.log('on login');
     await updateState();
     navigate({ to: '/' });
   };
 
   const onSessionRestored = async (url: string) => {
-    console.log('on session restored');
     await updateState();
 
     const parts = url.split('/').filter((part) => part !== '');
@@ -102,81 +104,39 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     await logout({
       logoutType: 'app',
     });
-    setSession(null);
+    clear();
     navigate({ to: '/auth/login' });
   };
 
   const onAuthCallback = async () => {
-    console.log('on auth callback');
     await updateState();
   };
 
   const updateState = async () => {
     const session = getDefaultSession();
-    setSession(session);
-    setPod(await getPodUrl(session));
+    if (session.info.isLoggedIn) {
+      setSession(session);
+      setPod(await getPodUrl(session));
+    } else {
+      clear();
+      navigate({ to: '/auth/login' });
+    }
     setIsLoading(false);
+  };
+
+  const clear = () => {
+    setSession(null);
+    setPod(null);
   };
 
   return (
     <AuthContext.Provider
       value={{ session, pod, signIn, signOut, onAuthCallback }}
     >
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : !pod && location.pathname !== '/auth/login' ? (
-        <LoggedOut />
-      ) : (
-        children
-      )}
+      {isLoading ? <AuthLoading /> : children}
     </AuthContext.Provider>
   );
 };
-
-function LoggedOut() {
-  return (
-    <div className="flex min-h-screen place-items-center bg-muted p-4">
-      <Card className="mx-auto max-w-md text-center">
-        <CardHeader>
-          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-warning/20">
-            <AlertCircle className="h-10 w-10 text-warning animate-pulse" />
-          </div>
-          <CardTitle className="text-2xl font-bold">
-            Oops! You got logged out
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">
-            Your session has expired or you've been logged out. Don't worry, it
-            happens to the best of us!
-          </p>
-          <div className="mt-6 flex items-center justify-center">
-            <div className="relative">
-              <div className="absolute -inset-0.5 rounded-md bg-gradient-to-r from-pink-500 to-purple-500 opacity-75 blur-sm animate-pulse"></div>
-              {/* <Button asChild size="lg" className="relative"> */}
-              <Link
-                to="/auth/login"
-                className={`${buttonVariants({ size: 'lg' })} relative`}
-              >
-                <LogIn className="h-4 w-4" />
-                <span>Back to Login</span>
-              </Link>
-              {/* </Button> */}
-            </div>
-          </div>
-        </CardContent>
-        <CardFooter className="flex justify-center pt-2">
-          <p className="text-sm text-muted-foreground">
-            Need help?{' '}
-            <Link to="/" className="text-primary underline">
-              Contact support
-            </Link>
-          </p>
-        </CardFooter>
-      </Card>
-    </div>
-  );
-}
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

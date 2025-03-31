@@ -1,3 +1,4 @@
+import AuthLoading from '@/components/auth-loading';
 import { useAuth } from '@/context/auth-context';
 import {
   getDefaultSession,
@@ -30,5 +31,5 @@ function RouteComponent() {
     handleRedirectAfterLogin();
   }, []);
 
-  return <p>Signing in...</p>;
+  return <AuthLoading />;
 }

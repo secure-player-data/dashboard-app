@@ -1,7 +1,7 @@
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from './query-keys';
-import { uploadPlayerData } from '@/api/data/upload-data';
+import { uploadPlayerData } from '@/api/upload-data';
 
 export function useUploadData(session: Session | null, pod: string | null) {
   const queryClient = useQueryClient();

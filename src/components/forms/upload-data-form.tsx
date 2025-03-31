@@ -1,7 +1,7 @@
 import type React from 'react';
 import { useState } from 'react';
 import TipTap from '../text-editor/tiptap';
-import { Button } from '@/components/ui/button';
+import { Button, ButtonWithLoader } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -59,6 +59,7 @@ export default function UploadDataForm() {
     setDataEntries([]);
     setUploadedFiles([]);
     setTextContent('');
+    setHasTextEntry(false);
     setDataType('');
     setReason('');
     setLocation('');
@@ -114,11 +115,6 @@ export default function UploadDataForm() {
 
   const updateTextEntry = (content: string) => {
     setTextContent(content);
-    setDataEntries(
-      dataEntries.map((entry) =>
-        entry.type === 'text' ? { ...entry, content } : entry
-      )
-    );
   };
 
   const removeEntry = (id: string) => {
@@ -131,6 +127,7 @@ export default function UploadDataForm() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log('handle submit triggered');
     e.preventDefault();
 
     let playerPod = '';
@@ -144,10 +141,15 @@ export default function UploadDataForm() {
       throw new Error('Missing pod or session');
     }
 
+    // Create html file from text input
+    const file = new File([textContent], 'playerData.html', {
+      type: 'text/html',
+    });
+
     uploadPlayerData.mutate(
       {
         session: session,
-        uploadedFile: uploadedFiles,
+        uploadedFile: [...uploadedFiles, file],
         senderPod: pod,
         uploader: { webId: session?.info.webId!, name: profile?.name! },
         reason: reason,
@@ -290,7 +292,7 @@ export default function UploadDataForm() {
             {hasTextEntry && (
               <div className="mb-4 border rounded-md">
                 <div className="p-1">
-                  {<TipTap callback={updateTextEntry()} />}
+                  {<TipTap onChange={updateTextEntry} />}
                 </div>
               </div>
             )}
@@ -314,8 +316,8 @@ export default function UploadDataForm() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  dataEntries.map((entry) => (
-                    <TableRow key={entry.fileName}>
+                  dataEntries.map((entry, index) => (
+                    <TableRow key={entry.id + index}>
                       <TableCell>
                         {entry.type === 'file' ? 'File' : 'Text'}
                       </TableCell>
@@ -346,7 +348,12 @@ export default function UploadDataForm() {
           </div>
 
           <div className="flex justify-end">
-            <Button type="submit">Submit Report</Button>
+            <ButtonWithLoader
+              isLoading={uploadPlayerData.isPending}
+              type="submit"
+            >
+              Submit Report
+            </ButtonWithLoader>
           </div>
         </form>
       </CardContent>

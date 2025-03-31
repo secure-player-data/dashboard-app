@@ -20,7 +20,7 @@ function RouteComponent() {
 
       const session = getDefaultSession();
       if (session.info.isLoggedIn) {
-        localStorage.setItem('isAuthenticated', 'true');
+        // localStorage.setItem('isAuthenticated', 'true');
         await onAuthCallback();
       } else {
         navigate({ to: '/auth/login' });

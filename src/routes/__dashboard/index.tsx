@@ -86,7 +86,7 @@ function RouteComponent() {
           </p>
         </div>
       )}
-      {pod ? (
+      {pod && (
         <div className="flex-grow grid content-center @container">
           <h1 className="text-2xl font-semibold mb-4">Your Data</h1>
           <div className="grid grid-cols-1 @lg:grid-cols-2 @xl:grid-cols-3 gap-4 h-full">
@@ -103,21 +103,6 @@ function RouteComponent() {
                 </section>
               </Link>
             ))}
-          </div>
-        </div>
-      ) : (
-        <div className="grid">
-          <div className="flex gap-4 border border-warning rounded-md p-4">
-            <TriangleAlert />
-            <div>
-              <h1 className="font-bold text-xl leading-none">
-                Failed to find pod!
-              </h1>
-              <p className="text-sm text-warning">
-                Make sure you are logged in. You can log out and back in by
-                opening the menu in the bottom left.
-              </p>
-            </div>
           </div>
         </div>
       )}

@@ -11,7 +11,7 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { useEffect, useMemo } from 'react';
-import { isAuthenticated, useAuth } from '@/context/auth-context';
+import { useAuth } from '@/context/auth-context';
 import {
   CredentialsNotSetException,
   ProfileDoesNotExistException,
@@ -25,11 +25,6 @@ import { useGetProfile } from '@/use-cases/profile';
 
 export const Route = createFileRoute('/__dashboard')({
   component: RouteComponent,
-  beforeLoad: () => {
-    if (!isAuthenticated()) {
-      throw redirect({ to: '/auth/login' });
-    }
-  },
 });
 
 function RouteComponent() {

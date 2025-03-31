@@ -61,8 +61,7 @@ function RouteComponent() {
     router.history.back();
   }
 
-  // if (metaPending || filePending) {
-  if (true) {
+  if (metaPending || filePending) {
     return (
       <div className="grid place-items-center h-full">
         <Loader2 className="animate-spin" />

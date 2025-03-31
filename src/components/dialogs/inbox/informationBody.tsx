@@ -33,35 +33,9 @@ export function InformationDialogBody({
   };
 
   const handleInformationBody = (informationBody: string) => {
-    const bodyHeader = informationBody.split(';')[0];
-    const resources = informationBody.split(';')[1];
-    const reason = informationBody.split(';')[2];
-
     return (
       <div className="p-4 rounded-lg border bg-card text-card-foreground shadow-sm">
-        <div className="text-lg font-semibold text-primary mb-3">
-          {bodyHeader}
-        </div>
-        <div className="mb-3">
-          <div className="font-medium mb-1">Resources:</div>
-          <ul className="space-y-1 pl-5 list-disc text-sm text-muted-foreground">
-            {resources ? (
-              resources
-                .split(',')
-                .map((resource, index) => (
-                  <li key={index}>{resource.trim()}</li>
-                ))
-            ) : (
-              <li>No resources listed</li>
-            )}
-          </ul>
-        </div>
-        <div className="pt-2 border-t">
-          <span className="font-medium">Reason: </span>
-          <span className="text-sm text-muted-foreground">
-            {reason || 'No reason provided'}
-          </span>
-        </div>
+        {informationBody}
       </div>
     );
   };

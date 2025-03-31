@@ -113,7 +113,7 @@ export async function deleteData(
     data.map(async (item) => {
       const [fileError] = await safeCall(deleteFile(session, item.file.url));
       const [datasetError] = await safeCall(
-        deleteSolidDataset(item.id, { fetch: session.fetch })
+        deleteSolidDataset(item.url, { fetch: session.fetch })
       );
 
       if (fileError) {
@@ -316,7 +316,7 @@ function isFolder(thing: Thing) {
 
 function mapThingToDataInfo(thing: Thing): DataInfo {
   return {
-    id: thing.url,
+    url: thing.url,
     file: {
       url: getStringNoLocale(thing, DATA_INFO_SCHEMA.fileUrl) ?? '',
       name: getStringNoLocale(thing, DATA_INFO_SCHEMA.fileName) ?? '',

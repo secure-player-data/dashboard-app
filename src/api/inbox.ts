@@ -536,7 +536,7 @@ export async function sendDataDeletionRequest(
   // Update status of each data item to 'Deletion Requested'
   await Promise.all(
     request.data.map(async (item) => {
-      let dataset = await getSolidDataset(item.id, { fetch: session.fetch });
+      let dataset = await getSolidDataset(item.url, { fetch: session.fetch });
       let thing = getThingAll(dataset)[0];
 
       if (!thing) return;
@@ -544,12 +544,12 @@ export async function sendDataDeletionRequest(
       thing = setStringNoLocale(thing, DATA_INFO_SCHEMA.status, 'Requested');
       dataset = setThing(dataset, thing);
 
-      await saveSolidDatasetAt(item.id, dataset, { fetch: session.fetch });
+      await saveSolidDatasetAt(item.url, dataset, { fetch: session.fetch });
       // Give team owner permission to update the status when confirming the
       // deletion
       await updateAgentAccess({
         session,
-        containerUrl: item.id,
+        containerUrl: item.url,
         agentWebId: teamOwner.webId,
         modes: ['Read', 'Write', 'Control'],
       });
@@ -619,7 +619,7 @@ export async function sendDataDeletionConfirmation(
   await Promise.all(
     notification.data.map(async (item) => {
       const [error, dataset] = await safeCall(
-        getSolidDataset(item.id, { fetch: session.fetch })
+        getSolidDataset(item.url, { fetch: session.fetch })
       );
 
       if (error) {
@@ -630,14 +630,14 @@ export async function sendDataDeletionConfirmation(
       let thing = getThingAll(dataset)[0];
       thing = setStringNoLocale(thing, DATA_INFO_SCHEMA.status, 'Confirmed');
       const updatedDataset = setThing(dataset, thing);
-      await saveSolidDatasetAt(item.id, updatedDataset, {
+      await saveSolidDatasetAt(item.url, updatedDataset, {
         fetch: session.fetch,
       });
 
       // Remove users access from each data item
       await updateAgentAccess({
         session,
-        containerUrl: item.id,
+        containerUrl: item.url,
         agentWebId: session.info.webId ?? '',
         modes: [],
       });

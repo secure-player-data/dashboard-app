@@ -7,6 +7,7 @@ import {
   Share,
   LifeBuoy,
   Send,
+  Rocket,
   InboxIcon,
   Users,
   User,
@@ -117,9 +118,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             icon: Users,
           },
           {
+            name: 'Upload data',
+            url: '/team/upload-data',
+            icon: Share,
+          },
+
+          {
             name: 'Outsourcing',
             url: '/team/outsourcing',
-            icon: Share,
+            icon: Rocket,
           },
         ],
       },

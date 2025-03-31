@@ -7,17 +7,8 @@ import {
   logout,
   Session,
 } from '@inrupt/solid-client-authn-browser';
-import { Link, useLocation, useNavigate } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import { getPodUrl } from '@/api/utils';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { AlertCircle, LogIn } from 'lucide-react';
-import { buttonVariants } from '@/components/ui/button';
 import AuthLoading from '@/components/auth-loading';
 
 interface IAuthContext {

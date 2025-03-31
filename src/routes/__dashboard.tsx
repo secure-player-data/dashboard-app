@@ -1,16 +1,11 @@
-import {
-  createFileRoute,
-  Outlet,
-  redirect,
-  useNavigate,
-} from '@tanstack/react-router';
+import { createFileRoute, Outlet, useNavigate } from '@tanstack/react-router';
 import { AppSidebar } from '@/components/sidebar/app-sidebar';
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { useAuth } from '@/context/auth-context';
 import {
   CredentialsNotSetException,

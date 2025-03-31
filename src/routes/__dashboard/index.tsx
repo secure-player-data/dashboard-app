@@ -1,3 +1,4 @@
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useAuth } from '@/context/auth-context';
 import { useGetProfile } from '@/use-cases/profile';
 import { createFileRoute, Link } from '@tanstack/react-router';
@@ -7,6 +8,7 @@ import {
   Fingerprint,
   Info,
   Locate,
+  TriangleAlert,
   User,
   Volleyball,
 } from 'lucide-react';
@@ -19,7 +21,7 @@ export const Route = createFileRoute('/__dashboard/')({
 function RouteComponent() {
   const { session, pod } = useAuth();
 
-  const { data: profile } = useGetProfile(session, pod);
+  const { data: profile, isPending } = useGetProfile(session, pod);
 
   const categories = useMemo(
     () => [
@@ -104,7 +106,20 @@ function RouteComponent() {
           </div>
         </div>
       ) : (
-        <p>Something went wrong, please try again</p>
+        <div className="grid">
+          <div className="flex gap-4 border border-warning rounded-md p-4">
+            <TriangleAlert />
+            <div>
+              <h1 className="font-bold text-xl leading-none">
+                Failed to find pod!
+              </h1>
+              <p className="text-sm text-warning">
+                Make sure you are logged in. You can log out and back in by
+                opening the menu in the bottom left.
+              </p>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

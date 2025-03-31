@@ -111,7 +111,7 @@ export async function deleteData(
     data.map(async (item) => {
       const [fileError] = await safeCall(deleteFile(session, item.file.url));
       const [datasetError] = await safeCall(
-        deleteSolidDataset(item.id, { fetch: session.fetch })
+        deleteSolidDataset(item.url, { fetch: session.fetch })
       );
 
       if (fileError) {

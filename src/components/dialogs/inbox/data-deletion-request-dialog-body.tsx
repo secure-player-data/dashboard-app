@@ -76,7 +76,7 @@ export function DataDeletionRequestDialogBody({
           </TableHeader>
           <TableBody>
             {request.data.map((item, i) => (
-              <TableRow key={item.id}>
+              <TableRow key={item.url}>
                 <TableCell>{i + 1}</TableCell>
                 <TableCell>{item.location}</TableCell>
               </TableRow>

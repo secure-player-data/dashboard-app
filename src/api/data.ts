@@ -76,7 +76,9 @@ export async function fetchDataByCategory(
 }
 
 /**
- *
+ * Fetch a single data item
+ * @param session of the user requesting the data
+ * @param url of the data to fetch
  */
 export async function fetchData(
   session: Session | null,

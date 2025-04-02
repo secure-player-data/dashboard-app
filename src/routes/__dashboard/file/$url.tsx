@@ -165,6 +165,11 @@ function FileRendrer({
   mimeType: string;
 }) {
   const fileUrl = URL.createObjectURL(blob);
+  const [content, setContent] = useState('');
+
+  useEffect(() => {
+    blob.text().then(setContent);
+  }, [blob]);
 
   if (mimeType.startsWith('image/')) {
     return <img src={fileUrl} alt={name} style={{ maxWidth: '100%' }} />;
@@ -193,25 +198,19 @@ function FileRendrer({
   }
 
   if (mimeType === 'text/csv') {
-    const [text, setText] = useState<string | null>(null);
-
-    useEffect(() => {
-      blob.text().then(setText);
-    }, [blob]);
-
     return (
       <div className="border rounded-md h-full">
         <Table>
           <TableHeader>
             <TableRow>
-              {text
+              {content
                 ?.split('\n')[0]
                 .split(',')
                 .map((cell) => <TableHead key={cell}>{cell}</TableHead>)}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {text
+            {content
               ?.split('\n')
               .slice(1)
               .map((row) => (
@@ -228,12 +227,6 @@ function FileRendrer({
   }
 
   if (mimeType.startsWith('text/')) {
-    const [text, setText] = useState<string | null>(null);
-
-    useEffect(() => {
-      blob.text().then(setText);
-    }, [blob]);
-
-    return <pre style={{ whiteSpace: 'pre-wrap' }}>{text}</pre>;
+    return <pre style={{ whiteSpace: 'pre-wrap' }}>{content}</pre>;
   }
 }

@@ -2,8 +2,10 @@ import { SessionNotSetException } from '@/exceptions/session-exceptions';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import {
   buildThing,
+  createContainerAt,
   createSolidDataset,
   createThing,
+  getSolidDataset,
   saveSolidDatasetAt,
   setThing,
 } from '@inrupt/solid-client';
@@ -41,19 +43,34 @@ export async function uploadPlayerData(
         type: uploadedFile.type,
       });
 
-      const path = `${paths.root(receiverPod)}${category}files/`;
+      const fileContainerPath = `${paths.root(receiverPod)}${category}files/`;
+
+      // Check if file container exists
+      const [fileContainerError] = await safeCall(
+        getSolidDataset(fileContainerPath, {
+          fetch: session.fetch,
+        })
+      );
+
+      // Create file container if it doesn't exist
+      if (fileContainerError) {
+        await safeCall(
+          createContainerAt(fileContainerPath, { fetch: session.fetch })
+        );
+      }
 
       // Send renamed file to the container
-      await saveFileInContainer(path, renamedFile, {
+      await saveFileInContainer(fileContainerPath, renamedFile, {
         fetch: session.fetch,
       });
-
-      // Construct the file URL dynamically without hardcoded ".csv"
 
       // Create the thing with the updated file reference
       const thing = buildThing(createThing({ name: thingName }))
         .addUrl(RDF.type, DATA_INFO_SCHEMA.type)
-        .addStringNoLocale(DATA_INFO_SCHEMA.fileUrl, `${path}${newFileName}`)
+        .addStringNoLocale(
+          DATA_INFO_SCHEMA.fileUrl,
+          `${fileContainerPath}${newFileName}`
+        )
         .addStringNoLocale(DATA_INFO_SCHEMA.fileName, uploadedFile.name)
         .addStringNoLocale(DATA_INFO_SCHEMA.webId, uploader.name)
         .addStringNoLocale(DATA_INFO_SCHEMA.name, uploader.name)
@@ -61,25 +78,19 @@ export async function uploadPlayerData(
         .addStringNoLocale(DATA_INFO_SCHEMA.reason, reason)
         .addStringNoLocale(DATA_INFO_SCHEMA.location, location)
         .build();
-      // create dataset
+
+      // Create dataset
       let dataset = createSolidDataset();
       dataset = setThing(dataset, thing);
 
       const url = `${paths.root(receiverPod)}${category}${thingName}`;
 
       // Save dataset at receiver location
-      const [error, _] = await safeCall(
-        saveSolidDatasetAt(url, dataset, { fetch: session.fetch })
-      );
-
-      if (error) {
-        console.error(error);
-      }
+      await saveSolidDatasetAt(url, dataset, { fetch: session.fetch });
     })
   );
 
   // Send information to player inbox
-  console.log(senderPod, receiverPod);
   await sendInformation(
     session,
     senderPod,

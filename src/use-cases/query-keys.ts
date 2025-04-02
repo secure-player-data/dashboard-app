@@ -1,5 +1,4 @@
 import { InboxItem } from '@/entities/inboxItem';
-import { DataInfo } from '@/entities/data-info';
 
 export const queryKeys = {
   data: (podUrl: string, subDir: string) => ['data', podUrl, subDir],

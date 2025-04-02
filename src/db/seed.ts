@@ -47,7 +47,7 @@ export async function seedDb(session: Session, pod: string) {
         dataset = setThing(dataset, thing);
 
         const url = `${pod}${BASE_APP_CONTAINER}/${type.category}/${id}`;
-        const [error, _] = await safeCall(
+        const [error] = await safeCall(
           saveSolidDatasetAt(url, dataset, { fetch: session.fetch })
         );
 

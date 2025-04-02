@@ -381,8 +381,8 @@ export default function UploadDataForm() {
                       <Info className="size-4" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="text-sm mb-1">
+                  <TooltipContent className="font-normal">
+                    <p className="mb-1">
                       Enter the location of the origin of the data so that it
                       can be referenced later.
                     </p>

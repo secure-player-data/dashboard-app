@@ -222,14 +222,17 @@ export default function UploadDataForm() {
     const playerPod = member.pod;
 
     // Create html file from text input
-    const file = new File([textContent], textName, {
-      type: 'text/html',
-    });
+    let file: File | undefined;
+    if (hasTextEntry) {
+      file = new File([textContent], `${textName}.html`, {
+        type: 'text/html',
+      });
+    }
 
     uploadPlayerData.mutate(
       {
         session: session,
-        uploadedFile: [...uploadedFiles, file],
+        uploadedFile: file ? [...uploadedFiles, file] : uploadedFiles,
         senderPod: pod,
         uploader: { webId: session.info.webId, name: profile.name },
         reason: reason,

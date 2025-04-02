@@ -8,6 +8,7 @@ import { Loader2, RefreshCcw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys as inboxQueryKeys } from '@/use-cases/invitations';
 import { toast } from 'sonner';
+import { updateSeenMessages } from '@/api/inbox';
 
 export const Route = createFileRoute('/__dashboard/inbox')({
   component: RouteComponent,
@@ -17,6 +18,8 @@ function RouteComponent() {
   const { session, pod } = useAuth();
   const { error, isPending, data } = useGetInbox(session, pod);
   const queryClient = useQueryClient();
+
+  updateSeenMessages(session, pod);
 
   if (isPending) {
     return (

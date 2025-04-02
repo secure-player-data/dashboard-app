@@ -6,58 +6,10 @@ import { QueryEngine } from '@comunica/query-sparql';
 import { sendInformation } from '@/api/inbox';
 import { useState } from 'react';
 import { Session } from '@inrupt/solid-client-authn-browser';
-import { useQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/__dashboard/playground')({
   component: RouteComponent,
 });
-
-const queryKeys = {
-  policy: (pod: string) => ['playground', pod],
-};
-
-function useGetAmountOfInboxItems(session: Session | null, pod: string | null) {
-  return useQuery({
-    queryKey: queryKeys.policy(pod!),
-    queryFn: async () => fetchAmountOfInboxItems(session!, pod!),
-    refetchInterval: 5000,
-  });
-}
-async function fetchAmountOfInboxItems(session: Session, pod: string) {
-  if (!session) {
-    throw new Error('could not get session');
-  }
-
-  const myEngine = new QueryEngine();
-  const inboxUrl = `${pod}secure-player-data/inbox/`;
-
-  const query = `SELECT (COUNT(?item) as ?itemCount) 
-WHERE {
-    ?item <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/ldp#RDFSource> .
-    FILTER(STRSTARTS(STR(?item), "${inboxUrl}"))
-}`;
-  console.log('query: ', query);
-  const bindingStream = await myEngine.queryBindings(query, {
-    sources: [inboxUrl],
-    fetch: session.fetch,
-  });
-  bindingStream.on('data', (binding: any) => {
-    const amountAsString = JSON.parse(binding)['itemCount'].split('^^')[0];
-    const amountAsNumber = JSON.parse(amountAsString);
-    console.log('count attempt 1: ', amountAsNumber);
-    const amount = parseInt(localStorage.getItem('inboxItemAmount')!) ?? 0;
-    if (amountAsNumber > amount) {
-      localStorage.setItem('inboxItemAmount', amountAsNumber);
-      console.log(`DING! (${amountAsNumber - amount}) new messages`);
-      return amountAsNumber;
-    } else {
-      return amount;
-    }
-  });
-
-  const bindings = await bindingStream.toArray();
-  console.log('bindings: ', bindings[0]);
-}
 
 function RouteComponent() {
   const { session, pod } = useAuth();
@@ -66,8 +18,6 @@ function RouteComponent() {
   const [amount, setAmount] = useState<number>(0);
 
   const myEngine = new QueryEngine();
-
-  const { data } = useGetAmountOfInboxItems(session, pod);
 
   const source = `${paths.eventData(pod!)}`;
 
@@ -148,12 +98,6 @@ function RouteComponent() {
         {working && <div>({working})</div>}
       </div>
       <div className="flex flex-col gap-2 m-6">
-        <div className="flex flex-row gap-2 items-center justify-center">
-          <Button onClick={() => fetchAmountOfInboxItems(session!, pod!)}>
-            fetch amount of inbox items
-          </Button>
-          amount of items in inbox: {amount}
-        </div>
         number of fetched objects: {objects.length}
         {objects &&
           objects.map((object, index) => (

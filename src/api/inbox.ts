@@ -1,4 +1,5 @@
 import { Session } from '@inrupt/solid-client-authn-browser';
+import { QueryEngine } from '@comunica/query-sparql';
 import {
   createThing,
   getSolidDataset,
@@ -11,11 +12,9 @@ import {
   deleteSolidDataset,
   getStringNoLocale,
   Thing,
-  getThing,
   setStringNoLocale,
   saveSolidDatasetAt,
   setDatetime,
-  addStringNoLocale,
 } from '@inrupt/solid-client';
 import { RDF } from '@inrupt/vocab-common-rdf';
 import { BASE_APP_CONTAINER, INBOX_CONTAINER, paths } from './paths';
@@ -654,6 +653,57 @@ export async function sendDataDeletionConfirmation(
   );
   // Delete notification from inbox
   await deleteInboxItem(session, pod, notification.date);
+}
+
+export async function fetchUnseenMessageAmount(
+  session: Session | null,
+  pod: string | null
+) {
+  if (!session) {
+    throw new Error('Session not found');
+  }
+  if (!pod) {
+    throw new Error('pod not found');
+  }
+  const inboxItemAmount = await getInboxItemAmount(session, pod);
+  const unseenMessageAmount =
+    inboxItemAmount - Number(localStorage.getItem('inboxItemAmount'));
+
+  return unseenMessageAmount;
+}
+
+async function getInboxItemAmount(session: Session, pod: string) {
+  const myEngine = new QueryEngine();
+  const inboxUrl = `${paths.inbox(pod)}`;
+  const query = `SELECT (COUNT(?item) as ?itemCount) 
+WHERE {
+    ?item <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/ldp#RDFSource> .
+    FILTER(STRSTARTS(STR(?item), "${inboxUrl}"))
+}`;
+  const bindingStream = await myEngine.queryBindings(query, {
+    sources: [inboxUrl],
+    fetch: session.fetch,
+  });
+  const bindingArray = await bindingStream.toArray();
+  const binding = bindingArray[0].toString();
+  const amountAsString = JSON.parse(binding)['itemCount'].split('^^')[0];
+  const amountAsNumber = JSON.parse(amountAsString);
+  return amountAsNumber;
+}
+
+export async function updateSeenMessages(
+  session: Session | null,
+  pod: string | null
+) {
+  if (!session) {
+    throw new Error('Session not found');
+  }
+  if (!pod) {
+    throw new Error('pod not found');
+  }
+
+  const inboxItemAmount = await getInboxItemAmount(session, pod);
+  localStorage.setItem('inboxItemAmount', inboxItemAmount);
 }
 
 function mapThingToInboxItem(thing: any): InboxItem {

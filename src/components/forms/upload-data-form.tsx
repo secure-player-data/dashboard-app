@@ -2,7 +2,13 @@ import type React from 'react';
 import { useRef, useState } from 'react';
 import TipTap from '../text-editor/tiptap';
 import { Button, ButtonWithLoader } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -21,7 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { PlusCircle, Trash2, Upload } from 'lucide-react';
+import { Info, PlusCircle, Trash2, Upload } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { useGetMembers } from '@/use-cases/use-get-members';
 import { useGetResourceList } from '@/use-cases/use-get-resource-list';
@@ -29,6 +35,12 @@ import { toast } from 'sonner';
 import { useGetProfile } from '@/use-cases/profile';
 import { useUploadData } from '@/use-cases/use-upload-data';
 import { z } from 'zod';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip';
 
 type DataEntry = {
   id: string;
@@ -276,17 +288,16 @@ export default function UploadDataForm() {
 
   return (
     <Card className="w-full max-w-4xl mx-auto">
-      <CardContent className="pt-6">
+      <CardHeader>
+        <CardTitle>Player Data Collection Report</CardTitle>
+        <CardDescription>Submit data recorded of a player</CardDescription>
+      </CardHeader>
+      <CardContent>
         <form onSubmit={handleSubmit}>
-          <h1 className="text-2xl font-bold mb-6">
-            Player Data Collection Report
-          </h1>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
               <Label htmlFor="data-type">
-                Type of Data Collected{' '}
-                <span className="text-destructive">*</span>
+                Data type <span className="text-destructive">*</span>
               </Label>
               <Select value={dataType} onValueChange={setDataType} required>
                 <SelectTrigger
@@ -323,8 +334,26 @@ export default function UploadDataForm() {
 
           <div className="mb-4">
             <Label htmlFor="reason">
-              Reason for Data Collection{' '}
-              <span className="text-destructive">*</span>
+              Reason <span className="text-destructive">*</span>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button type="button" variant="ghost" size="sm">
+                      <Info className="size-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="font-normal">
+                    <p className="text-sm max-w-[50ch]">
+                      Please provide a clear and specific reason for collecting
+                      this data. According to{' '}
+                      <strong>GDPR Article 5.1(b)</strong>, data collection must
+                      have a legitimate purpose. Ensure that your reason aligns
+                      with compliance requirements and justifies why this data
+                      is necessary.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </Label>
             <Textarea
               id="reason"
@@ -341,8 +370,23 @@ export default function UploadDataForm() {
 
           <div className="mb-4">
             <Label htmlFor="location">
-              Location of Collected Data{' '}
-              <span className="text-destructive">*</span>
+              Location <span className="text-destructive">*</span>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button type="button" variant="ghost" size="sm">
+                      <Info className="size-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-sm mb-1">
+                      Enter the location of the origin of the data so that it
+                      can be referenced later.
+                    </p>
+                    <p>E.g. when a player wants the data deleted.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </Label>
             <Input
               id="location"
@@ -360,7 +404,7 @@ export default function UploadDataForm() {
           <div className="mb-4">
             <div className="flex justify-between items-center">
               <Label>
-                Collected Data <span className="text-destructive">*</span>
+                Files <span className="text-destructive">*</span>
               </Label>
               <div className="flex gap-2">
                 {!hasTextEntry && (

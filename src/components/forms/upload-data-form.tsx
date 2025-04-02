@@ -54,7 +54,7 @@ export default function UploadDataForm() {
 
   const { data: profile } = useGetProfile(session, pod);
 
-  const uploadPlayerData = useUploadData(session, pod);
+  const uploadPlayerData = useUploadData(session);
 
   const resetForm = () => {
     setDataEntries([]);
@@ -91,7 +91,7 @@ export default function UploadDataForm() {
         )
         .map((file) => ({
           id: Date.now().toString(),
-          type: 'file' as 'file',
+          type: 'file' as const,
           content: URL.createObjectURL(file),
           fileName: file.name,
         }));
@@ -128,19 +128,24 @@ export default function UploadDataForm() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log('handle submit triggered');
     e.preventDefault();
 
-    let playerPod = '';
-
-    if (members) {
-      const member = members.filter((member) => member.name == player);
-      playerPod = member[0].pod;
+    if (!session || !session.info.webId || !profile || !profile.name || !pod) {
+      toast.error('Authentication failed, please log out and back in again.');
+      return;
     }
 
-    if (!session || !pod) {
-      throw new Error('Missing pod or session');
+    if (!members) {
+      toast.error('No members available');
+      return;
     }
+
+    const member = members.find((member) => member.name == player);
+    if (!member) {
+      toast.error('Player not found');
+      return;
+    }
+    const playerPod = member.pod;
 
     // Create html file from text input
     const file = new File([textContent], 'playerData.html', {
@@ -152,7 +157,7 @@ export default function UploadDataForm() {
         session: session,
         uploadedFile: [...uploadedFiles, file],
         senderPod: pod,
-        uploader: { webId: session?.info.webId!, name: profile?.name! },
+        uploader: { webId: session.info.webId, name: profile.name },
         reason: reason,
         location: location,
         category: dataType,

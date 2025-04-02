@@ -19,9 +19,8 @@ import { Button } from '@/components/ui/button';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/context/auth-context';
 import { toast } from 'sonner';
-import { Link } from '@tanstack/react-router';
 import { queryKeys } from '@/use-cases/access-history';
-import { useMemo } from 'react';
+import { Pagination } from '@/components/ui/pagination';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -49,8 +48,6 @@ export function DataTable<TData, TValue>({
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
-
-  const numberOfPages = useMemo(() => Math.ceil(total / limit), [total, limit]);
 
   async function refreshHistory() {
     if (!pod) {
@@ -115,30 +112,12 @@ export function DataTable<TData, TValue>({
             </TableBody>
           </Table>
         </div>
-        <div className="flex justify-center items-center gap-2">
-          <Button asChild variant="outline" disabled={page === 1}>
-            <Link
-              to="/access-history"
-              search={{
-                limit: limit,
-                page: page === 1 ? undefined : page - 1,
-              }}
-            >
-              Prev
-            </Link>
-          </Button>
-          <p>
-            {page} / {numberOfPages}
-          </p>
-          <Button asChild variant="outline" disabled={page === numberOfPages}>
-            <Link
-              to="/access-history"
-              search={{ limit: limit, page: page + 1 }}
-            >
-              Next
-            </Link>
-          </Button>
-        </div>
+        <Pagination
+          href="/access-history"
+          current={page}
+          limit={limit}
+          totalItems={total}
+        />
       </div>
       <p className="text-sm text-muted-foreground text-center my-2">
         All agents that have accessed some of your resources.

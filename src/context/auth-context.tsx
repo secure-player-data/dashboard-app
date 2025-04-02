@@ -63,7 +63,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     // Unsubscribe from events when the component is unmounted
-    () => {
+    return () => {
       session?.events.off(EVENTS.LOGIN, onLogin);
       session?.events.off(EVENTS.SESSION_RESTORED, onSessionRestored);
     };

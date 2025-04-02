@@ -9,6 +9,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys as inboxQueryKeys } from '@/use-cases/invitations';
 import { toast } from 'sonner';
 import { updateSeenMessages } from '@/api/inbox';
+import { useEffect } from 'react';
 
 export const Route = createFileRoute('/__dashboard/inbox')({
   component: RouteComponent,
@@ -19,7 +20,16 @@ function RouteComponent() {
   const { error, isPending, data } = useGetInbox(session, pod);
   const queryClient = useQueryClient();
 
-  updateSeenMessages(session, pod);
+  useEffect(() => {
+    async function clearInbox() {
+      await updateSeenMessages(session, pod);
+      queryClient.invalidateQueries({
+        queryKey: inboxQueryKeys.inboxItemAmount(session?.info.webId ?? ''),
+      });
+    }
+
+    clearInbox();
+  }, []);
 
   if (isPending) {
     return (

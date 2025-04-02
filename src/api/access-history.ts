@@ -10,15 +10,18 @@ import {
   getUrl,
   setThing,
   solidDatasetAsTurtle,
+  Thing,
 } from '@inrupt/solid-client';
 import { Session } from '@inrupt/solid-client-authn-browser';
-import { BASE_APP_CONTAINER } from './paths';
+import { BASE_APP_CONTAINER, paths } from './paths';
 import { LOG_SCHEMA } from '@/lib/schemas';
-import { RDF } from '@inrupt/vocab-common-rdf';
+import { RDF, LDP } from '@inrupt/vocab-common-rdf';
 import { AccessHistory } from '@/entities/access-history';
 import { setPublicAccess } from './access-control';
 import { Permission } from '@/entities/permissions';
 import { log } from '@/lib/log';
+import { QueryEngine } from '@comunica/query-sparql';
+import { safeCall } from '@/utils';
 
 const getEndpoint = (pod: string) =>
   `${pod}${BASE_APP_CONTAINER}/access-history/`;
@@ -98,44 +101,102 @@ export async function logAccessRequest({
  * Returns the access history of the requesting user
  * @param session of the requesting user
  * @param pod url of the pod to get the access history of
- * @returns array of access history entries
+ * @param limit number of items to return
+ * @param page number of the page to return
+ * @returns array of access history entries and total number of entries
  */
 export async function fetchAccessHistory(
   session: Session | null,
-  pod: string | null
-): Promise<AccessHistory[]> {
+  pod: string | null,
+  limit: number = 25,
+  page: number = 1
+): Promise<{
+  items: AccessHistory[];
+  total: number;
+}> {
   if (!session || !pod) {
     throw new Error('Session or pod not set');
   }
 
-  const container = await getSolidDataset(getEndpoint(pod), {
+  const engine = new QueryEngine();
+
+  const path = paths.accessHistory(pod);
+  const query = `
+    SELECT ?s ?p ?o WHERE {
+      ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/ldp#RDFSource> .
+    } LIMIT ${limit} OFFSET ${(page - 1) * limit}
+  `;
+  const totalQuery = `
+    SELECT (COUNT(?s) as ?total) WHERE {
+      ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/ldp#RDFSource> .
+    }
+  `;
+
+  const stream = await engine.queryBindings(query, {
+    sources: [path],
+    fetch: session.fetch,
+  });
+  const totalStream = await engine.queryBindings(totalQuery, {
+    sources: [path],
     fetch: session.fetch,
   });
 
-  const entries = getThingAll(container);
+  const bindings = await stream.toArray();
+  const totalBindings = await totalStream.toArray();
 
   const items = await Promise.all(
-    entries
-      .filter((item) => item.url.split('access-history/')[1]?.length > 9)
-      .map(async (entry) => {
-        const dataset = await getSolidDataset(entry.url, {
-          fetch: session.fetch,
+    bindings.map(async (binding, i) => {
+      const url = binding.get('s')?.value;
+
+      if (!url) {
+        return null;
+      }
+
+      const [error, dataset] = await safeCall(
+        getSolidDataset(url, { fetch: session.fetch })
+      );
+      if (error) {
+        log({
+          type: 'error',
+          label: 'Fetch Access History',
+          message: error.message,
+          obj: error,
         });
+        return null;
+      }
+      const thing = getThingAll(dataset)[0];
 
-        const things = getThingAll(dataset);
+      if (!thing) {
+        log({
+          type: 'error',
+          label: 'Fetch Access History',
+          message: 'No thing found in dataset',
+          obj: dataset,
+        });
+      }
 
-        return {
-          webId: getUrl(things[0], LOG_SCHEMA.webId) ?? '',
-          resource: getUrl(things[0], LOG_SCHEMA.resource) ?? '',
-          time: getDatetime(things[0], LOG_SCHEMA.time) ?? new Date(),
-          action:
-            (getStringNoLocale(
-              things[0],
-              LOG_SCHEMA.action
-            ) as AccessHistory['action']) ?? '',
-        };
-      })
+      return mapThingToAccessHistory(thing);
+    })
   );
+  const filteredItems = items.filter(
+    (item) => item !== null
+  ) as AccessHistory[];
 
-  return items.sort((a, b) => b.time.getTime() - a.time.getTime());
+  return {
+    items: filteredItems,
+    total: Number(totalBindings[0].get('total')?.value) ?? 0,
+  };
+}
+
+function mapThingToAccessHistory(thing: Thing): AccessHistory {
+  return {
+    webId: getUrl(thing, LOG_SCHEMA.webId) ?? '',
+    resource: getUrl(thing, LOG_SCHEMA.resource) ?? '',
+    time: getDatetime(thing, LOG_SCHEMA.time) ?? new Date(),
+    action:
+      (getStringNoLocale(
+        thing,
+        LOG_SCHEMA.action
+      ) as AccessHistory['action']) ?? '',
+  };
 }

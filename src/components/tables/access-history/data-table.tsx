@@ -17,22 +17,30 @@ import {
 import { Loader2, RefreshCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '@/use-cases/query-keys';
 import { useAuth } from '@/context/auth-context';
 import { toast } from 'sonner';
+import { Link } from '@tanstack/react-router';
+import { queryKeys } from '@/use-cases/access-history';
+import { useMemo } from 'react';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  total: number;
   isLoading: boolean;
   error: string | undefined;
+  limit: number;
+  page: number;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  total,
   isLoading,
   error,
+  limit,
+  page,
 }: DataTableProps<TData, TValue>) {
   const queryClient = useQueryClient();
   const { pod } = useAuth();
@@ -41,6 +49,8 @@ export function DataTable<TData, TValue>({
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  const numberOfPages = useMemo(() => Math.ceil(total / limit), [total, limit]);
 
   async function refreshHistory() {
     if (!pod) {
@@ -51,7 +61,7 @@ export function DataTable<TData, TValue>({
     }
 
     await queryClient.invalidateQueries({
-      queryKey: queryKeys.accessHistory(pod),
+      queryKey: queryKeys.getAll(pod, limit, page),
     });
     toast.info('Access history refreshed');
   }
@@ -74,35 +84,61 @@ export function DataTable<TData, TValue>({
           <RefreshCcw />
         </Button>
       </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            <TableContent
-              columns={columns}
-              table={table}
-              isLoading={isLoading}
-              error={error}
-            />
-          </TableBody>
-        </Table>
+      <div className="grid gap-2">
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              <TableContent
+                columns={columns}
+                table={table}
+                isLoading={isLoading}
+                error={error}
+              />
+            </TableBody>
+          </Table>
+        </div>
+        <div className="flex justify-center items-center gap-2">
+          <Button asChild variant="outline" disabled={page === 1}>
+            <Link
+              to="/access-history"
+              search={{
+                limit: limit,
+                page: page === 1 ? undefined : page - 1,
+              }}
+            >
+              Prev
+            </Link>
+          </Button>
+          <p>
+            {page} / {numberOfPages}
+          </p>
+          <Button asChild variant="outline" disabled={page === numberOfPages}>
+            <Link
+              to="/access-history"
+              search={{ limit: limit, page: page + 1 }}
+            >
+              Next
+            </Link>
+          </Button>
+        </div>
       </div>
       <p className="text-sm text-muted-foreground text-center my-2">
         All agents that have accessed some of your resources.

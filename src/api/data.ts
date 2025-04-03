@@ -63,7 +63,7 @@ export async function fetchDataByCategory(
     (thing) => thing.url !== datasetUrl && !thing.url.endsWith('/files/')
   );
 
-  return await Promise.all(
+  const data = await Promise.all(
     things.map(async (thing) => {
       const innerDataset = await getSolidDataset(thing.url, {
         fetch: session.fetch,
@@ -73,6 +73,15 @@ export async function fetchDataByCategory(
       return mapThingToDataInfo(innerThing);
     })
   );
+
+  logResourceAccess({
+    session,
+    pod,
+    resource: datasetUrl,
+    action: 'Read',
+  });
+
+  return data;
 }
 
 /**
@@ -167,8 +176,6 @@ export async function fetchFile(session: Session | null, urlString: string) {
   if (!session || !session.info.webId) {
     throw new SessionNotSetException('User is not logged in');
   }
-
-  console.log(urlString);
 
   const podUrl = urlString.split(`${BASE_APP_CONTAINER}/`)[0];
   const file = await getFile(urlString, { fetch: session.fetch });

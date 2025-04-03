@@ -11,11 +11,9 @@ import {
   deleteSolidDataset,
   getStringNoLocale,
   Thing,
-  getThing,
   setStringNoLocale,
   saveSolidDatasetAt,
   setDatetime,
-  addStringNoLocale,
 } from '@inrupt/solid-client';
 import { RDF } from '@inrupt/vocab-common-rdf';
 import { BASE_APP_CONTAINER, INBOX_CONTAINER, paths } from './paths';
@@ -69,6 +67,7 @@ export async function fetchInbox(
     })
   );
   if (datasetError) {
+    console.log('ERROREROEOR: ', datasetError);
     throw new InboxDoesNotExistException('Inbox dataset was not found');
   }
 
@@ -654,6 +653,63 @@ export async function sendDataDeletionConfirmation(
   );
   // Delete notification from inbox
   await deleteInboxItem(session, pod, notification.date);
+}
+
+/**
+ * Calculates the amount of unseen messages in a users pod
+ * @param session of the logged in player
+ * @param pod of the logged in player
+ */
+export async function fetchUnseenMessageAmount(
+  session: Session | null,
+  pod: string | null
+) {
+  if (!session) {
+    throw new Error('Session not found');
+  }
+  if (!pod) {
+    throw new Error('pod not found');
+  }
+  const inboxItemAmount = await getInboxItemAmount(session, pod);
+  const unseenMessageAmount =
+    inboxItemAmount - Number(localStorage.getItem('inboxItemAmount'));
+
+  return unseenMessageAmount;
+}
+
+/**
+ * Gets the total amount of inbox items in a users inbox
+ * @param session of the logged in user
+ * @param pod of the logged in user
+ */
+async function getInboxItemAmount(session: Session, pod: string) {
+  const inboxUrl = `${paths.inbox(pod)}`;
+
+  const dataset = await getSolidDataset(inboxUrl, { fetch: session.fetch });
+
+  const length = getThingAll(dataset).length - 1;
+
+  return length;
+}
+
+/**
+ * Resets the amount of unseen items
+ * @param session of the logged in user
+ * @param pod of the logged in user
+ */
+export async function updateSeenMessages(
+  session: Session | null,
+  pod: string | null
+) {
+  if (!session) {
+    throw new Error('Session not found');
+  }
+  if (!pod) {
+    throw new Error('pod not found');
+  }
+
+  const inboxItemAmount = await getInboxItemAmount(session, pod);
+  localStorage.setItem('inboxItemAmount', inboxItemAmount.toString());
 }
 
 function mapThingToInboxItem(thing: any): InboxItem {

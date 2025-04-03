@@ -655,6 +655,11 @@ export async function sendDataDeletionConfirmation(
   await deleteInboxItem(session, pod, notification.date);
 }
 
+/**
+ * Calculates the amount of unseen messages in a users pod
+ * @param session of the logged in player
+ * @param pod of the logged in player
+ */
 export async function fetchUnseenMessageAmount(
   session: Session | null,
   pod: string | null
@@ -672,6 +677,11 @@ export async function fetchUnseenMessageAmount(
   return unseenMessageAmount;
 }
 
+/**
+ * Gets the total amount of inbox items in a users inbox
+ * @param session of the logged in user
+ * @param pod of the logged in user
+ */
 async function getInboxItemAmount(session: Session, pod: string) {
   const myEngine = new QueryEngine();
   const inboxUrl = `${paths.inbox(pod)}`;
@@ -691,6 +701,11 @@ WHERE {
   return amountAsNumber;
 }
 
+/**
+ * Resets the amount of unseen items
+ * @param session of the logged in user
+ * @param pod of the logged in user
+ */
 export async function updateSeenMessages(
   session: Session | null,
   pod: string | null

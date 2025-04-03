@@ -1,6 +1,12 @@
 import { useMemo } from 'react';
 import { Link } from '@tanstack/react-router';
 import { Button } from './button';
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from 'lucide-react';
 
 export function Pagination({
   href,
@@ -55,11 +61,22 @@ export function Pagination({
           <Link
             to={href}
             search={{
+              page: 1,
+              limit,
+            }}
+          >
+            <ChevronsLeft />
+          </Link>
+        </Button>
+        <Button asChild variant="outline" size="sm" disabled={current === 1}>
+          <Link
+            to={href}
+            search={{
               page: current - 1,
               limit,
             }}
           >
-            Prev
+            <ChevronLeft />
           </Link>
         </Button>
         {pageNumbers.map((page) => (
@@ -94,7 +111,23 @@ export function Pagination({
               limit,
             }}
           >
-            Next
+            <ChevronRight />
+          </Link>
+        </Button>
+        <Button
+          asChild
+          variant="outline"
+          size="sm"
+          disabled={current === totalPages}
+        >
+          <Link
+            to={href}
+            search={{
+              page: totalPages,
+              limit,
+            }}
+          >
+            <ChevronsRight />
           </Link>
         </Button>
       </div>

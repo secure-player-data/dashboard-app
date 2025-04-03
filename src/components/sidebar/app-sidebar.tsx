@@ -17,7 +17,6 @@ import {
   Fingerprint,
   Activity,
   PanelsTopLeft,
-  Smile,
 } from 'lucide-react';
 
 import { NavUser } from '@/components/sidebar/nav-user';
@@ -34,7 +33,6 @@ import { NavGroup } from './nav-group';
 import { NavFooter } from './nav-footer';
 import { NavMain } from './nav-main';
 import { useGetProfile } from '@/use-cases/profile';
-import { useGetAmountOfInboxItems } from '@/use-cases/invitations';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { session, pod } = useAuth();

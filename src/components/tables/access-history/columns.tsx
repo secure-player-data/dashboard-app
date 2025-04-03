@@ -1,8 +1,23 @@
 import { BASE_APP_CONTAINER, DATA_CONTAINER } from '@/api/paths';
 import { AccessHistory } from '@/entities/access-history';
 import { ColumnDef } from '@tanstack/react-table';
+import { Folder, File } from 'lucide-react';
 
 export const columns: ColumnDef<AccessHistory>[] = [
+  {
+    accessorKey: 'fileType',
+    header: 'Type',
+    cell: ({ row }) => {
+      const url = row.original.resource;
+      const isFolder = url.endsWith('/');
+
+      if (isFolder) {
+        return <Folder className="size-4" />;
+      }
+
+      return <File className="size-4" />;
+    },
+  },
   {
     accessorKey: 'webId',
     header: 'Web ID',
@@ -13,9 +28,7 @@ export const columns: ColumnDef<AccessHistory>[] = [
     cell: ({ row }) => {
       const url = row.original.resource;
 
-      const relativeUrl = url
-        .split(`${BASE_APP_CONTAINER}/`)[1]
-        .replace(`${DATA_CONTAINER}/`, 'Home/');
+      const relativeUrl = url.split(`${BASE_APP_CONTAINER}/`)[1];
 
       return decodeURIComponent(relativeUrl);
     },
@@ -26,7 +39,7 @@ export const columns: ColumnDef<AccessHistory>[] = [
   },
   {
     accessorKey: 'time',
-    header: 'Time',
+    header: 'Date & Time',
     cell: ({ row }) => {
       const date = row.original.time;
 

@@ -49,7 +49,7 @@ export async function initializeAccessHistory(session: Session, pod: string) {
  * @param resource link to the resource being accessed
  * @param action the action being performed on the resource
  */
-export async function logAccessRequest({
+export async function logResourceAccess({
   session,
   pod,
   resource,

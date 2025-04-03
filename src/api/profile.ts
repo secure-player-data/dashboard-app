@@ -25,11 +25,11 @@ import { fetchTeam } from './team';
 import { TeamNotFoundException } from '@/exceptions/team-exceptions';
 import { Team } from '@/entities/data/team';
 import { SessionNotSetException } from '@/exceptions/session-exceptions';
-import { logAccessRequest } from './access-history';
 import { setPublicAccess, updateAgentAccess } from './access-control';
 import { Permission } from '@/entities/permissions';
 import { PROFILE_SCHEMA } from '@/schemas/profile';
 import { uploadFile } from './data';
+import { logResourceAccess } from './access-history';
 
 function isEmptyOrSpaces(str: string | null) {
   return str === null || str.match(/^ *$/) !== null;
@@ -182,7 +182,7 @@ export async function updateAppProfile(
   });
 
   // If profile is not the user's own profile, log the update
-  await logAccessRequest({
+  await logResourceAccess({
     session: session,
     pod,
     resource: profileUrl,

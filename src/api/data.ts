@@ -9,7 +9,6 @@ import {
   DATA_DELETION_REQUEST_SCHEMA,
   DATA_INFO_SCHEMA,
 } from '@/schemas/data-info';
-import { logAccessRequest } from './access-history';
 import {
   createContainerAt,
   deleteContainer,
@@ -26,6 +25,7 @@ import {
 } from '@inrupt/solid-client';
 import { SessionNotSetException } from '@/exceptions/session-exceptions';
 import { safeCall } from '@/utils';
+import { logResourceAccess } from './access-history';
 
 const categories = [
   'personal-data',
@@ -63,7 +63,7 @@ export async function fetchDataByCategory(
     (thing) => thing.url !== datasetUrl && !thing.url.endsWith('/files/')
   );
 
-  return await Promise.all(
+  const data = await Promise.all(
     things.map(async (thing) => {
       const innerDataset = await getSolidDataset(thing.url, {
         fetch: session.fetch,
@@ -73,6 +73,15 @@ export async function fetchDataByCategory(
       return mapThingToDataInfo(innerThing);
     })
   );
+
+  logResourceAccess({
+    session,
+    pod,
+    resource: datasetUrl,
+    action: 'Read',
+  });
+
+  return data;
 }
 
 /**
@@ -170,18 +179,15 @@ export async function fetchFile(session: Session | null, urlString: string) {
 
   const podUrl = urlString.split(`${BASE_APP_CONTAINER}/`)[0];
   const file = await getFile(urlString, { fetch: session.fetch });
-  const fileName =
-    file.internal_resourceInfo.sourceIri.split('/').pop() ??
-    new Date().toISOString();
 
-  await logAccessRequest({
+  await logResourceAccess({
     session,
     pod: podUrl,
     resource: urlString,
     action: 'Read',
   });
 
-  return { blob: file, mimeType: file.type, name: fileName };
+  return { blob: file, mimeType: file.type };
 }
 
 /**
@@ -201,7 +207,7 @@ export async function uploadFile(
     throw new SessionNotSetException('User is not logged in');
   }
 
-  await logAccessRequest({
+  await logResourceAccess({
     session,
     pod,
     resource: `${pod}${BASE_APP_CONTAINER}/${DATA_CONTAINER}/${path}/${file.name}`,
@@ -269,7 +275,7 @@ export async function createNewFolder({
     throw new Error('Something went wrong, please try again later.');
   }
 
-  await logAccessRequest({
+  await logResourceAccess({
     session,
     pod: pod,
     resource: folderUrl,

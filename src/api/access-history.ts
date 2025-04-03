@@ -49,7 +49,7 @@ export async function initializeAccessHistory(session: Session, pod: string) {
  * @param resource link to the resource being accessed
  * @param action the action being performed on the resource
  */
-export async function logAccessRequest({
+export async function logResourceAccess({
   session,
   pod,
   resource,
@@ -118,73 +118,24 @@ export async function fetchAccessHistory(
     throw new Error('Session or pod not set');
   }
 
-  const engine = new QueryEngine();
-
-  const path = paths.accessHistory(pod);
-  const query = `
-    SELECT ?s ?p ?o WHERE {
-      ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/ldp#RDFSource> .
-    } LIMIT ${limit} OFFSET ${(page - 1) * limit}
-  `;
-  const totalQuery = `
-    SELECT (COUNT(?s) as ?total) WHERE {
-      ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/ldp#RDFSource> .
-    }
-  `;
-
-  const stream = await engine.queryBindings(query, {
-    sources: [path],
+  const dataset = await getSolidDataset(paths.accessHistory(pod), {
     fetch: session.fetch,
   });
-  const totalStream = await engine.queryBindings(totalQuery, {
-    sources: [path],
-    fetch: session.fetch,
-  });
-
-  const bindings = await stream.toArray();
-  const totalBindings = await totalStream.toArray();
+  const things = getThingAll(dataset);
+  console.log(things.length);
 
   const items = await Promise.all(
-    bindings.map(async (binding, i) => {
-      const url = binding.get('s')?.value;
-
-      if (!url) {
-        return null;
-      }
-
-      const [error, dataset] = await safeCall(
-        getSolidDataset(url, { fetch: session.fetch })
-      );
-      if (error) {
-        log({
-          type: 'error',
-          label: 'Fetch Access History',
-          message: error.message,
-          obj: error,
-        });
-        return null;
-      }
-      const thing = getThingAll(dataset)[0];
-
-      if (!thing) {
-        log({
-          type: 'error',
-          label: 'Fetch Access History',
-          message: 'No thing found in dataset',
-          obj: dataset,
-        });
-      }
-
-      return mapThingToAccessHistory(thing);
+    things.slice(page * limit, page * limit + limit).map(async (thing) => {
+      const tmp = await getSolidDataset(thing.url, {
+        fetch: session.fetch,
+      });
+      return mapThingToAccessHistory(getThingAll(tmp)[0]);
     })
   );
-  const filteredItems = items.filter(
-    (item) => item !== null
-  ) as AccessHistory[];
 
   return {
-    items: filteredItems,
-    total: Number(totalBindings[0].get('total')?.value) ?? 0,
+    items,
+    total: things.length,
   };
 }
 

@@ -10,7 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@comunica/query-sparql": "^4.1.0",
     "@emailjs/browser": "^4.4.1",
     "@inrupt/solid-client": "^2.1.2",
     "@inrupt/solid-client-access-grants": "^3.2.1",

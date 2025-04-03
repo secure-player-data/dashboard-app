@@ -1,5 +1,4 @@
 import { Session } from '@inrupt/solid-client-authn-browser';
-import { QueryEngine } from '@comunica/query-sparql';
 import {
   createThing,
   getSolidDataset,

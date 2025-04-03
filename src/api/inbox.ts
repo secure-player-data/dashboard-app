@@ -68,6 +68,7 @@ export async function fetchInbox(
     })
   );
   if (datasetError) {
+    console.log('ERROREROEOR: ', datasetError);
     throw new InboxDoesNotExistException('Inbox dataset was not found');
   }
 
@@ -683,22 +684,13 @@ export async function fetchUnseenMessageAmount(
  * @param pod of the logged in user
  */
 async function getInboxItemAmount(session: Session, pod: string) {
-  const myEngine = new QueryEngine();
   const inboxUrl = `${paths.inbox(pod)}`;
-  const query = `SELECT (COUNT(?item) as ?itemCount) 
-WHERE {
-    ?item <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/ldp#RDFSource> .
-    FILTER(STRSTARTS(STR(?item), "${inboxUrl}"))
-}`;
-  const bindingStream = await myEngine.queryBindings(query, {
-    sources: [inboxUrl],
-    fetch: session.fetch,
-  });
-  const bindingArray = await bindingStream.toArray();
-  const binding = bindingArray[0].toString();
-  const amountAsString = JSON.parse(binding)['itemCount'].split('^^')[0];
-  const amountAsNumber = JSON.parse(amountAsString);
-  return amountAsNumber;
+
+  const dataset = await getSolidDataset(inboxUrl, { fetch: session.fetch });
+
+  const length = getThingAll(dataset).length - 1;
+
+  return length;
 }
 
 /**
@@ -718,7 +710,7 @@ export async function updateSeenMessages(
   }
 
   const inboxItemAmount = await getInboxItemAmount(session, pod);
-  localStorage.setItem('inboxItemAmount', inboxItemAmount);
+  localStorage.setItem('inboxItemAmount', inboxItemAmount.toString());
 }
 
 function mapThingToInboxItem(thing: any): InboxItem {

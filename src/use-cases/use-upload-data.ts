@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from './query-keys';
 import { uploadPlayerData } from '@/api/upload-data';
 
-export function useUploadData(session: Session | null, pod: string | null) {
+export function useUploadData(session: Session | null) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -38,10 +38,10 @@ export function useUploadData(session: Session | null, pod: string | null) {
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.uploadPlayerData(session?.info.webId!),
+        queryKey: queryKeys.uploadPlayerData(session!.info.webId!),
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.uploadPlayerData(session?.info.webId!),
+        queryKey: queryKeys.uploadPlayerData(session!.info.webId!),
       });
     },
   });

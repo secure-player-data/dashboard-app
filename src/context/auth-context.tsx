@@ -34,14 +34,24 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     initialValue.session
   );
   const [pod, setPod] = React.useState<string | null>(initialValue.pod);
+
   const [isLoading, setIsLoading] = React.useState(true);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     if (session) {
+      // Subscribe to events
+      session.events.on(EVENTS.LOGIN, onLogin);
+      session.events.on(EVENTS.LOGOUT, updateState);
+      session.events.on(EVENTS.SESSION_RESTORED, onSessionRestored);
+      session.events.on(EVENTS.SESSION_EXPIRED, updateState);
+      session.events.on(EVENTS.SESSION_EXTENDED, updateState);
+      session.events.on(EVENTS.NEW_REFRESH_TOKEN, updateState);
+
       // Refresh session on page load
-      handleIncomingRedirect({ restorePreviousSession: true })
+      session
+        .handleIncomingRedirect({ restorePreviousSession: true })
         .then((data) => {
           if (!data?.isLoggedIn) {
             clear();
@@ -52,22 +62,17 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setIsLoading(false);
         });
     }
-  }, []);
-
-  // Subscribe to auth events when session is changed
-  useEffect(() => {
-    if (session) {
-      // Subscribe to events
-      session.events.on(EVENTS.LOGIN, onLogin);
-      session.events.on(EVENTS.SESSION_RESTORED, onSessionRestored);
-    }
 
     // Unsubscribe from events when the component is unmounted
-    () => {
+    return () => {
       session?.events.off(EVENTS.LOGIN, onLogin);
+      session?.events.off(EVENTS.LOGOUT, updateState);
       session?.events.off(EVENTS.SESSION_RESTORED, onSessionRestored);
+      session?.events.off(EVENTS.SESSION_EXPIRED, updateState);
+      session?.events.off(EVENTS.SESSION_EXTENDED, updateState);
+      session?.events.off(EVENTS.NEW_REFRESH_TOKEN, updateState);
     };
-  }, [session]);
+  }, []);
 
   const onLogin = async () => {
     await updateState();
@@ -95,8 +100,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     await logout({
       logoutType: 'app',
     });
-    clear();
-    navigate({ to: '/auth/login' });
+    await updateState();
   };
 
   const onAuthCallback = async () => {

@@ -1,3 +1,4 @@
+import { TiptapPreview } from '@/components/text-editor/tiptap';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -26,7 +27,7 @@ import {
   Loader2,
   Locate,
   User,
-  File,
+  File as FileIcon,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
@@ -85,7 +86,7 @@ function RouteComponent() {
           Back
         </Button>
         <Button variant="outline" asChild>
-          <a href={URL.createObjectURL(file.blob)} download={file.name}>
+          <a href={URL.createObjectURL(file.blob)} download={meta.file.name}>
             <FileDown className="size-4" />
             Export
           </a>
@@ -99,7 +100,7 @@ function RouteComponent() {
         <CardContent>
           <div className="grid gap-4 grid-cols-2">
             <div className="flex gap-2 items-center">
-              <File />
+              <FileIcon />
               <div>
                 <p className="text-sm text-muted-foreground">Name</p>
                 <p>{meta.file.name}</p>
@@ -164,6 +165,11 @@ function FileRendrer({
   mimeType: string;
 }) {
   const fileUrl = URL.createObjectURL(blob);
+  const [content, setContent] = useState('');
+
+  useEffect(() => {
+    blob.text().then(setContent);
+  }, [blob]);
 
   if (mimeType.startsWith('image/')) {
     return <img src={fileUrl} alt={name} style={{ maxWidth: '100%' }} />;
@@ -177,6 +183,10 @@ function FileRendrer({
     return <audio controls src={fileUrl} />;
   }
 
+  if (mimeType === 'text/html') {
+    return <TiptapPreview blob={blob} />;
+  }
+
   if (mimeType === 'application/pdf') {
     return (
       <iframe
@@ -188,25 +198,19 @@ function FileRendrer({
   }
 
   if (mimeType === 'text/csv') {
-    const [text, setText] = useState<string | null>(null);
-
-    useEffect(() => {
-      blob.text().then(setText);
-    }, [blob]);
-
     return (
       <div className="border rounded-md h-full">
         <Table>
           <TableHeader>
             <TableRow>
-              {text
+              {content
                 ?.split('\n')[0]
                 .split(',')
                 .map((cell) => <TableHead key={cell}>{cell}</TableHead>)}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {text
+            {content
               ?.split('\n')
               .slice(1)
               .map((row) => (
@@ -223,12 +227,6 @@ function FileRendrer({
   }
 
   if (mimeType.startsWith('text/')) {
-    const [text, setText] = useState<string | null>(null);
-
-    useEffect(() => {
-      blob.text().then(setText);
-    }, [blob]);
-
-    return <pre style={{ whiteSpace: 'pre-wrap' }}>{text}</pre>;
+    return <pre style={{ whiteSpace: 'pre-wrap' }}>{content}</pre>;
   }
 }

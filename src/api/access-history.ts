@@ -13,18 +13,16 @@ import {
   Thing,
 } from '@inrupt/solid-client';
 import { Session } from '@inrupt/solid-client-authn-browser';
-import { BASE_APP_CONTAINER, paths } from './paths';
+import { paths } from './paths';
 import { LOG_SCHEMA } from '@/lib/schemas';
 import { RDF, LDP } from '@inrupt/vocab-common-rdf';
 import { AccessHistory } from '@/entities/access-history';
 import { setPublicAccess } from './access-control';
 import { Permission } from '@/entities/permissions';
 import { log } from '@/lib/log';
-import { QueryEngine } from '@comunica/query-sparql';
-import { safeCall } from '@/utils';
+import { SessionNotSetException } from '@/exceptions/session-exceptions';
 
-const getEndpoint = (pod: string) =>
-  `${pod}${BASE_APP_CONTAINER}/access-history/`;
+const getEndpoint = (pod: string) => paths.accessHistory(pod);
 
 /**
  * Initializes the access history for a user
@@ -121,11 +119,16 @@ export async function fetchAccessHistory(
   const dataset = await getSolidDataset(paths.accessHistory(pod), {
     fetch: session.fetch,
   });
-  const things = getThingAll(dataset);
-  console.log(things.length);
+  const things = getThingAll(dataset).filter(
+    (thing) => thing.url !== paths.accessHistory(pod)
+  );
+  const pagedThings = things.slice(
+    (page - 1) * limit,
+    (page - 1) * limit + limit
+  );
 
   const items = await Promise.all(
-    things.slice(page * limit, page * limit + limit).map(async (thing) => {
+    pagedThings.map(async (thing) => {
       const tmp = await getSolidDataset(thing.url, {
         fetch: session.fetch,
       });

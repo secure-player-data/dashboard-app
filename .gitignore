@@ -24,8 +24,9 @@ dist-ssr
 *.sw?
 
 # Playground
-src/routes/__playground.tsx
-src/routes/__playground/*.tsx
+playground.tsx
+__playground.tsx
+__playground/*.tsx
 
 # Env
 .env

@@ -21,7 +21,6 @@ import { useAuth } from '@/context/auth-context';
 import { toast } from 'sonner';
 import { queryKeys } from '@/use-cases/access-history';
 import { Pagination } from '@/components/ui/pagination';
-import { fillWithDummyData, startExperiment } from '@/api/experiment';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -73,12 +72,6 @@ export function DataTable<TData, TValue>({
             View users that have accessed your data
           </p>
         </div>
-        <Button onClick={() => fillWithDummyData(session, pod, 50)}>
-          Fill
-        </Button>
-        <Button onClick={() => startExperiment(session, pod)}>
-          Experiment
-        </Button>
         <Button
           variant="outline"
           title="Refresh history"

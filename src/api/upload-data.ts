@@ -15,6 +15,7 @@ import { paths } from './paths';
 import { safeCall } from '@/utils';
 import { sendInformation } from './inbox';
 import { saveFileInContainer } from '@inrupt/solid-client';
+import { logResourceAccess } from './access-history';
 
 export async function uploadPlayerData(
   session: Session | null,
@@ -87,6 +88,12 @@ export async function uploadPlayerData(
 
       // Save dataset at receiver location
       await saveSolidDatasetAt(url, dataset, { fetch: session.fetch });
+      await logResourceAccess({
+        session,
+        pod: receiverPod,
+        resource: `${paths.root(receiverPod)}${category}${uploadedFile.name}`,
+        action: 'Write'
+      })
     })
   );
 

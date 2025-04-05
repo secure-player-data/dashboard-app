@@ -121,11 +121,15 @@ export async function fetchAccessHistory(
   const dataset = await getSolidDataset(paths.accessHistory(pod), {
     fetch: session.fetch,
   });
-  const things = getThingAll(dataset);
-  console.log(things.length);
+  const things = getThingAll(dataset).filter(
+    (thing) => thing.url !== paths.accessHistory(pod)
+  );
+  const start = (page - 1) * limit;
+  const end = page * limit;
+  const pagedThings = things.slice(start, end);
 
   const items = await Promise.all(
-    things.slice(page * limit, page * limit + limit).map(async (thing) => {
+    pagedThings.map(async (thing) => {
       const tmp = await getSolidDataset(thing.url, {
         fetch: session.fetch,
       });

@@ -15,13 +15,11 @@ import {
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { BASE_APP_CONTAINER, paths } from './paths';
 import { LOG_SCHEMA } from '@/lib/schemas';
-import { RDF, LDP } from '@inrupt/vocab-common-rdf';
+import { RDF } from '@inrupt/vocab-common-rdf';
 import { AccessHistory } from '@/entities/access-history';
 import { setPublicAccess } from './access-control';
 import { Permission } from '@/entities/permissions';
 import { log } from '@/lib/log';
-import { QueryEngine } from '@comunica/query-sparql';
-import { safeCall } from '@/utils';
 
 const getEndpoint = (pod: string) =>
   `${pod}${BASE_APP_CONTAINER}/access-history/`;

@@ -17,6 +17,8 @@ import {
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
 import { Link } from '@tanstack/react-router';
+import { useGetUnseenMessages } from '@/use-cases/invitations';
+import { useAuth } from '@/context/auth-context';
 
 export function NavMain({
   items,
@@ -25,6 +27,7 @@ export function NavMain({
     title: string;
     url: string;
     icon: LucideIcon;
+    secondIcon?: LucideIcon;
     isActive?: boolean;
     items?: {
       title: string;
@@ -34,6 +37,9 @@ export function NavMain({
     }[];
   }[];
 }) {
+  const { session, pod } = useAuth();
+  const { data: newMessages } = useGetUnseenMessages(session, pod);
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Main</SidebarGroupLabel>
@@ -45,6 +51,12 @@ export function NavMain({
                 <Link to={item.url}>
                   <item.icon />
                   <span>{item.title}</span>
+                  {item.title == 'Inbox' && newMessages != 0 && (
+                    <p className="rounded-full bg-black text-white px-2">
+                      {newMessages}
+                    </p>
+                  )}
+                  {item.secondIcon && <item.secondIcon />}
                 </Link>
               </SidebarMenuButton>
               {item.items?.length ? (

@@ -5,11 +5,13 @@ import {
   sendInvitation,
 } from '@/api/inbox';
 import { InboxItem } from '@/entities/inboxItem';
+import { fetchUnseenMessageAmount } from '@/api/inbox';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const queryKeys = {
   inbox: (webId: string) => ['inbox', webId],
+  inboxItemAmount: (webId: string) => ['inboxItemAmount', webId],
 };
 
 export function useGetInbox(session: Session | null, pod: string | null) {
@@ -17,6 +19,17 @@ export function useGetInbox(session: Session | null, pod: string | null) {
     queryKey: queryKeys.inbox(session?.info.webId ?? ''),
     queryFn: () => fetchInbox(session, pod),
     enabled: !!session && !!pod,
+  });
+}
+
+export function useGetUnseenMessages(
+  session: Session | null,
+  pod: string | null
+) {
+  return useQuery({
+    queryKey: queryKeys.inboxItemAmount(session?.info.webId ?? ''),
+    queryFn: async () => fetchUnseenMessageAmount(session!, pod!),
+    refetchInterval: 5000,
   });
 }
 

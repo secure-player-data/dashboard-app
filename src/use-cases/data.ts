@@ -42,11 +42,22 @@ export function useGetData(session: Session | null, url: string) {
   });
 }
 
-export function useGetFile(session: Session | null, url: string | undefined) {
+/**
+ * Get a single file
+ * @param session of the user requesting the file
+ * @param url of the file
+ * @param name original name of the file
+ * @returns useQuery with the file data
+ */
+export function useGetFile(
+  session: Session | null,
+  url: string | undefined,
+  name: string | undefined
+) {
   return useQuery({
     queryKey: queryKeys.file(url!),
-    queryFn: async () => await fetchFile(session, url!),
-    enabled: !!session && !!url,
+    queryFn: async () => await fetchFile(session, url!, name!),
+    enabled: !!session && !!url && !!name,
   });
 }
 

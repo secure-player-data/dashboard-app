@@ -132,8 +132,9 @@ export function Pagination({
         </Button>
       </div>
       <p className="text-sm text-muted-foreground">
-        {current * limit - limit + 1} - {Math.min(current * limit, totalItems)}{' '}
-        of {totalItems}
+        {totalItems === 0
+          ? '0 of 0'
+          : `${current * limit - limit + 1} - ${Math.min(current * limit, totalItems)} of ${totalItems}`}
       </p>
     </div>
   );

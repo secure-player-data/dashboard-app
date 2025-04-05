@@ -170,20 +170,26 @@ export async function fetchDeletionRequests(
  * Returns the content of a file as a JSON object
  * @param session of the requesting user
  * @param url to the file
+ * @param name original name of the file
  * @returns a blob and its mimeType
  */
-export async function fetchFile(session: Session | null, urlString: string) {
+export async function fetchFile(
+  session: Session | null,
+  urlString: string,
+  name: string
+) {
   if (!session || !session.info.webId) {
     throw new SessionNotSetException('User is not logged in');
   }
 
   const podUrl = urlString.split(`${BASE_APP_CONTAINER}/`)[0];
+  const resourceUrl = `${urlString.split('/').slice(0, -2).join('/')}/${name}`;
   const file = await getFile(urlString, { fetch: session.fetch });
 
   await logResourceAccess({
     session,
     pod: podUrl,
-    resource: urlString,
+    resource: resourceUrl,
     action: 'Read',
   });
 

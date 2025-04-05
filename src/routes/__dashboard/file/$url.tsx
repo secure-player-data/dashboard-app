@@ -56,7 +56,7 @@ function RouteComponent() {
     data: file,
     isPending: filePending,
     error: fileError,
-  } = useGetFile(session, meta?.file.url);
+  } = useGetFile(session, meta?.file.url, meta?.file.name);
 
   function goBack() {
     router.history.back();

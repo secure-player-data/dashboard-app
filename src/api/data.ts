@@ -18,6 +18,7 @@ import {
   getFile,
   getSolidDataset,
   getStringNoLocale,
+  getThing,
   getThingAll,
   deleteFile as inrupt_deleteFile,
   saveFileInContainer,
@@ -60,19 +61,9 @@ export async function fetchDataByCategory(
     fetch: session.fetch,
   });
   const things = getThingAll(dataset).filter(
-    (thing) => thing.url !== datasetUrl && !thing.url.endsWith('/files/')
+    (thing) => thing.url !== datasetUrl && thing.url !== `${datasetUrl}files/`
   );
-
-  const data = await Promise.all(
-    things.map(async (thing) => {
-      const innerDataset = await getSolidDataset(thing.url, {
-        fetch: session.fetch,
-      });
-      const innerThing = getThingAll(innerDataset)[0];
-
-      return mapThingToDataInfo(innerThing);
-    })
-  );
+  const data = things.map(mapThingToDataInfo);
 
   logResourceAccess({
     session,
@@ -98,7 +89,11 @@ export async function fetchData(
   }
 
   const dataset = await getSolidDataset(url, { fetch: session.fetch });
-  const thing = getThingAll(dataset)[0];
+  const thing = getThing(dataset, url);
+
+  if (!thing) {
+    throw new Error('Could not find the requested data');
+  }
 
   return mapThingToDataInfo(thing);
 }

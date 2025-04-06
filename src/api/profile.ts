@@ -204,6 +204,18 @@ export async function initAppProfile(
     paths.inbox(pod),
     paths.accessHistory(pod),
     paths.deletionRequests(pod),
+  ];
+
+  for await (const path of pathsToCreate) {
+    console.log('Creating path: ', path);
+    const [err, _] = await safeCall(
+      createContainerAt(path, { fetch: session.fetch })
+    );
+
+    if (err) continue;
+  }
+
+  const resourcesToCreate = [
     paths.personalData(pod),
     paths.footballData(pod),
     paths.eventData(pod),
@@ -212,10 +224,12 @@ export async function initAppProfile(
     paths.healthData(pod),
   ];
 
-  for await (const path of pathsToCreate) {
-    console.log('Creating path: ', path);
+  for await (const resource of resourcesToCreate) {
+    const dataset = createSolidDataset();
     const [err, _] = await safeCall(
-      createContainerAt(path, { fetch: session.fetch })
+      saveSolidDatasetAt(resource, dataset, {
+        fetch: session.fetch,
+      })
     );
 
     if (err) continue;
@@ -259,7 +273,7 @@ export async function initAppProfile(
     });
   }
 
-  await seedDb(session, pod);
+  // await seedDb(session, pod);
 }
 
 export async function createAppProfile(

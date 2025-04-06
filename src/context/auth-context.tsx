@@ -2,7 +2,6 @@ import React, { useContext, useEffect } from 'react';
 import {
   EVENTS,
   getDefaultSession,
-  handleIncomingRedirect,
   login,
   logout,
   Session,

@@ -112,6 +112,7 @@ export default function UploadDataForm() {
   const resetForm = () => {
     setDataEntries([]);
     setUploadedFiles([]);
+    setTextName('');
     setTextContent('');
     setHasTextEntry(false);
     setDataType('');

@@ -14,6 +14,7 @@ import {
   setStringNoLocale,
   saveSolidDatasetAt,
   setDatetime,
+  getThing,
 } from '@inrupt/solid-client';
 import { RDF } from '@inrupt/vocab-common-rdf';
 import { BASE_APP_CONTAINER, INBOX_CONTAINER, paths } from './paths';
@@ -43,6 +44,7 @@ import {
   DATA_INFO_SCHEMA,
 } from '@/schemas/data-info';
 import { SessionNotSetException } from '@/exceptions/session-exceptions';
+import { log } from '@/lib/log';
 
 /**
  * Fetches the inbox of a user
@@ -332,7 +334,20 @@ async function deleteInboxItem(
   const inboxThings = getThingAll(inboxDataset);
 
   for (const item of inboxThings) {
-    const dataset = await getSolidDataset(item.url, { fetch: session.fetch });
+    const [error, dataset] = await safeCall(
+      getSolidDataset(item.url, { fetch: session.fetch })
+    );
+
+    if (error) {
+      log({
+        type: 'error',
+        label: 'Delete inbox item',
+        message: 'Failed to fetch inbox item',
+        obj: error,
+      });
+      return;
+    }
+
     const things = getThingAll(dataset);
 
     for (const thing of things) {
@@ -536,7 +551,7 @@ export async function sendDataDeletionRequest(
   await Promise.all(
     request.data.map(async (item) => {
       let dataset = await getSolidDataset(item.url, { fetch: session.fetch });
-      let thing = getThingAll(dataset)[0];
+      let thing = getThing(dataset, item.url);
 
       if (!thing) return;
 
@@ -626,7 +641,13 @@ export async function sendDataDeletionConfirmation(
         return;
       }
 
-      let thing = getThingAll(dataset)[0];
+      let thing = getThing(dataset, item.url);
+
+      if (!thing) {
+        console.error('Thing not found');
+        return;
+      }
+
       thing = setStringNoLocale(thing, DATA_INFO_SCHEMA.status, 'Confirmed');
       const updatedDataset = setThing(dataset, thing);
       await saveSolidDatasetAt(item.url, updatedDataset, {

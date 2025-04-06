@@ -34,10 +34,9 @@ export async function uploadPlayerData(
 
   await Promise.all(
     uploadedFiles.map(async (uploadedFile) => {
-      const thingName = crypto.randomUUID();
-      const fileId = crypto.randomUUID();
+      const id = crypto.randomUUID();
       const fileExtension = uploadedFile.name.split('.').pop(); // Get original file extension
-      const newFileName = `${fileId}.${fileExtension}`; // Keep original extension
+      const newFileName = `${id}.${fileExtension}`; // Keep original extension
 
       const fileBuffer = await uploadedFile.arrayBuffer(); // Preserve file content
       const renamedFile = new File([fileBuffer], newFileName, {
@@ -66,7 +65,7 @@ export async function uploadPlayerData(
       });
 
       // Create the thing with the updated file reference
-      const thing = buildThing(createThing({ name: thingName }))
+      const thing = buildThing(createThing({ name: id }))
         .addUrl(RDF.type, DATA_INFO_SCHEMA.type)
         .addStringNoLocale(
           DATA_INFO_SCHEMA.fileUrl,
@@ -80,20 +79,38 @@ export async function uploadPlayerData(
         .addStringNoLocale(DATA_INFO_SCHEMA.location, location)
         .build();
 
+      const datasetUrl = `${paths.root(receiverPod)}${category}/`;
+      const [error, dataset] = await safeCall(
+        getSolidDataset(datasetUrl, {
+          fetch: session.fetch,
+        })
+      );
+
+      if (error) {
+        // TODO: Create dataset if 404
+        console.log(error);
+        throw new Error(`Error getting dataset ${error}`);
+      }
+
+      const updateDataset = setThing(dataset, thing);
+      await saveSolidDatasetAt(datasetUrl, updateDataset, {
+        fetch: session.fetch,
+      });
+
       // Create dataset
-      let dataset = createSolidDataset();
-      dataset = setThing(dataset, thing);
+      // let dataset = createSolidDataset();
+      // dataset = setThing(dataset, thing);
 
-      const url = `${paths.root(receiverPod)}${category}${thingName}`;
+      // const url = `${paths.root(receiverPod)}${category}${thingName}`;
 
-      // Save dataset at receiver location
-      await saveSolidDatasetAt(url, dataset, { fetch: session.fetch });
+      // // Save dataset at receiver location
+      // await saveSolidDatasetAt(url, dataset, { fetch: session.fetch });
       await logResourceAccess({
         session,
         pod: receiverPod,
         resource: `${paths.root(receiverPod)}${category}${uploadedFile.name}`,
-        action: 'Write'
-      })
+        action: 'Write',
+      });
     })
   );
 

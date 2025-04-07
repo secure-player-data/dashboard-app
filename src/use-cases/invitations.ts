@@ -26,9 +26,17 @@ export function useGetUnseenMessages(
   session: Session | null,
   pod: string | null
 ) {
+  const queryClient = useQueryClient();
   return useQuery({
     queryKey: queryKeys.inboxItemAmount(session?.info.webId ?? ''),
-    queryFn: async () => fetchUnseenMessageAmount(session!, pod!),
+    queryFn: async () => {
+      const unseenAmount = await fetchUnseenMessageAmount(session!, pod!);
+      if (unseenAmount > 0 && session && session.info.webId)
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.inbox(session.info.webId),
+        });
+      return unseenAmount;
+    },
     refetchInterval: 5000,
   });
 }

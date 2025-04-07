@@ -18,14 +18,18 @@ import {
   getFile,
   getSolidDataset,
   getStringNoLocale,
+  getThing,
   getThingAll,
   deleteFile as inrupt_deleteFile,
+  removeThing,
   saveFileInContainer,
+  saveSolidDatasetAt,
   Thing,
 } from '@inrupt/solid-client';
 import { SessionNotSetException } from '@/exceptions/session-exceptions';
 import { safeCall } from '@/utils';
 import { logResourceAccess } from './access-history';
+import { log } from '@/lib/log';
 
 const categories = [
   'personal-data',
@@ -60,19 +64,11 @@ export async function fetchDataByCategory(
     fetch: session.fetch,
   });
   const things = getThingAll(dataset).filter(
-    (thing) => thing.url !== datasetUrl && !thing.url.endsWith('/files/')
+    (thing) => thing.url !== datasetUrl && thing.url !== `${datasetUrl}files/`
   );
-
-  const data = await Promise.all(
-    things.map(async (thing) => {
-      const innerDataset = await getSolidDataset(thing.url, {
-        fetch: session.fetch,
-      });
-      const innerThing = getThingAll(innerDataset)[0];
-
-      return mapThingToDataInfo(innerThing);
-    })
-  );
+  const data = things.map(mapThingToDataInfo).sort((a, b) => {
+    return b.uploadedAt.getTime() - a.uploadedAt.getTime();
+  });
 
   logResourceAccess({
     session,
@@ -98,7 +94,11 @@ export async function fetchData(
   }
 
   const dataset = await getSolidDataset(url, { fetch: session.fetch });
-  const thing = getThingAll(dataset)[0];
+  const thing = getThing(dataset, url);
+
+  if (!thing) {
+    throw new Error('Could not find the requested data');
+  }
 
   return mapThingToDataInfo(thing);
 }
@@ -118,21 +118,46 @@ export async function deleteData(
     throw new SessionNotSetException('Session and pod are required');
   }
 
+  if (data.length === 0) {
+    log({
+      type: 'warn',
+      label: 'Delete Data',
+      message: 'Tried to delete data with empty array',
+    });
+    return;
+  }
+
+  console.log('Deleting data', data);
+
+  const datasetUrl = data[0].url;
+  const [datasetError, dataset] = await safeCall(
+    getSolidDataset(datasetUrl, {
+      fetch: session.fetch,
+    })
+  );
+
+  if (datasetError) {
+    throw new Error('Could not find the requested data');
+  }
+
+  let updatedDataset = dataset;
+  for (const item of data) {
+    updatedDataset = removeThing(updatedDataset, item.url);
+  }
+
   await Promise.all(
     data.map(async (item) => {
       const [fileError] = await safeCall(deleteFile(session, item.file.url));
-      const [datasetError] = await safeCall(
-        deleteSolidDataset(item.url, { fetch: session.fetch })
-      );
 
       if (fileError) {
         console.error('Error deleting file', fileError);
       }
-      if (datasetError) {
-        console.error('Error deleting file info', datasetError);
-      }
     })
   );
+
+  await saveSolidDatasetAt(datasetUrl, updatedDataset, {
+    fetch: session.fetch,
+  });
 }
 
 /**

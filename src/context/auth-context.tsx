@@ -2,7 +2,6 @@ import React, { useContext, useEffect } from 'react';
 import {
   EVENTS,
   getDefaultSession,
-  handleIncomingRedirect,
   login,
   logout,
   Session,
@@ -92,6 +91,9 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       oidcIssuer: provider,
       redirectUrl: new URL('/auth/callback', window.location.href).toString(),
       clientName: 'Secure Player Data',
+      clientId: !import.meta.env.DEV
+        ? 'https://secure-player-data.onrender.com/app-id.jsonld'
+        : undefined,
       tokenType: 'DPoP',
     });
   };

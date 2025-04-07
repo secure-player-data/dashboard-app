@@ -68,27 +68,6 @@ const MenuBar = () => {
         </button>
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
-          className={`${baseStyle} ${editor.isActive('bulletList') ? isActive : ''}`}
-        >
-          <List size={16} />
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          className={`${baseStyle} ${editor.isActive('orderedList') ? isActive : ''}`}
-        >
-          <ListOrdered size={16} />
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleBlockquote().run()}
-          className={`${baseStyle} ${editor.isActive('blockquote') ? isActive : ''}`}
-        >
-          <Quote size={16} />
-        </button>
-        <button
-          type="button"
           onClick={() => editor.chain().focus().setHorizontalRule().run()}
           className={`${baseStyle}`}
         >

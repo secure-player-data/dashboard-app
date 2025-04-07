@@ -127,8 +127,6 @@ export async function deleteData(
     return;
   }
 
-  console.log('Deleting data', data);
-
   const datasetUrl = data[0].url;
   const [datasetError, dataset] = await safeCall(
     getSolidDataset(datasetUrl, {

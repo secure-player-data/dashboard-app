@@ -51,7 +51,7 @@ export function NavMain({
                 <Link to={item.url}>
                   <item.icon />
                   <span>{item.title}</span>
-                  {item.title == 'Inbox' && newMessages != 0 && (
+                  {item.title == 'Inbox' && newMessages! > 0 && (
                     <p className="flex items-center justify-center rounded-full aspect-square size-5 text-xs p-1 bg-primary text-primary-foreground">
                       {newMessages}
                     </p>

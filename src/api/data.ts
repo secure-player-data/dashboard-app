@@ -21,12 +21,15 @@ import {
   getThing,
   getThingAll,
   deleteFile as inrupt_deleteFile,
+  removeThing,
   saveFileInContainer,
+  saveSolidDatasetAt,
   Thing,
 } from '@inrupt/solid-client';
 import { SessionNotSetException } from '@/exceptions/session-exceptions';
 import { safeCall } from '@/utils';
 import { logResourceAccess } from './access-history';
+import { log } from '@/lib/log';
 
 const categories = [
   'personal-data',
@@ -63,7 +66,9 @@ export async function fetchDataByCategory(
   const things = getThingAll(dataset).filter(
     (thing) => thing.url !== datasetUrl && thing.url !== `${datasetUrl}files/`
   );
-  const data = things.map(mapThingToDataInfo);
+  const data = things.map(mapThingToDataInfo).sort((a, b) => {
+    return b.uploadedAt.getTime() - a.uploadedAt.getTime();
+  });
 
   logResourceAccess({
     session,
@@ -115,15 +120,36 @@ export async function deleteData(
 
   await Promise.all(
     data.map(async (item) => {
+      log({
+        type: 'info',
+        label: 'Delete Data',
+        message: `Deleting item ${item.file.name}`,
+        obj: item,
+      });
+
       const [fileError] = await safeCall(deleteFile(session, item.file.url));
-      const [datasetError] = await safeCall(
-        deleteSolidDataset(item.url, { fetch: session.fetch })
+      const [datasetError, dataset] = await safeCall(
+        getSolidDataset(item.url, {
+          fetch: session.fetch,
+        })
+      );
+
+      if (datasetError) {
+        console.error(datasetError);
+        return;
+      }
+
+      const updatedDataset = removeThing(dataset, item.url);
+      const [updatedDatasetError] = await safeCall(
+        saveSolidDatasetAt(item.url, updatedDataset, {
+          fetch: session.fetch,
+        })
       );
 
       if (fileError) {
         console.error('Error deleting file', fileError);
       }
-      if (datasetError) {
+      if (updatedDatasetError) {
         console.error('Error deleting file info', datasetError);
       }
     })

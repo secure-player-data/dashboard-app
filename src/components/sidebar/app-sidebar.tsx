@@ -18,7 +18,6 @@ import {
   Activity,
   PanelsTopLeft,
 } from 'lucide-react';
-
 import { NavUser } from '@/components/sidebar/nav-user';
 import {
   Sidebar,
@@ -33,6 +32,7 @@ import { NavGroup } from './nav-group';
 import { NavFooter } from './nav-footer';
 import { NavMain } from './nav-main';
 import { useGetProfile } from '@/use-cases/profile';
+import { Link } from '@tanstack/react-router';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { session, pod } = useAuth();
@@ -154,7 +154,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <div className="flex gap-2">
+              <Link to="/" className="flex gap-2">
                 <div className="flex aspect-square size-10 items-center justify-center rounded-lg">
                   <img
                     src={user?.team?.img || '/placeholder.svg'}
@@ -170,7 +170,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     {user?.team?.tag ?? '-'}
                   </span>
                 </div>
-              </div>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

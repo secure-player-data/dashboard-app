@@ -371,11 +371,11 @@ function mapThingToDataInfo(thing: Thing): DataInfo {
 function mapThingToDeletionRequest(thing: Thing): DataDeletionRequest {
   const confirmerName = getStringNoLocale(
     thing,
-    DATA_DELETION_REQUEST_SCHEMA.senderName
+    DATA_DELETION_REQUEST_SCHEMA.confirmerName
   );
   const confirmerWebId = getStringNoLocale(
     thing,
-    DATA_DELETION_REQUEST_SCHEMA.senderWebId
+    DATA_DELETION_REQUEST_SCHEMA.confirmerWebId
   );
   const confirmer =
     confirmerName && confirmerWebId

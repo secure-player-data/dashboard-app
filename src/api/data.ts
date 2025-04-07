@@ -118,42 +118,46 @@ export async function deleteData(
     throw new SessionNotSetException('Session and pod are required');
   }
 
+  if (data.length === 0) {
+    log({
+      type: 'warn',
+      label: 'Delete Data',
+      message: 'Tried to delete data with empty array',
+    });
+    return;
+  }
+
+  console.log('Deleting data', data);
+
+  const datasetUrl = data[0].url;
+  const [datasetError, dataset] = await safeCall(
+    getSolidDataset(datasetUrl, {
+      fetch: session.fetch,
+    })
+  );
+
+  if (datasetError) {
+    throw new Error('Could not find the requested data');
+  }
+
+  let updatedDataset = dataset;
+  for (const item of data) {
+    updatedDataset = removeThing(updatedDataset, item.url);
+  }
+
   await Promise.all(
     data.map(async (item) => {
-      log({
-        type: 'info',
-        label: 'Delete Data',
-        message: `Deleting item ${item.file.name}`,
-        obj: item,
-      });
-
       const [fileError] = await safeCall(deleteFile(session, item.file.url));
-      const [datasetError, dataset] = await safeCall(
-        getSolidDataset(item.url, {
-          fetch: session.fetch,
-        })
-      );
-
-      if (datasetError) {
-        console.error(datasetError);
-        return;
-      }
-
-      const updatedDataset = removeThing(dataset, item.url);
-      const [updatedDatasetError] = await safeCall(
-        saveSolidDatasetAt(item.url, updatedDataset, {
-          fetch: session.fetch,
-        })
-      );
 
       if (fileError) {
         console.error('Error deleting file', fileError);
       }
-      if (updatedDatasetError) {
-        console.error('Error deleting file info', datasetError);
-      }
     })
   );
+
+  await saveSolidDatasetAt(datasetUrl, updatedDataset, {
+    fetch: session.fetch,
+  });
 }
 
 /**

@@ -21,12 +21,15 @@ import {
   getThing,
   getThingAll,
   deleteFile as inrupt_deleteFile,
+  removeThing,
   saveFileInContainer,
+  saveSolidDatasetAt,
   Thing,
 } from '@inrupt/solid-client';
 import { SessionNotSetException } from '@/exceptions/session-exceptions';
 import { safeCall } from '@/utils';
 import { logResourceAccess } from './access-history';
+import { log } from '@/lib/log';
 
 const categories = [
   'personal-data',
@@ -63,7 +66,9 @@ export async function fetchDataByCategory(
   const things = getThingAll(dataset).filter(
     (thing) => thing.url !== datasetUrl && thing.url !== `${datasetUrl}files/`
   );
-  const data = things.map(mapThingToDataInfo);
+  const data = things.map(mapThingToDataInfo).sort((a, b) => {
+    return b.uploadedAt.getTime() - a.uploadedAt.getTime();
+  });
 
   logResourceAccess({
     session,
@@ -113,21 +118,46 @@ export async function deleteData(
     throw new SessionNotSetException('Session and pod are required');
   }
 
+  if (data.length === 0) {
+    log({
+      type: 'warn',
+      label: 'Delete Data',
+      message: 'Tried to delete data with empty array',
+    });
+    return;
+  }
+
+  console.log('Deleting data', data);
+
+  const datasetUrl = data[0].url;
+  const [datasetError, dataset] = await safeCall(
+    getSolidDataset(datasetUrl, {
+      fetch: session.fetch,
+    })
+  );
+
+  if (datasetError) {
+    throw new Error('Could not find the requested data');
+  }
+
+  let updatedDataset = dataset;
+  for (const item of data) {
+    updatedDataset = removeThing(updatedDataset, item.url);
+  }
+
   await Promise.all(
     data.map(async (item) => {
       const [fileError] = await safeCall(deleteFile(session, item.file.url));
-      const [datasetError] = await safeCall(
-        deleteSolidDataset(item.url, { fetch: session.fetch })
-      );
 
       if (fileError) {
         console.error('Error deleting file', fileError);
       }
-      if (datasetError) {
-        console.error('Error deleting file info', datasetError);
-      }
     })
   );
+
+  await saveSolidDatasetAt(datasetUrl, updatedDataset, {
+    fetch: session.fetch,
+  });
 }
 
 /**

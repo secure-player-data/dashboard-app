@@ -24,7 +24,7 @@ function RouteComponent() {
       data={data ?? []}
       columns={columns}
       isLoading={isPending}
-      error={error?.message}
+      error={error}
       pod={pod}
       category={category}
       name={profile?.name ?? ''}

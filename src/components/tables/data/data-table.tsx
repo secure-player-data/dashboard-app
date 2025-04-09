@@ -18,19 +18,20 @@ import {
 } from '@/components/ui/table';
 import React from 'react';
 import { Loader2, RefreshCcw } from 'lucide-react';
-import { convertKebabCaseToString } from '@/utils';
+import { convertKebabCaseToString, extractJsonObject } from '@/utils';
 import { DeleteDataDialog } from '@/components/dialogs/delete-data-dialog';
 import { DataInfo } from '@/entities/data-info';
 import { Button } from '@/components/ui/button';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys as dataQueryKeys } from '@/use-cases/data';
 import { toast } from 'sonner';
+import Error from '@/components/error';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   isLoading: boolean;
-  error: string | undefined;
+  error: Error | null;
   category: string;
   pod: string;
   name: string;
@@ -149,7 +150,7 @@ function TableContent<TData, TValue>({
   columns: ColumnDef<TData, TValue>[];
   table: ITable<TData>;
   isLoading: boolean;
-  error: string | undefined;
+  error: Error | null;
 }) {
   if (isLoading) {
     return (
@@ -165,7 +166,7 @@ function TableContent<TData, TValue>({
     return (
       <TableRow>
         <TableCell colSpan={columns.length} className="h-24 text-center">
-          {error}
+          <Error error={error} />
         </TableCell>
       </TableRow>
     );

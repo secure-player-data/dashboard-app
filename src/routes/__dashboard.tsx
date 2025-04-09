@@ -71,6 +71,13 @@ function RouteComponent() {
     }
   }
 
+  function truncate(str: string, length: number = 30) {
+    if (str.length > length) {
+      return str.substring(0, length) + '...';
+    }
+    return str;
+  }
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -99,7 +106,7 @@ function RouteComponent() {
                       <ChevronRight className="size-4" />
                       <BreadcrumbItem>
                         <BreadcrumbLink>
-                          {decodeURIComponent(path)}
+                          {truncate(decodeURIComponent(path))}
                         </BreadcrumbLink>
                       </BreadcrumbItem>
                     </div>

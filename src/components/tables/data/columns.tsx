@@ -120,7 +120,7 @@ export const columns: ColumnDef<DataInfo>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           <Locate />
-          Location
+          Data Source
           {sortDirection === 'asc' ? (
             <ArrowDown />
           ) : sortDirection === 'desc' ? (

@@ -109,7 +109,7 @@ function RouteComponent() {
             <div className="flex gap-2 items-center">
               <Locate />
               <div>
-                <p className="text-sm text-muted-foreground">Location</p>
+                <p className="text-sm text-muted-foreground">Data Source</p>
                 <p>{meta.location}</p>
               </div>
             </div>

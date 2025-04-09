@@ -197,7 +197,7 @@ function FileRendrer({
     );
   }
 
-  if (mimeType === 'text/csv') {
+  if (mimeType.includes('text/csv')) {
     return (
       <div className="border rounded-md h-full">
         <Table>

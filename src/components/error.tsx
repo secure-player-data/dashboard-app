@@ -28,6 +28,15 @@ export default function Error({ error }: { error: Error }) {
     return <div>You do not have permission to access this resource</div>;
   }
 
+  if (status === 401) {
+    return (
+      <div>
+        You are not authenticated. Please log in before trying to view this
+        data.
+      </div>
+    );
+  }
+
   return (
     <div>
       Something went wrong. We are looking into it, please try again later.

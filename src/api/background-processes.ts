@@ -1,5 +1,5 @@
 import { Session } from '@inrupt/solid-client-authn-browser';
-import { BASE_APP_CONTAINER, paths } from './paths';
+import { BASE_APP_CONTAINER } from './paths';
 import { getSolidDataset, getThingAll } from '@inrupt/solid-client';
 
 /**
@@ -21,7 +21,6 @@ export async function sortAppendContainer(
   });
 
   const things = getThingAll(parentDataset);
-  console.log('things: ', things);
   const pages = things
     .map((container) => {
       if (container.url.includes('page')) {
@@ -38,14 +37,15 @@ export async function sortAppendContainer(
 
   const entriesInLatestPage = await checkEntriesInPage(
     session,
-    pod,
     latestPage.path
   );
   // Check if latest container is full or not
   if (entriesInLatestPage < 25) {
     //sort in latest container if not full
+    console.log('sort into page: ', latestPage.path);
   } else {
     // create new container if the latest one is full
+    console.log('create new container');
   }
   // Write to metadata
 }
@@ -54,7 +54,7 @@ async function writeMetadata(session: Session, pod: string, container: string) {
   console.log('Attempted to write metadata');
 }
 
-async function checkEntriesInPage(session: Session, pod: string, path: string) {
+async function checkEntriesInPage(session: Session, path: string) {
   const dataset = await getSolidDataset(path, { fetch: session.fetch });
   const entryAmount = getThingAll(dataset).length;
   return entryAmount;

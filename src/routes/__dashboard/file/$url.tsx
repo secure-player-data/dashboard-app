@@ -183,7 +183,7 @@ function FileRendrer({
     return <audio controls src={fileUrl} />;
   }
 
-  if (mimeType === 'text/html') {
+  if (mimeType.includes('text/html')) {
     return <TiptapPreview blob={blob} />;
   }
 

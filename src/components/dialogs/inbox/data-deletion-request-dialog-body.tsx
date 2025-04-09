@@ -72,7 +72,7 @@ export function DataDeletionRequestDialogBody({
             <TableRow>
               <TableHead>Id</TableHead>
               <TableHead>File</TableHead>
-              <TableHead>Location</TableHead>
+              <TableHead>Data Source</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

@@ -60,7 +60,7 @@ export function RequestOverviewDialog({ data }: { data: DataDeletionRequest }) {
                 <TableHeader>
                   <TableRow>
                     <TableHead>File</TableHead>
-                    <TableHead>Location</TableHead>
+                    <TableHead>Data Source</TableHead>
                     <TableHead>Status</TableHead>
                   </TableRow>
                 </TableHeader>

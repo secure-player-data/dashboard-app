@@ -145,7 +145,7 @@ function RouteComponent() {
               </div>
             </div>
             <div className="col-span-2">
-              <p className="text-sm text-muted-foreground">Reason</p>
+              <p className="text-sm text-muted-foreground">Legal Basis</p>
               <Textarea value={meta.reason} readOnly />
             </div>
           </div>

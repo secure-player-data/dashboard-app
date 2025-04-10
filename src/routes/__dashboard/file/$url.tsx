@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
+import Error from '@/components/error';
 
 const searchParams = z.object({
   name: z.string(),
@@ -62,20 +63,28 @@ function RouteComponent() {
     router.history.back();
   }
 
+  if (metaError) {
+    return (
+      <div className="grid place-items-center h-full text-muted-foreground">
+        <Error error={metaError} />
+      </div>
+    );
+  }
+
+  if (fileError) {
+    return (
+      <div className="grid place-items-center h-full text-muted-foreground">
+        <Error error={fileError} />
+      </div>
+    );
+  }
+
   if (metaPending || filePending) {
     return (
       <div className="grid place-items-center h-full">
         <Loader2 className="animate-spin" />
       </div>
     );
-  }
-
-  if (metaError) {
-    return <p>Error: {metaError.message}</p>;
-  }
-
-  if (fileError) {
-    return <p>Error: {fileError.message}</p>;
   }
 
   return (
@@ -109,7 +118,7 @@ function RouteComponent() {
             <div className="flex gap-2 items-center">
               <Locate />
               <div>
-                <p className="text-sm text-muted-foreground">Location</p>
+                <p className="text-sm text-muted-foreground">Data Source</p>
                 <p>{meta.location}</p>
               </div>
             </div>

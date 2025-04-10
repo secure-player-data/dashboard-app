@@ -31,3 +31,28 @@ export function convertKebabCaseToString(str: string) {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 }
+
+/**
+ * Returns the first JSON object found in a string.
+ * @param inputString the string to search for a JSON object
+ * @returns returns JSON object, or null if no object is found
+ */
+export function extractJsonObject(
+  inputString: string
+): Record<string, unknown> | null {
+  try {
+    const jsonRegex = /\{[\s\S]*?\}/;
+
+    const match = inputString.match(jsonRegex);
+
+    if (match) {
+      const jsonString = match[0];
+      return JSON.parse(jsonString);
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error('Error parsing JSON:', error);
+    return null;
+  }
+}

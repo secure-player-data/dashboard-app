@@ -17,6 +17,9 @@ import {
   Play,
   User,
   File,
+  Database,
+  Handshake,
+  PackageOpen,
 } from 'lucide-react';
 
 export const columns: ColumnDef<DataInfo>[] = [
@@ -129,60 +132,86 @@ export const columns: ColumnDef<DataInfo>[] = [
         </Button>
       );
     },
+    cell: ({ row }) => {
+      const status = row.original.status;
+      const location = row.original.location;
+
+      return (
+        <p
+          className={
+            status === 'Confirmed' ? 'line-through text-muted-foreground' : ''
+          }
+        >
+          {location}
+        </p>
+      );
+    },
   },
   // {
-  //   accessorKey: 'reason',
-  //   header: ({ column }) => {
-  //     const sortDirection = column.getIsSorted();
-  //     return (
-  //       <Button
-  //         variant="ghost"
-  //         onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-  //       >
-  //         <MessageSquareMore />
-  //         Reason
-  //         {sortDirection === 'asc' ? (
-  //           <ArrowDown />
-  //         ) : sortDirection === 'desc' ? (
-  //           <ArrowUp />
-  //         ) : null}
-  //       </Button>
-  //     );
+  //   accessorKey: 'status',
+  //   header: () => (
+  //     <div className="flex items-center gap-2">
+  //       <Info className="size-4" /> Status
+  //     </div>
+  //   ),
+  //   cell: ({ row }) => {
+  //     const status = row.original.status;
+
+  //     if (status === 'Requested') {
+  //       return (
+  //         <Badge
+  //           variant="outline"
+  //           className="bg-yellow-50 text-yellow-700 border-yellow-200"
+  //         >
+  //           <Clock className="h-3 w-3 mr-1" />
+  //           Requested
+  //         </Badge>
+  //       );
+  //     }
+
+  //     if (status === 'Confirmed') {
+  //       return (
+  //         <Badge
+  //           variant="outline"
+  //           className="bg-green-50 text-green-700 border-green-200"
+  //         >
+  //           <Check className="h-3 w-3 mr-1" />
+  //           Confirmed
+  //         </Badge>
+  //       );
+  //     }
   //   },
   // },
   {
-    accessorKey: 'status',
+    accessorKey: 'stored',
     header: () => (
       <div className="flex items-center gap-2">
-        <Info className="size-4" /> Status
+        <Database className="size-4" /> Stored At
       </div>
     ),
     cell: ({ row }) => {
       const status = row.original.status;
 
-      if (status === 'Requested') {
-        return (
+      return (
+        <div className="flex gap-4">
           <Badge
             variant="outline"
-            className="bg-yellow-50 text-yellow-700 border-yellow-200"
+            className="bg-purple-50 text-purple-800 border-purple-200"
           >
-            <Clock className="h-3 w-3 mr-1" />
-            Requested
+            <PackageOpen className="size-4 mr-1" />
+            Pod
           </Badge>
-        );
-      }
-
-      if (status === 'Confirmed') {
-        return (
-          <Badge
-            variant="outline"
-            className="bg-green-50 text-green-700 border-green-200"
-          >
-            <Check className="h-3 w-3 mr-1" />
-            Confirmed
-          </Badge>
-        );
-      }
+          {status !== 'Confirmed' && (
+            <Badge
+              variant="outline"
+              className="bg-cyan-50 text-cyan-800 border-cyan-200"
+            >
+              <Handshake className="size-4 mr-1" />
+              Third Party
+            </Badge>
+          )}
+        </div>
+      );
     },
   },
   {

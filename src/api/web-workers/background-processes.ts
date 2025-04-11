@@ -1,5 +1,5 @@
 import { Session } from '@inrupt/solid-client-authn-browser';
-import { BASE_APP_CONTAINER } from './paths';
+import { BASE_APP_CONTAINER } from '../paths';
 import {
   Thing,
   deleteSolidDataset,
@@ -47,10 +47,9 @@ export async function sortAppendContainer(
       latestPage.path
     );
 
+    sliceAmount = 0;
     if (entriesInLatestPage < 25) {
       for (let i = 0; i <= 25 - entriesInLatestPage; i++) {
-        console.log('moving resources');
-        console.log('sorted list iteration: ', sortedList);
         sliceAmount = 25 - entriesInLatestPage + 1;
         if (sortedList[i]) {
           await moveResource(session, sortedList[i].url, latestPage.path);
@@ -75,7 +74,6 @@ export async function sortAppendContainer(
       latestPage = getLatestPage(things, containerUrl);
     }
     //reset slice amount
-    sliceAmount = 0;
   }
 }
 

@@ -1,5 +1,5 @@
 import { logResourceAccess } from '@/api/access-history';
-import { sortAppendContainer } from '@/api/background-processes';
+import { sortAppendContainer } from '@/api/web-workers/background-processes';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/auth-context';
 import { createFileRoute } from '@tanstack/react-router';

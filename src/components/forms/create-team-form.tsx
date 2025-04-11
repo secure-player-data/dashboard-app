@@ -13,6 +13,7 @@ import {
   CardTitle,
 } from '../ui/card';
 import { useCreateTeam } from '@/use-cases/team';
+import { handleError } from '@/utils';
 
 const createTeamSchema = z.object({
   teamName: z.string().nonempty({ message: 'Team Name is required' }),
@@ -55,7 +56,7 @@ export default function CreateTeamForm() {
       },
       {
         onError: (error) => {
-          toast.error(`Failed to create team: ${error.message}`);
+          toast.error(handleError(error));
         },
       }
     );

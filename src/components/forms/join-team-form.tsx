@@ -16,6 +16,7 @@ import {
 } from '../ui/card';
 import { useGetProfile } from '@/use-cases/profile';
 import { useSendInvitation } from '@/use-cases/invitations';
+import { handleError } from '@/utils';
 
 const joinTeamSchema = z.object({
   ownerPod: z.string().nonempty({ message: 'Owner Pod is required' }),
@@ -80,7 +81,7 @@ export default function JoinTeamForm() {
           );
         },
         onError: (error) => {
-          toast.error(`Failed to send request: ${error.message}`);
+          toast.error(handleError(error));
         },
       }
     );

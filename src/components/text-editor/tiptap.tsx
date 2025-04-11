@@ -8,9 +8,6 @@ import {
   Italic,
   Strikethrough,
   Code,
-  List,
-  ListOrdered,
-  Quote,
   Undo,
   Redo,
   Minus,
@@ -115,7 +112,7 @@ const TiptapEditor = ({ onChange }: { onChange: (hmtl: string) => void }) => {
       extensions={extensions}
       editorProps={{
         attributes: {
-          class: 'min-h-[300px] p-4 border border-gray-300 rounded-md',
+          class: 'min-h-[300px] p-4 border border-text-muted rounded-md',
           placeholder: 'Start typing here...',
         },
       }}

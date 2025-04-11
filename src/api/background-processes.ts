@@ -1,5 +1,5 @@
 import { Session } from '@inrupt/solid-client-authn-browser';
-import { ACCESS_HISTORY_CONTAINER, BASE_APP_CONTAINER } from './paths';
+import { BASE_APP_CONTAINER } from './paths';
 import {
   Thing,
   deleteSolidDataset,

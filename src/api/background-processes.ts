@@ -47,10 +47,10 @@ export async function sortAppendContainer(
       latestPage.path
     );
 
+    //reset slice amount
+    sliceAmount = 0;
     if (entriesInLatestPage < 25) {
       for (let i = 0; i <= 25 - entriesInLatestPage; i++) {
-        console.log('moving resources');
-        console.log('sorted list iteration: ', sortedList);
         sliceAmount = 25 - entriesInLatestPage + 1;
         if (sortedList[i]) {
           await moveResource(session, sortedList[i].url, latestPage.path);
@@ -74,8 +74,6 @@ export async function sortAppendContainer(
 
       latestPage = getLatestPage(things, containerUrl);
     }
-    //reset slice amount
-    sliceAmount = 0;
   }
 }
 

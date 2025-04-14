@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { Link } from '@tanstack/react-router';
 import { Button } from './button';
 import {
@@ -12,18 +11,13 @@ export function Pagination({
   href,
   current,
   limit,
-  totalItems,
+  totalPages,
 }: {
   href: string;
   current: number;
   limit: number;
-  totalItems: number;
+  totalPages: number;
 }) {
-  const totalPages = useMemo(
-    () => Math.ceil(totalItems / limit),
-    [totalItems, limit]
-  );
-
   function getPageNumbers() {
     const pageNumbers: number[] = [];
 
@@ -132,9 +126,7 @@ export function Pagination({
         </Button>
       </div>
       <p className="text-sm text-muted-foreground">
-        {totalItems === 0
-          ? '0 of 0'
-          : `${current * limit - limit + 1} - ${Math.min(current * limit, totalItems)} of ${totalItems}`}
+        {totalPages === 0 ? '0 of 0' : `Page ${current} of ${totalPages}`}
       </p>
     </div>
   );

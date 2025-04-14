@@ -116,7 +116,7 @@ export function DataTable<TData, TValue>({
           href="/access-history"
           current={page}
           limit={limit}
-          totalItems={total}
+          totalPages={total}
         />
       </div>
       <p className="text-sm text-muted-foreground text-center my-2">

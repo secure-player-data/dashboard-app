@@ -1,4 +1,4 @@
-import { fetchAccessHistory } from '@/api/access-history';
+import { fetchAccessHistoryPage } from '@/api/access-history';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { useQuery } from '@tanstack/react-query';
 
@@ -19,7 +19,7 @@ export function useGetAccessHistory(
 ) {
   return useQuery({
     queryKey: queryKeys.getAll(pod!, limit, page),
-    queryFn: () => fetchAccessHistory(session, pod, limit, page),
+    queryFn: () => fetchAccessHistoryPage(session, pod, page),
     enabled: !!session && !!pod,
   });
 }

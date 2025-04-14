@@ -34,7 +34,6 @@ function RouteComponent() {
         await sortAppendContainer(session, pod, 'access-history');
       };
       sortContainer();
-      console.log('sorting started');
     }
   }, []);
 

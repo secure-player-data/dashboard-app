@@ -102,6 +102,7 @@ export async function logResourceAccess({
  * @param limit number of items to return
  * @param page number of the page to return
  * @returns array of access history entries and total number of entries
+ * LEGACY
  */
 export async function fetchAccessHistory(
   session: Session | null,
@@ -138,6 +139,47 @@ export async function fetchAccessHistory(
   return {
     items,
     total: things.length,
+  };
+}
+
+export async function fetchAccessHistoryPage(
+  session: Session | null,
+  pod: string | null,
+  pageNumber: number
+) {
+  if (!session || !pod) {
+    throw new Error('Session or pod not set');
+  }
+  const dataset = await getSolidDataset(paths.accessHistory(pod), {
+    fetch: session.fetch,
+  });
+  const pages = getThingAll(dataset).filter(
+    (pageThing) =>
+      pageThing.url !== paths.accessHistory(pod) &&
+      pageThing.url.includes('page')
+  );
+  const pn = pages.length - (pageNumber - 1);
+  const page = pages.filter(
+    (page) => parseInt(page.url.split('page-')[1]) === pn
+  );
+  const pageDataset = await getSolidDataset(page[0].url, {
+    fetch: session.fetch,
+  });
+  const things = getThingAll(pageDataset);
+  const items = await Promise.all(
+    things
+      .filter((thing) => thing.url.split(`page-${pn}/`)[1] !== '')
+      .map(async (thing) => {
+        const tmp = await getSolidDataset(thing.url, {
+          fetch: session.fetch,
+        });
+        return mapThingToAccessHistory(getThingAll(tmp)[0]);
+      })
+  );
+  console.log(items);
+  return {
+    items,
+    total: pages.length,
   };
 }
 

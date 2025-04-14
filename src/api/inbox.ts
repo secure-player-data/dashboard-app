@@ -548,30 +548,34 @@ export async function sendDataDeletionRequest(
   await sendToInbox(session, teamOwner.pod, requestNotificationThing);
 
   // Update status of each data item to 'Deletion Requested'
-  let itemDataset = await getSolidDataset(request.data[0].url, {
-    fetch: session.fetch,
-  });
-  for (const item of request.data) {
-    const thing = getThing(itemDataset, item.url);
+  await Promise.all(
+    request.data.map(async (item) => {
+      let dataset = await getSolidDataset(item.url, { fetch: session.fetch });
+      let thing = getThingAll(dataset)[0];
 
-    if (!thing) continue;
+      if (!thing) {
+        log({
+          type: 'error',
+          label: 'Data deletion request',
+          message: `Failed to update status of thing: Thing ${item.url} not found`,
+        });
+        return;
+      }
 
-    const updatedThing = setStringNoLocale(
-      thing,
-      DATA_INFO_SCHEMA.status,
-      'Requested'
-    );
-    itemDataset = setThing(itemDataset, updatedThing);
-  }
-  await saveSolidDatasetAt(request.data[0].url, itemDataset, {
-    fetch: session.fetch,
-  });
-  await updateAgentAccess({
-    session,
-    containerUrl: request.data[0].url,
-    agentWebId: teamOwner.webId,
-    modes: ['Read', 'Write', 'Control'],
-  });
+      thing = setStringNoLocale(thing, DATA_INFO_SCHEMA.status, 'Requested');
+      dataset = setThing(dataset, thing);
+
+      await saveSolidDatasetAt(item.url, dataset, { fetch: session.fetch });
+      // Give team owner permission to update the status when confirming the
+      // deletion
+      await updateAgentAccess({
+        session,
+        containerUrl: item.url,
+        agentWebId: teamOwner.webId,
+        modes: ['Read', 'Write', 'Control'],
+      });
+    })
+  );
 }
 
 /**
@@ -640,14 +644,22 @@ export async function sendDataDeletionConfirmation(
       );
 
       if (error) {
-        console.error(error);
+        log({
+          type: 'error',
+          label: 'Data deletion confirmation',
+          message: `Failed to update status of thing: Dataset ${item.url} not found`,
+        });
         return;
       }
 
-      let thing = getThing(dataset, item.url);
+      let thing = getThingAll(dataset)[0];
 
       if (!thing) {
-        console.error('Thing not found');
+        log({
+          type: 'error',
+          label: 'Data deletion confirmation',
+          message: `Failed to update status of thing: Thing ${item.url} not found`,
+        });
         return;
       }
 

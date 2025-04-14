@@ -100,7 +100,7 @@ export function DeleteDataDialog({
 
   function handleError(error: Error) {
     if (error instanceof TeamNotFoundException) {
-      toast.error(error.message);
+      toast.error('You are not part of a team. Please join or create one.');
     } else {
       toast.error('Something went wrong, please try again later');
     }

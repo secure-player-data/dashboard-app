@@ -41,6 +41,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '../ui/tooltip';
+import { handleError } from '@/utils';
 
 type DataEntry = {
   id: string;
@@ -243,7 +244,11 @@ export default function UploadDataForm() {
       },
       {
         onError: (error) => {
-          toast.error(`An error occured: ${error.message}`);
+          toast.error(
+            handleError(error, {
+              403: `You do not have permission to upload ${dataType} to this user`,
+            })
+          );
         },
         onSuccess: () => {
           resetForm();
@@ -338,7 +343,7 @@ export default function UploadDataForm() {
 
           <div className="mb-4">
             <Label htmlFor="reason">
-              Reason <span className="text-destructive">*</span>
+              Legal Basis <span className="text-destructive">*</span>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -348,12 +353,9 @@ export default function UploadDataForm() {
                   </TooltipTrigger>
                   <TooltipContent className="font-normal">
                     <p className="text-sm max-w-[50ch]">
-                      Please provide a clear and specific reason for collecting
-                      this data. According to{' '}
-                      <strong>GDPR Article 5.1(b)</strong>, data collection must
-                      have a legitimate purpose. Ensure that your reason aligns
-                      with compliance requirements and justifies why this data
-                      is necessary.
+                      Specify the legal reason or applicable law that allows you
+                      to collect and process this user's personal data (e.g.,
+                      consent, contract, legal obligation, legitimate interest).
                     </p>
                   </TooltipContent>
                 </Tooltip>
@@ -361,7 +363,7 @@ export default function UploadDataForm() {
             </Label>
             <Textarea
               id="reason"
-              placeholder="Explain why this data is being collected..."
+              placeholder="Enter the legal justification for collecting this user's data."
               className={`min-h-[80px] ${errors.reason && 'border-destructive'}`}
               value={reason}
               onChange={(e) => setReason(e.target.value)}
@@ -374,7 +376,7 @@ export default function UploadDataForm() {
 
           <div className="mb-4">
             <Label htmlFor="location">
-              Location <span className="text-destructive">*</span>
+              Data Source <span className="text-destructive">*</span>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -384,10 +386,9 @@ export default function UploadDataForm() {
                   </TooltipTrigger>
                   <TooltipContent className="font-normal">
                     <p className="mb-1">
-                      Enter the location of the origin of the data so that it
-                      can be referenced later.
+                      Identify the system and place where this data is primarily
+                      stored. Used to reference the data in the future.
                     </p>
-                    <p>E.g. when a player wants the data deleted.</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>

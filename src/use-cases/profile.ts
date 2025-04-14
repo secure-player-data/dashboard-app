@@ -7,12 +7,12 @@ import { Session } from '@inrupt/solid-client-authn-browser';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const queryKeys = {
-  profile: (sessionId: string) => ['profile', sessionId],
+  profile: (pod: string) => ['profile', pod],
 };
 
 export function useGetProfile(session: Session | null, pod: string | null) {
   return useQuery({
-    queryKey: queryKeys.profile(session?.info.webId ?? ''),
+    queryKey: queryKeys.profile(pod!),
     queryFn: () => fetchProfileData(session, pod),
     enabled: !!session?.info.webId && !!pod,
   });

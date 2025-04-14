@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
+import { handleError } from '@/utils';
 
 const searchParams = z.object({
   name: z.string(),
@@ -62,20 +63,28 @@ function RouteComponent() {
     router.history.back();
   }
 
+  if (metaError) {
+    return (
+      <div className="grid place-items-center h-full text-muted-foreground">
+        {handleError(metaError)}
+      </div>
+    );
+  }
+
+  if (fileError) {
+    return (
+      <div className="grid place-items-center h-full text-muted-foreground">
+        {handleError(fileError)}
+      </div>
+    );
+  }
+
   if (metaPending || filePending) {
     return (
       <div className="grid place-items-center h-full">
         <Loader2 className="animate-spin" />
       </div>
     );
-  }
-
-  if (metaError) {
-    return <p>Error: {metaError.message}</p>;
-  }
-
-  if (fileError) {
-    return <p>Error: {fileError.message}</p>;
   }
 
   return (
@@ -109,7 +118,7 @@ function RouteComponent() {
             <div className="flex gap-2 items-center">
               <Locate />
               <div>
-                <p className="text-sm text-muted-foreground">Location</p>
+                <p className="text-sm text-muted-foreground">Data Source</p>
                 <p>{meta.location}</p>
               </div>
             </div>
@@ -136,7 +145,7 @@ function RouteComponent() {
               </div>
             </div>
             <div className="col-span-2">
-              <p className="text-sm text-muted-foreground">Reason</p>
+              <p className="text-sm text-muted-foreground">Legal Basis</p>
               <Textarea value={meta.reason} readOnly />
             </div>
           </div>
@@ -183,7 +192,7 @@ function FileRendrer({
     return <audio controls src={fileUrl} />;
   }
 
-  if (mimeType === 'text/html') {
+  if (mimeType.includes('text/html')) {
     return <TiptapPreview blob={blob} />;
   }
 
@@ -197,7 +206,7 @@ function FileRendrer({
     );
   }
 
-  if (mimeType === 'text/csv') {
+  if (mimeType.includes('text/csv')) {
     return (
       <div className="border rounded-md h-full">
         <Table>

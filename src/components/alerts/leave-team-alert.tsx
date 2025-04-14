@@ -15,6 +15,7 @@ import { useState } from 'react';
 import { useLeaveTeam } from '@/use-cases/team';
 import { useAuth } from '@/context/auth-context';
 import { toast } from 'sonner';
+import { handleError } from '@/utils';
 
 export default function LeaveTeamDialog() {
   const { session, pod } = useAuth();
@@ -30,7 +31,7 @@ export default function LeaveTeamDialog() {
           toast.success('You have left the team');
         },
         onError: (error) => {
-          toast.error(error.message);
+          toast.error(handleError(error));
         },
       }
     );

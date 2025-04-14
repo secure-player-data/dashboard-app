@@ -1,4 +1,10 @@
-import { createFileRoute, Outlet, useNavigate } from '@tanstack/react-router';
+import {
+  createFileRoute,
+  Link,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from '@tanstack/react-router';
 import { AppSidebar } from '@/components/sidebar/app-sidebar';
 import {
   SidebarInset,
@@ -13,11 +19,18 @@ import {
 } from '@/exceptions/profile-data-exceptions';
 import { usePageTitle } from '@/hooks/use-page-title';
 import { useGetAccessPolicy } from '@/use-cases/access-controll';
-import { TriangleAlert, X } from 'lucide-react';
+import { ChevronRight, TriangleAlert, X } from 'lucide-react';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { Button } from '@/components/ui/button';
 import { useGetProfile } from '@/use-cases/profile';
 import { sortAppendContainer } from '@/api/background-processes';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+} from '@/components/ui/breadcrumb';
+import { useMemo } from 'react';
 
 export const Route = createFileRoute('/__dashboard')({
   component: RouteComponent,
@@ -25,6 +38,7 @@ export const Route = createFileRoute('/__dashboard')({
 
 function RouteComponent() {
   const { session, pod } = useAuth();
+  const location = useLocation();
   const navigate = useNavigate();
   usePageTitle('Secure Player Data - Dashboard');
 
@@ -36,6 +50,11 @@ function RouteComponent() {
       sortContainer();
     }
   }, []);
+  const paths = useMemo(() => {
+    const path = location.pathname;
+    const pathParts = path.split('/').filter((part) => part !== '');
+    return pathParts;
+  }, [location.pathname]);
 
   const {
     error: profileError,
@@ -61,6 +80,13 @@ function RouteComponent() {
     }
   }
 
+  function truncate(str: string, length: number = 30) {
+    if (str.length > length) {
+      return str.substring(0, length) + '...';
+    }
+    return str;
+  }
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -68,6 +94,35 @@ function RouteComponent() {
         <header className="flex h-16 shrink-0 items-center gap-2">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
+            <div className="bg-muted-foreground h-4 w-[1px] rounded-full" />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to="/">Secure Player Data</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                {paths.includes('player') ? (
+                  <div className="flex items-center gap-2">
+                    <ChevronRight className="size-4" />
+                    <BreadcrumbItem>
+                      <BreadcrumbLink>{paths[paths.length - 1]}</BreadcrumbLink>
+                    </BreadcrumbItem>
+                  </div>
+                ) : (
+                  paths.map((path, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <ChevronRight className="size-4" />
+                      <BreadcrumbItem>
+                        <BreadcrumbLink>
+                          {truncate(decodeURIComponent(path))}
+                        </BreadcrumbLink>
+                      </BreadcrumbItem>
+                    </div>
+                  ))
+                )}
+              </BreadcrumbList>
+            </Breadcrumb>
           </div>
         </header>
         <div className="px-4 pb-4 h-full w-full">

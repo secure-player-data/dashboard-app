@@ -18,6 +18,7 @@ import { Profile } from '@/entities/data/profile';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { toast } from 'sonner';
 import { useUpdateAppProfile } from '@/use-cases/profile';
+import { handleError } from '@/utils';
 
 interface ProfileEditDialogProps {
   session: Session;
@@ -64,7 +65,7 @@ export function ProfileEditDialog({
       { name, email, picture: avatarFile },
       {
         onError: (error) => {
-          toast.error(`Could not save changes: ${error.message}`);
+          toast.error(handleError(error));
         },
         onSuccess: () => {
           onOpenChange(false);

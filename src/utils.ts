@@ -33,11 +33,53 @@ export function convertKebabCaseToString(str: string) {
 }
 
 /**
+ * Helper function to handle error messages
+ *
+ * @param error The error to handle
+ * @param ctx An optional object for custom error messages for specific status codes.
+ *            If not provided, default messages will be used
+ * @returns an error message based on the error status code
+ *
+ * Example:
+ * handleError(error, { 404: 'Custom 404 message' });
+ */
+export function handleError(error: Error, ctx?: Record<number, string>) {
+  const json = extractJsonObject(error.message);
+  const status = json?.status;
+
+  if (!json || Object.keys(json).length === 0) {
+    return 'Something went wrong. We are looking into it, please try again later.';
+  }
+
+  if (!status) {
+    return 'Something went wrong. We are looking into it, please try again later.';
+  }
+
+  if (ctx && ctx[Number(status)]) {
+    return ctx[Number(status)];
+  }
+
+  if (status === 404) {
+    return 'The requested resource was not found';
+  }
+
+  if (status === 403) {
+    return 'You do not have permission to access this resource';
+  }
+
+  if (status === 401) {
+    return 'You are not authenticated. Please log in before trying to view this data.';
+  }
+
+  return 'Something went wrong. We are looking into it, please try again later.';
+}
+
+/**
  * Returns the first JSON object found in a string.
  * @param inputString the string to search for a JSON object
  * @returns returns JSON object, or null if no object is found
  */
-export function extractJsonObject(
+function extractJsonObject(
   inputString: string
 ): Record<string, unknown> | null {
   try {

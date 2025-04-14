@@ -30,6 +30,7 @@ import { Permission } from '@/entities/permissions';
 import { PROFILE_SCHEMA } from '@/schemas/profile';
 import { uploadFile } from './data';
 import { logResourceAccess } from './access-history';
+import { log } from '@/lib/log';
 
 function isEmptyOrSpaces(str: string | null) {
   return str === null || str.match(/^ *$/) !== null;
@@ -204,18 +205,6 @@ export async function initAppProfile(
     paths.inbox(pod),
     paths.accessHistory(pod),
     paths.deletionRequests(pod),
-  ];
-
-  for await (const path of pathsToCreate) {
-    console.log('Creating path: ', path);
-    const [err, _] = await safeCall(
-      createContainerAt(path, { fetch: session.fetch })
-    );
-
-    if (err) continue;
-  }
-
-  const resourcesToCreate = [
     paths.personalData(pod),
     paths.footballData(pod),
     paths.eventData(pod),
@@ -224,12 +213,14 @@ export async function initAppProfile(
     paths.healthData(pod),
   ];
 
-  for await (const resource of resourcesToCreate) {
-    const dataset = createSolidDataset();
+  for await (const path of pathsToCreate) {
+    log({
+      type: 'info',
+      label: 'Init Profile',
+      message: `Creating folder: ${path}`,
+    });
     const [err, _] = await safeCall(
-      saveSolidDatasetAt(resource, dataset, {
-        fetch: session.fetch,
-      })
+      createContainerAt(path, { fetch: session.fetch })
     );
 
     if (err) continue;
@@ -262,10 +253,11 @@ export async function initAppProfile(
   ];
 
   for await (const resource of resourcesToSetPublicAccess) {
-    console.log(
-      `Setting public ${resource.modes.join(', ')} access for: `,
-      resource.url
-    );
+    log({
+      type: 'info',
+      label: 'Init Profile',
+      message: `Setting public ${resource.modes.join(', ')} access for: ${resource.url}`,
+    });
     await setPublicAccess({
       session,
       url: resource.url,

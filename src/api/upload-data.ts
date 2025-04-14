@@ -79,32 +79,12 @@ export async function uploadPlayerData(
         .addStringNoLocale(DATA_INFO_SCHEMA.location, location)
         .build();
 
-      const datasetUrl = `${paths.root(receiverPod)}${category}/`;
-      const [error, dataset] = await safeCall(
-        getSolidDataset(datasetUrl, {
-          fetch: session.fetch,
-        })
-      );
+      let dataset = createSolidDataset();
+      dataset = setThing(dataset, thing);
 
-      if (error) {
-        // TODO: Create dataset if 404
-        console.log(error);
-        throw new Error(`Error getting dataset ${error}`);
-      }
+      const url = `${paths.root(receiverPod)}${category}${id}`;
+      await saveSolidDatasetAt(url, dataset, { fetch: session.fetch });
 
-      const updateDataset = setThing(dataset, thing);
-      await saveSolidDatasetAt(datasetUrl, updateDataset, {
-        fetch: session.fetch,
-      });
-
-      // Create dataset
-      // let dataset = createSolidDataset();
-      // dataset = setThing(dataset, thing);
-
-      // const url = `${paths.root(receiverPod)}${category}${thingName}`;
-
-      // // Save dataset at receiver location
-      // await saveSolidDatasetAt(url, dataset, { fetch: session.fetch });
       await logResourceAccess({
         session,
         pod: receiverPod,

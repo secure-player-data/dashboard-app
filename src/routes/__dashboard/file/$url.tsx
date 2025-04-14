@@ -31,7 +31,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
-import Error from '@/components/error';
+import { handleError } from '@/utils';
 
 const searchParams = z.object({
   name: z.string(),
@@ -66,7 +66,7 @@ function RouteComponent() {
   if (metaError) {
     return (
       <div className="grid place-items-center h-full text-muted-foreground">
-        <Error error={metaError} />
+        {handleError(metaError)}
       </div>
     );
   }
@@ -74,7 +74,7 @@ function RouteComponent() {
   if (fileError) {
     return (
       <div className="grid place-items-center h-full text-muted-foreground">
-        <Error error={fileError} />
+        {handleError(fileError)}
       </div>
     );
   }

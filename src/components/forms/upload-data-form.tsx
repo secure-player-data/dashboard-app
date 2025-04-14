@@ -41,6 +41,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '../ui/tooltip';
+import { handleError } from '@/utils';
 
 type DataEntry = {
   id: string;
@@ -243,7 +244,11 @@ export default function UploadDataForm() {
       },
       {
         onError: (error) => {
-          toast.error(`An error occured: ${error.message}`);
+          toast.error(
+            handleError(error, {
+              403: `You do not have permission to upload ${dataType} to this user`,
+            })
+          );
         },
         onSuccess: () => {
           resetForm();

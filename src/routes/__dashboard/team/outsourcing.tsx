@@ -31,6 +31,7 @@ import {
   TRACKING_DATA,
 } from '@/api/paths';
 import { useGetProfile } from '@/use-cases/profile';
+import { handleError } from '@/utils';
 
 const dataTypes = [
   {
@@ -125,7 +126,7 @@ function RouteComponent() {
         reason: reason,
       },
       {
-        onError: (error) => toast.error(`An error occured:  ${error.message}`),
+        onError: (error) => toast.error(handleError(error)),
         onSuccess: (data) =>
           setAccesses({ failed: data.failed, successful: data.successful }),
       }

@@ -9,6 +9,7 @@ import {
 import { useNavigate } from '@tanstack/react-router';
 import { getPodUrl } from '@/api/utils';
 import AuthLoading from '@/components/auth-loading';
+import { sortAppendContainer } from '@/api/background-processes';
 
 interface IAuthContext {
   session: Session | null;

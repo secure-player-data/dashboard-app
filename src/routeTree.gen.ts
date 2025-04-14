@@ -21,7 +21,6 @@ import { Route as AuthSetupImport } from './routes/auth/_setup'
 import { Route as dashboardSettingsImport } from './routes/__dashboard/settings'
 import { Route as dashboardRequestOverviewImport } from './routes/__dashboard/request-overview'
 import { Route as dashboardProfileImport } from './routes/__dashboard/profile'
-import { Route as dashboardPlaygroundImport } from './routes/__dashboard/playground'
 import { Route as dashboardInboxImport } from './routes/__dashboard/inbox'
 import { Route as dashboardAccessHistoryImport } from './routes/__dashboard/access-history'
 import { Route as dashboardAccessControlImport } from './routes/__dashboard/access-control'
@@ -90,12 +89,6 @@ const dashboardRequestOverviewRoute = dashboardRequestOverviewImport.update({
 const dashboardProfileRoute = dashboardProfileImport.update({
   id: '/profile',
   path: '/profile',
-  getParentRoute: () => dashboardRoute,
-} as any)
-
-const dashboardPlaygroundRoute = dashboardPlaygroundImport.update({
-  id: '/playground',
-  path: '/playground',
   getParentRoute: () => dashboardRoute,
 } as any)
 
@@ -198,13 +191,6 @@ declare module '@tanstack/react-router' {
       path: '/inbox'
       fullPath: '/inbox'
       preLoaderRoute: typeof dashboardInboxImport
-      parentRoute: typeof dashboardImport
-    }
-    '/__dashboard/playground': {
-      id: '/__dashboard/playground'
-      path: '/playground'
-      fullPath: '/playground'
-      preLoaderRoute: typeof dashboardPlaygroundImport
       parentRoute: typeof dashboardImport
     }
     '/__dashboard/profile': {
@@ -353,7 +339,6 @@ interface dashboardRouteChildren {
   dashboardAccessControlRoute: typeof dashboardAccessControlRoute
   dashboardAccessHistoryRoute: typeof dashboardAccessHistoryRoute
   dashboardInboxRoute: typeof dashboardInboxRoute
-  dashboardPlaygroundRoute: typeof dashboardPlaygroundRoute
   dashboardProfileRoute: typeof dashboardProfileRoute
   dashboardRequestOverviewRoute: typeof dashboardRequestOverviewRoute
   dashboardSettingsRoute: typeof dashboardSettingsRoute
@@ -369,7 +354,6 @@ const dashboardRouteChildren: dashboardRouteChildren = {
   dashboardAccessControlRoute: dashboardAccessControlRoute,
   dashboardAccessHistoryRoute: dashboardAccessHistoryRoute,
   dashboardInboxRoute: dashboardInboxRoute,
-  dashboardPlaygroundRoute: dashboardPlaygroundRoute,
   dashboardProfileRoute: dashboardProfileRoute,
   dashboardRequestOverviewRoute: dashboardRequestOverviewRoute,
   dashboardSettingsRoute: dashboardSettingsRoute,
@@ -391,7 +375,6 @@ export interface FileRoutesByFullPath {
   '/access-control': typeof dashboardAccessControlRoute
   '/access-history': typeof dashboardAccessHistoryRoute
   '/inbox': typeof dashboardInboxRoute
-  '/playground': typeof dashboardPlaygroundRoute
   '/profile': typeof dashboardProfileRoute
   '/request-overview': typeof dashboardRequestOverviewRoute
   '/settings': typeof dashboardSettingsRoute
@@ -413,7 +396,6 @@ export interface FileRoutesByTo {
   '/access-control': typeof dashboardAccessControlRoute
   '/access-history': typeof dashboardAccessHistoryRoute
   '/inbox': typeof dashboardInboxRoute
-  '/playground': typeof dashboardPlaygroundRoute
   '/profile': typeof dashboardProfileRoute
   '/request-overview': typeof dashboardRequestOverviewRoute
   '/settings': typeof dashboardSettingsRoute
@@ -437,7 +419,6 @@ export interface FileRoutesById {
   '/__dashboard/access-control': typeof dashboardAccessControlRoute
   '/__dashboard/access-history': typeof dashboardAccessHistoryRoute
   '/__dashboard/inbox': typeof dashboardInboxRoute
-  '/__dashboard/playground': typeof dashboardPlaygroundRoute
   '/__dashboard/profile': typeof dashboardProfileRoute
   '/__dashboard/request-overview': typeof dashboardRequestOverviewRoute
   '/__dashboard/settings': typeof dashboardSettingsRoute
@@ -463,7 +444,6 @@ export interface FileRouteTypes {
     | '/access-control'
     | '/access-history'
     | '/inbox'
-    | '/playground'
     | '/profile'
     | '/request-overview'
     | '/settings'
@@ -484,7 +464,6 @@ export interface FileRouteTypes {
     | '/access-control'
     | '/access-history'
     | '/inbox'
-    | '/playground'
     | '/profile'
     | '/request-overview'
     | '/settings'
@@ -506,7 +485,6 @@ export interface FileRouteTypes {
     | '/__dashboard/access-control'
     | '/__dashboard/access-history'
     | '/__dashboard/inbox'
-    | '/__dashboard/playground'
     | '/__dashboard/profile'
     | '/__dashboard/request-overview'
     | '/__dashboard/settings'
@@ -564,7 +542,6 @@ export const routeTree = rootRoute
         "/__dashboard/access-control",
         "/__dashboard/access-history",
         "/__dashboard/inbox",
-        "/__dashboard/playground",
         "/__dashboard/profile",
         "/__dashboard/request-overview",
         "/__dashboard/settings",
@@ -586,10 +563,6 @@ export const routeTree = rootRoute
     },
     "/__dashboard/inbox": {
       "filePath": "__dashboard/inbox.tsx",
-      "parent": "/__dashboard"
-    },
-    "/__dashboard/playground": {
-      "filePath": "__dashboard/playground.tsx",
       "parent": "/__dashboard"
     },
     "/__dashboard/profile": {

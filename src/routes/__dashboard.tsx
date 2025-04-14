@@ -17,6 +17,7 @@ import { TriangleAlert, X } from 'lucide-react';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { Button } from '@/components/ui/button';
 import { useGetProfile } from '@/use-cases/profile';
+import { sortAppendContainer } from '@/api/background-processes';
 
 export const Route = createFileRoute('/__dashboard')({
   component: RouteComponent,
@@ -26,6 +27,16 @@ function RouteComponent() {
   const { session, pod } = useAuth();
   const navigate = useNavigate();
   usePageTitle('Secure Player Data - Dashboard');
+
+  useEffect(() => {
+    if (session && pod) {
+      const sortContainer = async () => {
+        await sortAppendContainer(session, pod, 'access-history');
+      };
+      sortContainer();
+      console.log('sorting started');
+    }
+  }, []);
 
   const {
     error: profileError,

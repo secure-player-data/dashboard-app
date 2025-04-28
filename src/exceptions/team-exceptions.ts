@@ -3,3 +3,9 @@ export class TeamNotFoundException extends Error {
     super(message);
   }
 }
+
+export class TeamOwnerException extends Error {
+  constructor(message: string) {
+    super(message);
+  }
+}

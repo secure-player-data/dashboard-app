@@ -17,6 +17,7 @@ import { useAuth } from '@/context/auth-context';
 import { toast } from 'sonner';
 import { handleError } from '@/utils';
 import { log } from '@/lib/log';
+import { TeamOwnerException } from '@/exceptions/team-exceptions';
 
 export default function LeaveTeamDialog() {
   const { session, pod } = useAuth();
@@ -32,13 +33,13 @@ export default function LeaveTeamDialog() {
           toast.success('You have left the team');
         },
         onError: (error) => {
-          log({
-            type: 'error',
-            label: 'Leave Team',
-            message: 'Error leaving team',
-            obj: error,
-          });
-          toast.error(handleError(error));
+          if (error instanceof TeamOwnerException) {
+            toast.error(
+              'You cannot leave the team as you are the owner. Please transfer ownership to another member before leaving. Alternatively, you can delete the team.'
+            );
+          } else {
+            toast.error(handleError(error));
+          }
         },
       }
     );

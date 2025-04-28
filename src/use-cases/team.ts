@@ -2,6 +2,7 @@ import { createTeam, leaveTeam, updateTeam } from '@/api/team';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKeys as profileQueryKeys } from './profile';
+import { log } from '@/lib/log';
 
 export function useCreateTeam(session: Session | null, pod: string | null) {
   const queryClient = useQueryClient();
@@ -65,6 +66,14 @@ export function useLeaveTeam() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries();
+    },
+    onError: (error) => {
+      log({
+        type: 'error',
+        label: 'Leave Team',
+        message: 'Error leaving team',
+        obj: error,
+      });
     },
   });
 }

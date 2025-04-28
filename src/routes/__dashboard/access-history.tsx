@@ -1,3 +1,4 @@
+import { fetchAccessHistoryPage } from '@/api/access-history';
 import { columns } from '@/components/tables/access-history/columns';
 import { DataTable } from '@/components/tables/access-history/data-table';
 import { useAuth } from '@/context/auth-context';

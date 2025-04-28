@@ -23,6 +23,7 @@ import { ChevronRight, TriangleAlert, X } from 'lucide-react';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { Button } from '@/components/ui/button';
 import { useGetProfile } from '@/use-cases/profile';
+import { sortAppendContainer } from '@/api/background-processes';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -41,6 +42,14 @@ function RouteComponent() {
   const navigate = useNavigate();
   usePageTitle('Secure Player Data - Dashboard');
 
+  useEffect(() => {
+    if (session && pod) {
+      const sortContainer = async () => {
+        await sortAppendContainer(session, pod, 'access-history');
+      };
+      sortContainer();
+    }
+  }, []);
   const paths = useMemo(() => {
     const path = location.pathname;
     const pathParts = path.split('/').filter((part) => part !== '');

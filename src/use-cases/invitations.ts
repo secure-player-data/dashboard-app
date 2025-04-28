@@ -8,6 +8,7 @@ import { InboxItem } from '@/entities/inboxItem';
 import { fetchUnseenMessageAmount } from '@/api/inbox';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { queryKeys as defaultQueryKeys } from './query-keys';
 
 export const queryKeys = {
   inbox: (webId: string) => ['inbox', webId],
@@ -89,6 +90,9 @@ export const useAcceptInvitation = (session: Session | null) => {
       if (session && session.info.webId) {
         queryClient.invalidateQueries({
           queryKey: queryKeys.inbox(session.info.webId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: defaultQueryKeys.members.default(session.info.webId),
         });
       }
     },

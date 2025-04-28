@@ -67,7 +67,9 @@ export function InboxTableRowDialog({
       >
         <DialogHeader>
           <DialogTitle className="text-3xl font-bold mb-4 text-primary">
-            {row.original.type}
+            {row.original.type === 'Invitation'
+              ? 'Join Request'
+              : row.original.type}
           </DialogTitle>
           <DialogDescription asChild>
             <div className="pb-8">

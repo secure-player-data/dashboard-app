@@ -94,12 +94,13 @@ export async function uploadPlayerData(
     })
   );
 
-  // Send information to player inbox
+  const categoryStr = category.replace('-', ' ').replace('/', '');
+
   await sendInformation(
     session,
     senderPod,
     receiverPod,
     'Data was Uploaded to your pod',
-    `You have new data in your pod. Visit ${category} to view more information`
+    `You have new data in your pod. Visit '${categoryStr}' to view more information`
   );
 }

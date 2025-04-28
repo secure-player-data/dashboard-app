@@ -18,7 +18,10 @@ import {
 import { RDF } from '@inrupt/vocab-common-rdf';
 import { safeCall } from '@/utils';
 import { SessionNotSetException } from '@/exceptions/session-exceptions';
-import { TeamNotFoundException } from '@/exceptions/team-exceptions';
+import {
+  TeamNotFoundException,
+  TeamOwnerException,
+} from '@/exceptions/team-exceptions';
 import { TeamCreationConflictException } from '@/exceptions/team-creation-conflict-exception';
 import { fetchProfileData, updateAppProfile } from './profile';
 import { setPublicAccess, updateAgentAccess } from './access-control';
@@ -361,7 +364,7 @@ export async function leaveTeam(session: Session | null, pod: string | null) {
 
   const user = await fetchMember(session, pod);
   if (user.role === 'Owner') {
-    throw new Error(
+    throw new TeamOwnerException(
       'As a owner, you cannot leave the team. You need to transphere ownership of delete the team instead!'
     );
   }

@@ -5,6 +5,15 @@ export const columns: ColumnDef<InboxItem>[] = [
   {
     accessorKey: 'type',
     header: 'Type',
+    cell: ({ row }) => {
+      const type = row.original.type;
+
+      if (type === 'Invitation') {
+        return 'Join Request';
+      }
+
+      return type;
+    },
   },
   {
     accessorKey: 'webId',

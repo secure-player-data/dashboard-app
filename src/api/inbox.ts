@@ -118,7 +118,13 @@ export async function fetchInbox(
     })
     .flat();
 
-  return inboxItems;
+  const sortedInboxItems = inboxItems.sort((a, b) => {
+    const dateA = new Date(a.date);
+    const dateB = new Date(b.date);
+    return dateB.getTime() - dateA.getTime();
+  });
+
+  return sortedInboxItems;
 }
 
 export async function sendInvitation(

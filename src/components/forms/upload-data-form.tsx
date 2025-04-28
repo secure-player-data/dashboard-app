@@ -54,7 +54,9 @@ const formSchema = z
   .object({
     dataType: z.string().min(2, 'Need to select a datatype'),
     player: z.string().min(2, 'Need to select a player'),
-    reason: z.string().min(2, 'Need to give a reason for the data collection'),
+    reason: z
+      .string()
+      .min(2, 'Need to give a legal basis for the data collection'),
     location: z.string().min(2, 'Need to specify the location of the data'),
     files: z.array(z.any()).min(1, 'At least one file must be uploaded'),
     hasTextEntry: z.boolean(),
@@ -84,8 +86,12 @@ type FormSchema = z.infer<typeof formSchema>;
 
 type ErrorState = Partial<Record<keyof FormSchema, string>>;
 
-export default function UploadDataForm() {
-  const [dataType, setDataType] = useState<string>('');
+export default function UploadDataForm({
+  selectedDataType,
+}: {
+  selectedDataType?: string;
+}) {
+  const [dataType, setDataType] = useState<string>(selectedDataType || '');
   const [player, setPlayer] = useState<string>('');
   const [reason, setReason] = useState<string>('');
   const [location, setLocation] = useState<string>('');
@@ -353,9 +359,9 @@ export default function UploadDataForm() {
                   </TooltipTrigger>
                   <TooltipContent className="font-normal">
                     <p className="text-sm max-w-[50ch]">
-                      Specify the legal reason or applicable law that allows you
-                      to collect and process this user's personal data (e.g.,
-                      consent, contract, legal obligation, legitimate interest).
+                      Specify the legal basis that allows you to collect and
+                      process this user's personal data (e.g., consent,
+                      contract, legal obligation, legitimate interest).
                     </p>
                   </TooltipContent>
                 </Tooltip>
@@ -363,7 +369,7 @@ export default function UploadDataForm() {
             </Label>
             <Textarea
               id="reason"
-              placeholder="Enter the legal justification for collecting this user's data."
+              placeholder="Enter the legal basis for collecting this user's data."
               className={`min-h-[80px] ${errors.reason && 'border-destructive'}`}
               value={reason}
               onChange={(e) => setReason(e.target.value)}

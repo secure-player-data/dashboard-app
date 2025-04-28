@@ -1,7 +1,7 @@
 import { createTeam, leaveTeam, updateTeam } from '@/api/team';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from './profile';
+import { queryKeys as profileQueryKeys } from './profile';
 
 export function useCreateTeam(session: Session | null, pod: string | null) {
   const queryClient = useQueryClient();
@@ -20,7 +20,7 @@ export function useCreateTeam(session: Session | null, pod: string | null) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.profile(session?.info.webId ?? ''),
+        queryKey: profileQueryKeys.profile(pod ?? ''),
       });
     },
   });
@@ -44,7 +44,7 @@ export function useUpdateTeam(session: Session | null, pod: string | null) {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.profile(session?.info.webId ?? ''),
+        queryKey: profileQueryKeys.profile(pod ?? ''),
       });
     },
   });

@@ -17,7 +17,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import React from 'react';
-import { Loader2, RefreshCcw } from 'lucide-react';
+import { Loader2, RefreshCcw, Upload } from 'lucide-react';
 import { convertKebabCaseToString, handleError } from '@/utils';
 import { DeleteDataDialog } from '@/components/dialogs/delete-data-dialog';
 import { DataInfo } from '@/entities/data-info';
@@ -25,6 +25,7 @@ import { Button } from '@/components/ui/button';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys as dataQueryKeys } from '@/use-cases/data';
 import { toast } from 'sonner';
+import { Link } from '@tanstack/react-router';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -93,6 +94,12 @@ export function DataTable<TData, TValue>({
             onClick={refreshData}
           >
             <RefreshCcw />
+          </Button>
+          <Button asChild variant="outline">
+            <Link to="/team/upload-data" search={{ dataType: `${category}/` }}>
+              <Upload />
+              Upload data
+            </Link>
           </Button>
           <DeleteDataDialog
             selected={table

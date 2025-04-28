@@ -86,8 +86,12 @@ type FormSchema = z.infer<typeof formSchema>;
 
 type ErrorState = Partial<Record<keyof FormSchema, string>>;
 
-export default function UploadDataForm() {
-  const [dataType, setDataType] = useState<string>('');
+export default function UploadDataForm({
+  selectedDataType,
+}: {
+  selectedDataType?: string;
+}) {
+  const [dataType, setDataType] = useState<string>(selectedDataType || '');
   const [player, setPlayer] = useState<string>('');
   const [reason, setReason] = useState<string>('');
   const [location, setLocation] = useState<string>('');

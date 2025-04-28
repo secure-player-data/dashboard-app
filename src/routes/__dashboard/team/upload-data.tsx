@@ -3,12 +3,20 @@ import UploadDataForm from '@/components/forms/upload-data-form';
 import { useGetProfile } from '@/use-cases/profile';
 import { useAuth } from '@/context/auth-context';
 import { Loader2 } from 'lucide-react';
+import { z } from 'zod';
+import { zodValidator } from '@tanstack/zod-adapter';
+
+const searchParams = z.object({
+  dataType: z.string().optional(),
+});
 
 export const Route = createFileRoute('/__dashboard/team/upload-data')({
   component: RouteComponent,
+  validateSearch: zodValidator(searchParams),
 });
 
 function RouteComponent() {
+  const { dataType } = Route.useSearch();
   const { session, pod } = useAuth();
   const { data: profile, isPending, error } = useGetProfile(session, pod);
 
@@ -38,5 +46,5 @@ function RouteComponent() {
     );
   }
 
-  return <UploadDataForm />;
+  return <UploadDataForm selectedDataType={dataType} />;
 }

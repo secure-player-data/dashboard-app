@@ -14,7 +14,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Loader2 } from 'lucide-react';
+import { Loader2, RefreshCcw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/use-cases/query-keys';
+import { useAuth } from '@/context/auth-context';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -29,15 +33,29 @@ export function DataTable<TData, TValue>({
   isLoading,
   error,
 }: DataTableProps<TData, TValue>) {
+  const { session } = useAuth();
+  const queryClient = useQueryClient();
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
 
+  function handleRefreshMembers() {
+    queryClient.invalidateQueries({
+      queryKey: queryKeys.members.default(session?.info.webId!),
+    });
+  }
+
   return (
     <div>
-      <h1 className="font-semibold mb-2">Members</h1>
+      <div className="flex items-end justify-between mb-2">
+        <h1 className="font-semibold mb-2">Members</h1>
+        <Button variant="outline" onClick={handleRefreshMembers}>
+          <RefreshCcw />
+        </Button>
+      </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>

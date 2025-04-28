@@ -112,7 +112,7 @@ export function AccessRequestDialogBody({
               <div className="flex items-center gap-2 mb-2">
                 <Info className="h-5 w-5 text-muted-foreground" />
                 <span className="text-lg font-semibold">
-                  Reason for Access:
+                  Legal basis for access:
                 </span>
               </div>
               <div className="bg-primary/5 p-4 rounded-md text-sm leading-relaxed">

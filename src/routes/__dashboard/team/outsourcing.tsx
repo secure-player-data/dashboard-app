@@ -256,7 +256,7 @@ function RouteComponent() {
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-medium" htmlFor="reason">
-                        Reason for Sharing
+                        Legal basis for sharing
                       </label>
                       <Textarea
                         id="reason"

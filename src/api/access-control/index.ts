@@ -268,7 +268,7 @@ export async function outsourcePlayerData(
       pod,
       grantedAccess.owner.pod,
       'Your data was outsourced',
-      `${profile.name} has shared the following of your resources with ${dataReceiver}: ${urlsList}. with reason: ${reason}`
+      `Your resources were shared with ${dataReceiver} by ${profile.name}. The shared items are: ${urlsList}. Legal basis: ${reason}.`
     );
   });
 

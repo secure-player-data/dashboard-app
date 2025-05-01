@@ -112,7 +112,7 @@ export async function fetchMembers(
 
       return {
         webId,
-        name: err ? 'unknown' : name,
+        name: err ? webId : name,
         role: getStringNoLocale(member, TEAM_MEMBER_SCHEMA.role) ?? '',
         pod: podUrl,
       };

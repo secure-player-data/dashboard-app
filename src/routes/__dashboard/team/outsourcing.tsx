@@ -32,6 +32,12 @@ import {
 } from '@/api/paths';
 import { useGetProfile } from '@/use-cases/profile';
 import { handleError } from '@/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 const dataTypes = [
   {
@@ -176,6 +182,44 @@ function RouteComponent() {
   };
   return (
     <div className="flex flex-col gap-4">
+      {accesses && (
+        <TooltipProvider>
+          <div className="flex flex-row gap-2 items-center ">
+            {accesses.successful.length > 0 && (
+              <Tooltip>
+                <TooltipTrigger>
+                  <div className="bg-green-50 border-green-500 border rounded-md p-1 min-w-6 flex justify-center items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    {accesses.successful.length}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>
+                    Successful resources outsourced, more information at the
+                    bottom of the page
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+            {accesses.failed.length > 0 && (
+              <Tooltip>
+                <TooltipTrigger>
+                  <div className="bg-red-50 border-red-500 border rounded-md p-1 min-w-6 flex justify-center gap-2 items-center ">
+                    <AlertCircle className="h-4 w-4 text-red-600" />
+                    {accesses.failed.length}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>
+                    Failed resources outsourced, more information at the bottom
+                    of the page
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </div>
+        </TooltipProvider>
+      )}
       <div className="flex-grow grid content-center @container ">
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 md:grid-cols-2">

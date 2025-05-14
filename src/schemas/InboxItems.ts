@@ -29,3 +29,8 @@ export const DELETE_DATA_NOTIFICATION_SCHEMA = {
   deletionRequestUrl: 'https://schema.org/deletionRequestUrl',
   data: 'https://schema.org/data',
 };
+
+export const LEAVE_TEAM_NOTIFICATION_SCHEMA = {
+  ...INBOX_ITEM_SCHEMA,
+  body: 'https://schema.org/body',
+};

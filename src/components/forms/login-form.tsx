@@ -7,6 +7,13 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip';
+import { Info } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import React, { FormEvent, useState } from 'react';
@@ -65,13 +72,32 @@ export function LoginForm({
         <Card>
           <CardHeader className="text-center">
             <CardTitle className="text-xl">Welcome back</CardTitle>
-            <CardDescription>Login with your Solid Issuer</CardDescription>
+            <CardDescription>Login with your Solid Pod</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-6">
               <div className="grid gap-6">
                 <form onSubmit={handleFormSubmit} className="grid gap-2">
-                  <Label htmlFor="webID">Your Solid Issuer</Label>
+                  <div className="flex flex-row gap-2">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="size-4 hover:cursor-pointer" />
+                        </TooltipTrigger>
+                        <TooltipContent className="font-normal">
+                          <p className="text-sm max-w-[50ch]">
+                            Your Pod provider is the service you use to log in
+                            to your Solid Pod, your personal online data
+                            storage. It’s usually a web address like
+                            https://solidcommunity.net or another Solid
+                            provider. If you’re not sure, check with the
+                            provider you signed up with.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <Label htmlFor="webID">Your Pod Provider</Label>
+                  </div>
                   <Input
                     id="webID"
                     type="text"
@@ -105,9 +131,17 @@ export function LoginForm({
                   </Button>
                 </div>
               </div>
+              <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary  ">
+                New to Solid? Learn how to{' '}
+                <a href="https://solidproject.org/users/get-a-pod">
+                  create a Pod
+                </a>{' '}
+                and get started!
+              </div>
             </div>
           </CardContent>
         </Card>
+
         <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary  ">
           By clicking continue, you agree to our{' '}
           <Link hash="#" to={'/auth/login'}>

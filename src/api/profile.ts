@@ -196,10 +196,15 @@ export async function updateAppProfile(
 export async function initAppProfile(
   session: Session | null,
   pod: string | null,
-  profile: Omit<Profile, 'webId' | 'team' | 'picture'>
+  profile: Omit<Profile, 'webId' | 'team' | 'picture'>,
+  options?: { setLoadingMessage?: (message: string) => void }
 ) {
   if (!session || !pod) {
     throw new Error('No session or pod found');
+  }
+
+  if (options?.setLoadingMessage) {
+    options.setLoadingMessage('1/3 Initializing profile structure...');
   }
 
   // Create folders
@@ -228,8 +233,16 @@ export async function initAppProfile(
     if (err) continue;
   }
 
+  if (options?.setLoadingMessage) {
+    options.setLoadingMessage('2/3 Creating profile...');
+  }
+
   // Create profile
   await createAppProfile(session, pod, profile);
+
+  if (options?.setLoadingMessage) {
+    options.setLoadingMessage('3/3 Setting up access control...');
+  }
 
   // Init access control
   await updateAgentAccess({

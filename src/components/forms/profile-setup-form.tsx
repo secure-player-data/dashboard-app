@@ -151,10 +151,13 @@ export function ProfileSetupForm({
                     className="w-full"
                     disabled={mutation.isPending}
                   >
-                    {mutation.isPending ? (
-                      <Loader2 className="size-4 animate-spin" />
+                    {mutation.loadingMessage ? (
+                      <p className="flex items-center gap-2">
+                        <Loader2 className="animate-spin size-4" />
+                        {mutation.loadingMessage}
+                      </p>
                     ) : (
-                      'Save'
+                      <p>Create profile</p>
                     )}
                   </Button>
                 </form>

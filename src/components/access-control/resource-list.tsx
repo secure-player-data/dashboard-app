@@ -8,6 +8,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { FolderOpen, FileText, Lock, Globe, Users } from 'lucide-react';
 import { resource } from '@/entities/data/access-control';
+import { capitalizeFirstLetter } from '@/utils';
 
 interface ResourceListProps {
   resourceList: resource[];
@@ -70,9 +71,9 @@ export default function ResourceList({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Pod Resources</CardTitle>
+        <CardTitle>Resources Categories</CardTitle>
         <CardDescription>
-          Select a resource to view its access permissions
+          Select a resource category to view and manage its permissions
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -95,7 +96,9 @@ export default function ResourceList({
                     <FileText className="h-5 w-5 text-muted-foreground" />
                   )}
                   <span className="font-medium text-sm truncate max-w-[150px]">
-                    {resource.path.replace('-', ' ').replace('/', ' ')}
+                    {capitalizeFirstLetter(
+                      resource.path.replace('-', ' ').replace('/', ' ')
+                    )}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">

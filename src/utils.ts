@@ -32,6 +32,13 @@ export function convertKebabCaseToString(str: string) {
     .join(' ');
 }
 
+export function capitalizeFirstLetter(str: string) {
+  return str
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
 /**
  * Helper function to handle error messages
  *

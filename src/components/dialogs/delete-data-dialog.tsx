@@ -110,7 +110,7 @@ export function DeleteDataDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="destructive" disabled={numberOfSelected === 0}>
-          <Trash /> Delete selected
+          <Trash /> Delete options
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-[900px]">

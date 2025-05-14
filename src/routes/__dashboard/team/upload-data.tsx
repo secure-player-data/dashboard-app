@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import UploadDataForm from '@/components/forms/upload-data-form';
+import UploadMyDataForm from '@/components/forms/upload-my-data-form';
 import { useGetProfile } from '@/use-cases/profile';
 import { useAuth } from '@/context/auth-context';
 import { Loader2 } from 'lucide-react';
@@ -37,13 +38,7 @@ function RouteComponent() {
   }
 
   if (profile?.team === null) {
-    return (
-      <div className="grid place-items-center h-full">
-        <p className="text-sm text-destructive">
-          Cannot upload data as you are not part of a team...
-        </p>
-      </div>
-    );
+    return <UploadMyDataForm selectedDataType={dataType} />;
   }
 
   return <UploadDataForm selectedDataType={dataType} />;

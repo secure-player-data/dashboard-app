@@ -1,4 +1,3 @@
-import { seedDb } from '@/db/seed';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import type { Profile } from '@/entities/data/profile';
 import {
@@ -7,12 +6,15 @@ import {
   getStringNoLocale,
   setThing,
   getThing,
+  getThingAll,
   buildThing,
   createSolidDataset,
   saveSolidDatasetAt,
   setStringNoLocale,
   createContainerAt,
   deleteSolidDataset,
+  deleteContainer,
+  isContainer,
 } from '@inrupt/solid-client';
 import { RDF } from '@inrupt/vocab-common-rdf';
 import { BASE_APP_CONTAINER, paths } from './paths';
@@ -301,4 +303,26 @@ export async function createAppProfile(
     url: profileUrl,
     modes: ['Read'],
   });
+}
+
+export async function deleteAppAccount(
+  session: Session | null,
+  pod: string | null
+) {
+  if (!session || !pod) {
+    throw new Error('No session found');
+  }
+  await purgeContainer(paths.root(pod), session);
+}
+
+async function purgeContainer(container: string, session: Session) {
+  const parent = await getSolidDataset(container, { fetch: session.fetch });
+  const things = getThingAll(parent);
+  for (const thing of things) {
+    if (isContainer(thing.url) && thing.url !== container) {
+      await purgeContainer(thing.url, session);
+    } else {
+      await deleteSolidDataset(thing.url, { fetch: session.fetch });
+    }
+  }
 }

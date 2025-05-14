@@ -17,8 +17,9 @@ export default function EditTeamDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost">
+        <Button variant="outline">
           <SquarePen className="size-4" />
+          Edit Team
         </Button>
       </DialogTrigger>
       <DialogContent>

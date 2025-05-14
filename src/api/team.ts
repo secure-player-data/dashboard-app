@@ -432,6 +432,11 @@ export async function leaveTeam(session: Session | null, pod: string | null) {
   });
 }
 
+// TODO: Implement delete team
+export async function deleteTeam(session: Session | null, pod: string | null) {
+  throw new Error('Not implemented');
+}
+
 function mapThingToTeam(thing: any): Team {
   return {
     url: thing,

@@ -1,5 +1,6 @@
 import {
   createTeam,
+  deleteTeam,
   leaveTeam,
   removeMemberFromTeam,
   updateTeam,
@@ -103,6 +104,21 @@ export function useRemoveMemberFromTeam(
           queryKey: profileQueryKeys.profile(session.info.webId),
         });
       }
+    },
+  });
+}
+
+export function useDeleteTeam(pod: string | null) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ session }: { session: Session | null }) => {
+      await deleteTeam(session, pod);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: profileQueryKeys.profile(pod ?? ''),
+      });
     },
   });
 }

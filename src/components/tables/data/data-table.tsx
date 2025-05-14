@@ -17,7 +17,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import React from 'react';
-import { Loader2, RefreshCcw, Upload } from 'lucide-react';
+import { EyeOff, Loader2, RefreshCcw, Upload } from 'lucide-react';
 import { convertKebabCaseToString, handleError } from '@/utils';
 import { DeleteDataDialog } from '@/components/dialogs/delete-data-dialog';
 import { DataInfo } from '@/entities/data-info';
@@ -94,6 +94,12 @@ export function DataTable<TData, TValue>({
             onClick={refreshData}
           >
             <RefreshCcw />
+          </Button>
+          <Button variant="outline" asChild>
+            <Link to="/manage-access">
+              <EyeOff className="size-4" />
+              Manage Access
+            </Link>
           </Button>
           <Button asChild variant="outline">
             <Link to="/team/upload-data" search={{ dataType: `${category}/` }}>

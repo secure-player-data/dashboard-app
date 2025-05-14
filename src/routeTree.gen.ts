@@ -21,9 +21,9 @@ import { Route as AuthSetupImport } from './routes/auth/_setup'
 import { Route as dashboardSettingsImport } from './routes/__dashboard/settings'
 import { Route as dashboardRequestOverviewImport } from './routes/__dashboard/request-overview'
 import { Route as dashboardProfileImport } from './routes/__dashboard/profile'
+import { Route as dashboardManageAccessImport } from './routes/__dashboard/manage-access'
 import { Route as dashboardInboxImport } from './routes/__dashboard/inbox'
 import { Route as dashboardAccessHistoryImport } from './routes/__dashboard/access-history'
-import { Route as dashboardAccessControlImport } from './routes/__dashboard/access-control'
 import { Route as AuthSetupTeamImport } from './routes/auth/_setup.team'
 import { Route as AuthSetupProfileImport } from './routes/auth/_setup.profile'
 import { Route as dashboardTeamUploadDataImport } from './routes/__dashboard/team/upload-data'
@@ -92,6 +92,12 @@ const dashboardProfileRoute = dashboardProfileImport.update({
   getParentRoute: () => dashboardRoute,
 } as any)
 
+const dashboardManageAccessRoute = dashboardManageAccessImport.update({
+  id: '/manage-access',
+  path: '/manage-access',
+  getParentRoute: () => dashboardRoute,
+} as any)
+
 const dashboardInboxRoute = dashboardInboxImport.update({
   id: '/inbox',
   path: '/inbox',
@@ -101,12 +107,6 @@ const dashboardInboxRoute = dashboardInboxImport.update({
 const dashboardAccessHistoryRoute = dashboardAccessHistoryImport.update({
   id: '/access-history',
   path: '/access-history',
-  getParentRoute: () => dashboardRoute,
-} as any)
-
-const dashboardAccessControlRoute = dashboardAccessControlImport.update({
-  id: '/access-control',
-  path: '/access-control',
   getParentRoute: () => dashboardRoute,
 } as any)
 
@@ -172,13 +172,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboardImport
       parentRoute: typeof rootRoute
     }
-    '/__dashboard/access-control': {
-      id: '/__dashboard/access-control'
-      path: '/access-control'
-      fullPath: '/access-control'
-      preLoaderRoute: typeof dashboardAccessControlImport
-      parentRoute: typeof dashboardImport
-    }
     '/__dashboard/access-history': {
       id: '/__dashboard/access-history'
       path: '/access-history'
@@ -191,6 +184,13 @@ declare module '@tanstack/react-router' {
       path: '/inbox'
       fullPath: '/inbox'
       preLoaderRoute: typeof dashboardInboxImport
+      parentRoute: typeof dashboardImport
+    }
+    '/__dashboard/manage-access': {
+      id: '/__dashboard/manage-access'
+      path: '/manage-access'
+      fullPath: '/manage-access'
+      preLoaderRoute: typeof dashboardManageAccessImport
       parentRoute: typeof dashboardImport
     }
     '/__dashboard/profile': {
@@ -336,9 +336,9 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 )
 
 interface dashboardRouteChildren {
-  dashboardAccessControlRoute: typeof dashboardAccessControlRoute
   dashboardAccessHistoryRoute: typeof dashboardAccessHistoryRoute
   dashboardInboxRoute: typeof dashboardInboxRoute
+  dashboardManageAccessRoute: typeof dashboardManageAccessRoute
   dashboardProfileRoute: typeof dashboardProfileRoute
   dashboardRequestOverviewRoute: typeof dashboardRequestOverviewRoute
   dashboardSettingsRoute: typeof dashboardSettingsRoute
@@ -351,9 +351,9 @@ interface dashboardRouteChildren {
 }
 
 const dashboardRouteChildren: dashboardRouteChildren = {
-  dashboardAccessControlRoute: dashboardAccessControlRoute,
   dashboardAccessHistoryRoute: dashboardAccessHistoryRoute,
   dashboardInboxRoute: dashboardInboxRoute,
+  dashboardManageAccessRoute: dashboardManageAccessRoute,
   dashboardProfileRoute: dashboardProfileRoute,
   dashboardRequestOverviewRoute: dashboardRequestOverviewRoute,
   dashboardSettingsRoute: dashboardSettingsRoute,
@@ -372,9 +372,9 @@ const dashboardRouteWithChildren = dashboardRoute._addFileChildren(
 export interface FileRoutesByFullPath {
   '/auth': typeof AuthSetupRouteWithChildren
   '': typeof dashboardRouteWithChildren
-  '/access-control': typeof dashboardAccessControlRoute
   '/access-history': typeof dashboardAccessHistoryRoute
   '/inbox': typeof dashboardInboxRoute
+  '/manage-access': typeof dashboardManageAccessRoute
   '/profile': typeof dashboardProfileRoute
   '/request-overview': typeof dashboardRequestOverviewRoute
   '/settings': typeof dashboardSettingsRoute
@@ -393,9 +393,9 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/auth': typeof AuthSetupRouteWithChildren
-  '/access-control': typeof dashboardAccessControlRoute
   '/access-history': typeof dashboardAccessHistoryRoute
   '/inbox': typeof dashboardInboxRoute
+  '/manage-access': typeof dashboardManageAccessRoute
   '/profile': typeof dashboardProfileRoute
   '/request-overview': typeof dashboardRequestOverviewRoute
   '/settings': typeof dashboardSettingsRoute
@@ -416,9 +416,9 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/auth': typeof AuthRouteRouteWithChildren
   '/__dashboard': typeof dashboardRouteWithChildren
-  '/__dashboard/access-control': typeof dashboardAccessControlRoute
   '/__dashboard/access-history': typeof dashboardAccessHistoryRoute
   '/__dashboard/inbox': typeof dashboardInboxRoute
+  '/__dashboard/manage-access': typeof dashboardManageAccessRoute
   '/__dashboard/profile': typeof dashboardProfileRoute
   '/__dashboard/request-overview': typeof dashboardRequestOverviewRoute
   '/__dashboard/settings': typeof dashboardSettingsRoute
@@ -441,9 +441,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/auth'
     | ''
-    | '/access-control'
     | '/access-history'
     | '/inbox'
+    | '/manage-access'
     | '/profile'
     | '/request-overview'
     | '/settings'
@@ -461,9 +461,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
-    | '/access-control'
     | '/access-history'
     | '/inbox'
+    | '/manage-access'
     | '/profile'
     | '/request-overview'
     | '/settings'
@@ -482,9 +482,9 @@ export interface FileRouteTypes {
     | '__root__'
     | '/auth'
     | '/__dashboard'
-    | '/__dashboard/access-control'
     | '/__dashboard/access-history'
     | '/__dashboard/inbox'
+    | '/__dashboard/manage-access'
     | '/__dashboard/profile'
     | '/__dashboard/request-overview'
     | '/__dashboard/settings'
@@ -539,9 +539,9 @@ export const routeTree = rootRoute
     "/__dashboard": {
       "filePath": "__dashboard.tsx",
       "children": [
-        "/__dashboard/access-control",
         "/__dashboard/access-history",
         "/__dashboard/inbox",
+        "/__dashboard/manage-access",
         "/__dashboard/profile",
         "/__dashboard/request-overview",
         "/__dashboard/settings",
@@ -553,16 +553,16 @@ export const routeTree = rootRoute
         "/__dashboard/player/$pod/$category"
       ]
     },
-    "/__dashboard/access-control": {
-      "filePath": "__dashboard/access-control.tsx",
-      "parent": "/__dashboard"
-    },
     "/__dashboard/access-history": {
       "filePath": "__dashboard/access-history.tsx",
       "parent": "/__dashboard"
     },
     "/__dashboard/inbox": {
       "filePath": "__dashboard/inbox.tsx",
+      "parent": "/__dashboard"
+    },
+    "/__dashboard/manage-access": {
+      "filePath": "__dashboard/manage-access.tsx",
       "parent": "/__dashboard"
     },
     "/__dashboard/profile": {

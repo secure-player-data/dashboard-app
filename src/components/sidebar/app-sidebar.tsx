@@ -99,8 +99,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           icon: PanelsTopLeft,
         },
         {
-          title: 'Access Control',
-          url: '/access-control',
+          title: 'Manage Access',
+          url: '/manage-access',
           icon: EyeOff,
         },
         {

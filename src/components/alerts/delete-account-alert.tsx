@@ -58,7 +58,7 @@ export default function DeleteAccountDialog() {
 
         <div className="space-y-2">
           <p className="text-sm text-muted-foreground">
-            To confirm, type your <strong>WebId</strong> below:
+            To confirm, type <strong>"{session?.info.webId}"</strong> below:
           </p>
           <input
             type="text"

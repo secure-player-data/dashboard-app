@@ -1,4 +1,5 @@
 import {
+  deleteAppAccount,
   fetchProfileData,
   initAppProfile,
   updateAppProfile,
@@ -66,6 +67,22 @@ export function useUpdateAppProfile(
       teamUrl?: string;
       picture?: File;
     }) => updateAppProfile(session, pod, { name, email, teamUrl, picture }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.profile(session!.info.webId!),
+      });
+    },
+  });
+}
+
+export function useDeleteAppAccount(
+  session: Session | null,
+  pod: string | null
+) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({}: {}) => deleteAppAccount(session, pod),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.profile(session!.info.webId!),

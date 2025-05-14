@@ -52,7 +52,7 @@ type DataEntry = {
 const formSchema = z
   .object({
     dataType: z.string().min(2, 'Need to select a datatype'),
-    player: z.string().min(2, 'Need to select a player'),
+    playerPod: z.string().min(2, 'Need to select a player'),
     reason: z
       .string()
       .min(2, 'Need to give a legal basis for the data collection'),
@@ -197,6 +197,7 @@ export default function UploadMyDataForm({
       reason,
       location,
       files: dataEntries,
+      playerPod: pod,
       hasTextEntry,
       textName,
       textContent,
@@ -297,16 +298,10 @@ export default function UploadMyDataForm({
             <div>
               <Label htmlFor="player">Player</Label>
               <Select disabled>
-                <SelectTrigger
-                  id="player"
-                  className={errors.player && 'border-destructive'}
-                >
+                <SelectTrigger id="player">
                   <SelectValue placeholder={profile?.name} />
                 </SelectTrigger>
               </Select>
-              {errors.player && (
-                <p className="text-sm text-destructive">{errors.player}</p>
-              )}
             </div>
           </div>
 

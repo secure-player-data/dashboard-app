@@ -53,7 +53,7 @@ type DataEntry = {
 const formSchema = z
   .object({
     dataType: z.string().min(2, 'Need to select a datatype'),
-    player: z.string().min(2, 'Need to select a player'),
+    playerPod: z.string().min(2, 'Need to select a player'),
     reason: z
       .string()
       .min(2, 'Need to give a legal basis for the data collection'),
@@ -92,7 +92,7 @@ export default function UploadDataForm({
   selectedDataType?: string;
 }) {
   const [dataType, setDataType] = useState<string>(selectedDataType || '');
-  const [player, setPlayer] = useState<string>('');
+  const [playerPod, setPlayerPod] = useState<string>('');
   const [reason, setReason] = useState<string>('');
   const [location, setLocation] = useState<string>('');
 
@@ -125,7 +125,7 @@ export default function UploadDataForm({
     setDataType('');
     setReason('');
     setLocation('');
-    setPlayer('');
+    setPlayerPod('');
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -204,7 +204,7 @@ export default function UploadDataForm({
 
     const validation = formSchema.safeParse({
       dataType,
-      player,
+      playerPod,
       reason,
       location,
       files: dataEntries,
@@ -221,13 +221,6 @@ export default function UploadDataForm({
       setErrors(newErrors);
       return;
     }
-
-    const member = members.find((member) => member.name == player);
-    if (!member) {
-      toast.error('Player not found');
-      return;
-    }
-    const playerPod = member.pod;
 
     // Create html file from text input
     let file: File | undefined;
@@ -272,7 +265,7 @@ export default function UploadDataForm({
     return (
       <SelectContent>
         {members.map((member) => (
-          <SelectItem key={member.webId} value={member.name}>
+          <SelectItem key={member.webId} value={member.pod}>
             {member.name}
           </SelectItem>
         ))}
@@ -332,7 +325,7 @@ export default function UploadDataForm({
               <Label htmlFor="player">
                 Player <span className="text-destructive">*</span>
               </Label>
-              <Select value={player} onValueChange={setPlayer} required>
+              <Select value={playerPod} onValueChange={setPlayerPod} required>
                 <SelectTrigger
                   id="player"
                   className={errors.player && 'border-destructive'}

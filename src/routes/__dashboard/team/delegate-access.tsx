@@ -1,7 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router';
-import type React from 'react';
-import { useState } from 'react';
-import { Button, ButtonWithLoader } from '@/components/ui/button';
+import { createFileRoute } from '@tanstack/react-router'
+import type React from 'react'
+import { useState } from 'react'
+import { Button, ButtonWithLoader } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -9,19 +9,19 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { AlertCircle, Info, CheckCircle } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Textarea } from '@/components/ui/textarea';
-import { ScrollArea } from '@radix-ui/react-scroll-area';
-import { Input } from '@/components/ui/input';
-import { useGetMembers } from '@/use-cases/use-get-members';
-import { useAuth } from '@/context/auth-context';
-import { Member } from '@/entities/data/member';
-import { Loader2 } from 'lucide-react';
-import { useOutsourceData } from '@/use-cases/use-outsource-data';
-import { toast } from 'sonner';
+} from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
+import { AlertCircle, Info, CheckCircle } from 'lucide-react'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Textarea } from '@/components/ui/textarea'
+import { ScrollArea } from '@radix-ui/react-scroll-area'
+import { Input } from '@/components/ui/input'
+import { useGetMembers } from '@/use-cases/use-get-members'
+import { useAuth } from '@/context/auth-context'
+import { Member } from '@/entities/data/member'
+import { Loader2 } from 'lucide-react'
+import { useOutsourceData } from '@/use-cases/use-outsource-data'
+import { toast } from 'sonner'
 import {
   BIOMETRIC_DATA,
   EVENT_DATA,
@@ -29,15 +29,15 @@ import {
   HEALTH_DATA,
   PERSONAL_DATA,
   TRACKING_DATA,
-} from '@/api/paths';
-import { useGetProfile } from '@/use-cases/profile';
-import { handleError } from '@/utils';
+} from '@/api/paths'
+import { useGetProfile } from '@/use-cases/profile'
+import { handleError } from '@/utils'
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
+} from '@/components/ui/tooltip'
 
 const dataTypes = [
   {
@@ -77,55 +77,55 @@ const dataTypes = [
     label: 'Health Data',
     description: 'Medical records, injury history, and rehabilitation progress',
   },
-];
+]
 
-export const Route = createFileRoute('/__dashboard/team/outsourcing')({
+export const Route = createFileRoute('/__dashboard/team/delegate-access')({
   component: RouteComponent,
-});
+})
 
 function RouteComponent() {
-  const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
-  const [selectedDataTypes, setSelectedDataTypes] = useState<string[]>([]);
-  const [reason, setReason] = useState('');
-  const [webId, setWebId] = useState('');
-  const { session, pod } = useAuth();
+  const [selectedMembers, setSelectedMembers] = useState<string[]>([])
+  const [selectedDataTypes, setSelectedDataTypes] = useState<string[]>([])
+  const [reason, setReason] = useState('')
+  const [webId, setWebId] = useState('')
+  const { session, pod } = useAuth()
 
   type outsourceResult = {
-    failed: { owner: Member; urls: string[] }[];
-    successful: { owner: Member; urls: string[] }[];
-  };
-  const [accesses, setAccesses] = useState<outsourceResult | null>(null);
+    failed: { owner: Member; urls: string[] }[]
+    successful: { owner: Member; urls: string[] }[]
+  }
+  const [accesses, setAccesses] = useState<outsourceResult | null>(null)
   const { data: members, isPending: membersPending } = useGetMembers(
     session,
-    pod
-  );
+    pod,
+  )
 
-  const { data: profile } = useGetProfile(session, pod);
-  const outsourceMutation = useOutsourceData(session, pod);
+  const { data: profile } = useGetProfile(session, pod)
+  const outsourceMutation = useOutsourceData(session, pod)
 
   const handleMemberToggle = (MemberId: string) => {
     setSelectedMembers((prev) =>
       prev.includes(MemberId)
         ? prev.filter((id) => id !== MemberId)
-        : [...prev, MemberId]
-    );
-  };
+        : [...prev, MemberId],
+    )
+  }
 
   const handleDataTypeToggle = (dataTypeId: string) => {
     setSelectedDataTypes((prev) =>
       prev.includes(dataTypeId)
         ? prev.filter((id) => id !== dataTypeId)
-        : [...prev, dataTypeId]
-    );
-  };
+        : [...prev, dataTypeId],
+    )
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     outsourceMutation.mutate(
       {
         profile: profile!,
         dataOwners: members!.filter((member: Member) =>
-          selectedMembers.includes(member.webId)
+          selectedMembers.includes(member.webId),
         ),
         resourceUrls: selectedDataTypes,
         dataReceiver: webId,
@@ -135,24 +135,24 @@ function RouteComponent() {
         onError: (error) => toast.error(handleError(error)),
         onSuccess: (data) =>
           setAccesses({ failed: data.failed, successful: data.successful }),
-      }
-    );
-  };
+      },
+    )
+  }
 
   const isValidWebId = (id: string) => {
     try {
-      new URL(id);
-      return true;
+      new URL(id)
+      return true
     } catch {
-      return false;
+      return false
     }
-  };
+  }
 
   const getAmountOfItems = (result: { owner: Member; urls: string[] }[]) => {
-    let total = 0;
-    result.map((item) => (total += item.urls.length));
-    return total;
-  };
+    let total = 0
+    result.map((item) => (total += item.urls.length))
+    return total
+  }
 
   const showMembers = () => {
     if (members) {
@@ -173,13 +173,13 @@ function RouteComponent() {
             </label>
           </div>
         </div>
-      ));
+      ))
     } else if (membersPending) {
-      return <Loader2 className="size-4 animate-spin" />;
+      return <Loader2 className="size-4 animate-spin" />
     } else {
-      return <div>No members found</div>;
+      return <div>No members found</div>
     }
-  };
+  }
   return (
     <div className="flex flex-col gap-4">
       {accesses && (
@@ -405,5 +405,5 @@ function RouteComponent() {
         </div>
       )}
     </div>
-  );
+  )
 }

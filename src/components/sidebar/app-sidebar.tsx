@@ -17,6 +17,8 @@ import {
   Fingerprint,
   Activity,
   PanelsTopLeft,
+  Handshake,
+  Trash,
 } from 'lucide-react';
 import { NavUser } from '@/components/sidebar/nav-user';
 import {
@@ -45,7 +47,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       },
       navMain: [
         {
-          title: 'Your data',
+          title: 'Data',
           url: '/',
           icon: Database,
           isActive: true,
@@ -94,9 +96,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           icon: InboxIcon,
         },
         {
-          title: 'Request Overview',
-          url: '/request-overview',
-          icon: PanelsTopLeft,
+          title: 'Deletion Requests',
+          url: '/deletion-requests',
+          icon: Trash,
         },
         {
           title: 'Manage Access',
@@ -113,7 +115,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: 'Team',
         items: [
           {
-            name: 'Team Details',
+            name: 'Team',
             url: '/team/details',
             icon: Users,
           },
@@ -124,9 +126,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           },
 
           {
-            name: 'Outsourcing',
-            url: '/team/outsourcing',
-            icon: Rocket,
+            name: 'Deletage Access',
+            url: '/team/delegate-access',
+            icon: Handshake,
           },
         ],
       },

@@ -70,9 +70,9 @@ export function DataTable<TData, TValue>({
     <div className="grid gap-4">
       <div className="flex justify-between w-full">
         <div>
-          <h1 className="font-bold text-2xl">Request Overview</h1>
+          <h1 className="font-bold text-2xl">Deletion Requests</h1>
           <p className="text-muted-foreground">
-            Overview with status for all sent data deletion requests.
+            Overview of all data deletion requests with their current status.
           </p>
         </div>
         <Button

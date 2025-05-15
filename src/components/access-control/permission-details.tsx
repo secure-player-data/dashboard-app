@@ -164,8 +164,8 @@ export default function PermissionDetails({
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="agent">Agent WebID or Group</Label>
+              <div className="grid mb-4">
+                <Label htmlFor="agent">WebID</Label>
                 <AutoComplete
                   options={autoCompleteMembers()}
                   emptyMessage="No results."
@@ -173,6 +173,9 @@ export default function PermissionDetails({
                   onValueChange={(value) => setActiveAgent(value)}
                   value={activeAgent}
                 />
+                <p className="text-muted-foreground text-xs">
+                  Start typing a name to search for members in team
+                </p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center space-x-2">
@@ -270,6 +273,7 @@ export default function PermissionDetails({
                 Cancel
               </Button>
               <ButtonWithLoader
+                variant="destructive"
                 onClick={() => handleDialogSubmission('delete')}
                 isLoading={updatePending}
               >
@@ -445,7 +449,7 @@ export default function PermissionDetails({
                         setShowDialog('edit');
                         setActiveAgent({
                           value: permission.agent,
-                          label: 'non team member',
+                          label: '',
                         });
                         setActivePermissions({
                           read: permission.read,
@@ -460,13 +464,14 @@ export default function PermissionDetails({
                     </Button>
                     <Button
                       variant="ghost"
+                      className="text-red-500"
                       size="icon"
                       disabled={permission.agent === session?.info.webId!}
                       onClick={() => {
                         setShowDialog('delete');
                         setActiveAgent({
                           value: permission.agent,
-                          label: 'non team member',
+                          label: '',
                         });
                       }}
                     >

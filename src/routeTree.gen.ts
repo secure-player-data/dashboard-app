@@ -28,7 +28,7 @@ import { Route as AuthSetupTeamImport } from './routes/auth/_setup.team'
 import { Route as AuthSetupProfileImport } from './routes/auth/_setup.profile'
 import { Route as dashboardTeamUploadDataImport } from './routes/__dashboard/team/upload-data'
 import { Route as dashboardTeamDetailsImport } from './routes/__dashboard/team/details'
-import { Route as dashboardTeamDelegateAccessImport } from './routes/__dashboard/team/delegate-access'
+import { Route as dashboardTeamDataSharingImport } from './routes/__dashboard/team/data-sharing'
 import { Route as dashboardFileUrlImport } from './routes/__dashboard/file/$url'
 import { Route as dashboardPlayerPodCategoryImport } from './routes/__dashboard/player/$pod/$category'
 
@@ -134,12 +134,11 @@ const dashboardTeamDetailsRoute = dashboardTeamDetailsImport.update({
   getParentRoute: () => dashboardRoute,
 } as any)
 
-const dashboardTeamDelegateAccessRoute =
-  dashboardTeamDelegateAccessImport.update({
-    id: '/team/delegate-access',
-    path: '/team/delegate-access',
-    getParentRoute: () => dashboardRoute,
-  } as any)
+const dashboardTeamDataSharingRoute = dashboardTeamDataSharingImport.update({
+  id: '/team/data-sharing',
+  path: '/team/data-sharing',
+  getParentRoute: () => dashboardRoute,
+} as any)
 
 const dashboardFileUrlRoute = dashboardFileUrlImport.update({
   id: '/file/$url',
@@ -257,11 +256,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboardFileUrlImport
       parentRoute: typeof dashboardImport
     }
-    '/__dashboard/team/delegate-access': {
-      id: '/__dashboard/team/delegate-access'
-      path: '/team/delegate-access'
-      fullPath: '/team/delegate-access'
-      preLoaderRoute: typeof dashboardTeamDelegateAccessImport
+    '/__dashboard/team/data-sharing': {
+      id: '/__dashboard/team/data-sharing'
+      path: '/team/data-sharing'
+      fullPath: '/team/data-sharing'
+      preLoaderRoute: typeof dashboardTeamDataSharingImport
       parentRoute: typeof dashboardImport
     }
     '/__dashboard/team/details': {
@@ -345,7 +344,7 @@ interface dashboardRouteChildren {
   dashboardSettingsRoute: typeof dashboardSettingsRoute
   dashboardIndexRoute: typeof dashboardIndexRoute
   dashboardFileUrlRoute: typeof dashboardFileUrlRoute
-  dashboardTeamDelegateAccessRoute: typeof dashboardTeamDelegateAccessRoute
+  dashboardTeamDataSharingRoute: typeof dashboardTeamDataSharingRoute
   dashboardTeamDetailsRoute: typeof dashboardTeamDetailsRoute
   dashboardTeamUploadDataRoute: typeof dashboardTeamUploadDataRoute
   dashboardPlayerPodCategoryRoute: typeof dashboardPlayerPodCategoryRoute
@@ -360,7 +359,7 @@ const dashboardRouteChildren: dashboardRouteChildren = {
   dashboardSettingsRoute: dashboardSettingsRoute,
   dashboardIndexRoute: dashboardIndexRoute,
   dashboardFileUrlRoute: dashboardFileUrlRoute,
-  dashboardTeamDelegateAccessRoute: dashboardTeamDelegateAccessRoute,
+  dashboardTeamDataSharingRoute: dashboardTeamDataSharingRoute,
   dashboardTeamDetailsRoute: dashboardTeamDetailsRoute,
   dashboardTeamUploadDataRoute: dashboardTeamUploadDataRoute,
   dashboardPlayerPodCategoryRoute: dashboardPlayerPodCategoryRoute,
@@ -384,7 +383,7 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/': typeof dashboardIndexRoute
   '/file/$url': typeof dashboardFileUrlRoute
-  '/team/delegate-access': typeof dashboardTeamDelegateAccessRoute
+  '/team/data-sharing': typeof dashboardTeamDataSharingRoute
   '/team/details': typeof dashboardTeamDetailsRoute
   '/team/upload-data': typeof dashboardTeamUploadDataRoute
   '/auth/profile': typeof AuthSetupProfileRoute
@@ -405,7 +404,7 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/': typeof dashboardIndexRoute
   '/file/$url': typeof dashboardFileUrlRoute
-  '/team/delegate-access': typeof dashboardTeamDelegateAccessRoute
+  '/team/data-sharing': typeof dashboardTeamDataSharingRoute
   '/team/details': typeof dashboardTeamDetailsRoute
   '/team/upload-data': typeof dashboardTeamUploadDataRoute
   '/auth/profile': typeof AuthSetupProfileRoute
@@ -429,7 +428,7 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/__dashboard/': typeof dashboardIndexRoute
   '/__dashboard/file/$url': typeof dashboardFileUrlRoute
-  '/__dashboard/team/delegate-access': typeof dashboardTeamDelegateAccessRoute
+  '/__dashboard/team/data-sharing': typeof dashboardTeamDataSharingRoute
   '/__dashboard/team/details': typeof dashboardTeamDetailsRoute
   '/__dashboard/team/upload-data': typeof dashboardTeamUploadDataRoute
   '/auth/_setup/profile': typeof AuthSetupProfileRoute
@@ -453,7 +452,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/'
     | '/file/$url'
-    | '/team/delegate-access'
+    | '/team/data-sharing'
     | '/team/details'
     | '/team/upload-data'
     | '/auth/profile'
@@ -473,7 +472,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/'
     | '/file/$url'
-    | '/team/delegate-access'
+    | '/team/data-sharing'
     | '/team/details'
     | '/team/upload-data'
     | '/auth/profile'
@@ -495,7 +494,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/__dashboard/'
     | '/__dashboard/file/$url'
-    | '/__dashboard/team/delegate-access'
+    | '/__dashboard/team/data-sharing'
     | '/__dashboard/team/details'
     | '/__dashboard/team/upload-data'
     | '/auth/_setup/profile'
@@ -548,7 +547,7 @@ export const routeTree = rootRoute
         "/__dashboard/settings",
         "/__dashboard/",
         "/__dashboard/file/$url",
-        "/__dashboard/team/delegate-access",
+        "/__dashboard/team/data-sharing",
         "/__dashboard/team/details",
         "/__dashboard/team/upload-data",
         "/__dashboard/player/$pod/$category"
@@ -606,8 +605,8 @@ export const routeTree = rootRoute
       "filePath": "__dashboard/file/$url.tsx",
       "parent": "/__dashboard"
     },
-    "/__dashboard/team/delegate-access": {
-      "filePath": "__dashboard/team/delegate-access.tsx",
+    "/__dashboard/team/data-sharing": {
+      "filePath": "__dashboard/team/data-sharing.tsx",
       "parent": "/__dashboard"
     },
     "/__dashboard/team/details": {

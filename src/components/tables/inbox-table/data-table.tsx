@@ -116,7 +116,7 @@ function TableContent<TData, TValue>({
     return (
       <TableRow>
         <TableCell colSpan={columns.length} className="h-24 text-center">
-          No results.
+          No results found. Refresh data using the button at the top right.
         </TableCell>
       </TableRow>
     );

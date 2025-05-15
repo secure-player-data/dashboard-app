@@ -126,8 +126,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           },
 
           {
-            name: 'Deletage Access',
-            url: '/team/delegate-access',
+            name: 'Data Sharing',
+            url: '/team/data-sharing',
             icon: Handshake,
           },
         ],

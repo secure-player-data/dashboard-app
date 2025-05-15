@@ -79,7 +79,7 @@ const dataTypes = [
   },
 ]
 
-export const Route = createFileRoute('/__dashboard/team/delegate-access')({
+export const Route = createFileRoute('/__dashboard/team/data-sharing')({
   component: RouteComponent,
 })
 

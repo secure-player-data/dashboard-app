@@ -1,7 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router'
-import type React from 'react'
-import { useState } from 'react'
-import { Button, ButtonWithLoader } from '@/components/ui/button'
+import { createFileRoute } from '@tanstack/react-router';
+import type React from 'react';
+import { useState } from 'react';
+import { Button, ButtonWithLoader } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -9,19 +9,19 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { Checkbox } from '@/components/ui/checkbox'
-import { AlertCircle, Info, CheckCircle } from 'lucide-react'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Textarea } from '@/components/ui/textarea'
-import { ScrollArea } from '@radix-ui/react-scroll-area'
-import { Input } from '@/components/ui/input'
-import { useGetMembers } from '@/use-cases/use-get-members'
-import { useAuth } from '@/context/auth-context'
-import { Member } from '@/entities/data/member'
-import { Loader2 } from 'lucide-react'
-import { useOutsourceData } from '@/use-cases/use-outsource-data'
-import { toast } from 'sonner'
+} from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { AlertCircle, Info, CheckCircle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Textarea } from '@/components/ui/textarea';
+import { ScrollArea } from '@radix-ui/react-scroll-area';
+import { Input } from '@/components/ui/input';
+import { useGetMembers } from '@/use-cases/use-get-members';
+import { useAuth } from '@/context/auth-context';
+import { Member } from '@/entities/data/member';
+import { Loader2 } from 'lucide-react';
+import { useOutsourceData } from '@/use-cases/use-outsource-data';
+import { toast } from 'sonner';
 import {
   BIOMETRIC_DATA,
   EVENT_DATA,
@@ -29,15 +29,16 @@ import {
   HEALTH_DATA,
   PERSONAL_DATA,
   TRACKING_DATA,
-} from '@/api/paths'
-import { useGetProfile } from '@/use-cases/profile'
-import { handleError } from '@/utils'
+} from '@/api/paths';
+import { useGetProfile } from '@/use-cases/profile';
+import { handleError } from '@/utils';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip'
+} from '@/components/ui/tooltip';
+import { DisableWhen } from '@/components/disable-when';
 
 const dataTypes = [
   {
@@ -77,55 +78,55 @@ const dataTypes = [
     label: 'Health Data',
     description: 'Medical records, injury history, and rehabilitation progress',
   },
-]
+];
 
 export const Route = createFileRoute('/__dashboard/team/data-sharing')({
   component: RouteComponent,
-})
+});
 
 function RouteComponent() {
-  const [selectedMembers, setSelectedMembers] = useState<string[]>([])
-  const [selectedDataTypes, setSelectedDataTypes] = useState<string[]>([])
-  const [reason, setReason] = useState('')
-  const [webId, setWebId] = useState('')
-  const { session, pod } = useAuth()
+  const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
+  const [selectedDataTypes, setSelectedDataTypes] = useState<string[]>([]);
+  const [reason, setReason] = useState('');
+  const [webId, setWebId] = useState('');
+  const { session, pod } = useAuth();
 
   type outsourceResult = {
-    failed: { owner: Member; urls: string[] }[]
-    successful: { owner: Member; urls: string[] }[]
-  }
-  const [accesses, setAccesses] = useState<outsourceResult | null>(null)
+    failed: { owner: Member; urls: string[] }[];
+    successful: { owner: Member; urls: string[] }[];
+  };
+  const [accesses, setAccesses] = useState<outsourceResult | null>(null);
   const { data: members, isPending: membersPending } = useGetMembers(
     session,
-    pod,
-  )
+    pod
+  );
 
-  const { data: profile } = useGetProfile(session, pod)
-  const outsourceMutation = useOutsourceData(session, pod)
+  const { data: profile } = useGetProfile(session, pod);
+  const outsourceMutation = useOutsourceData(session, pod);
 
   const handleMemberToggle = (MemberId: string) => {
     setSelectedMembers((prev) =>
       prev.includes(MemberId)
         ? prev.filter((id) => id !== MemberId)
-        : [...prev, MemberId],
-    )
-  }
+        : [...prev, MemberId]
+    );
+  };
 
   const handleDataTypeToggle = (dataTypeId: string) => {
     setSelectedDataTypes((prev) =>
       prev.includes(dataTypeId)
         ? prev.filter((id) => id !== dataTypeId)
-        : [...prev, dataTypeId],
-    )
-  }
+        : [...prev, dataTypeId]
+    );
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     outsourceMutation.mutate(
       {
         profile: profile!,
         dataOwners: members!.filter((member: Member) =>
-          selectedMembers.includes(member.webId),
+          selectedMembers.includes(member.webId)
         ),
         resourceUrls: selectedDataTypes,
         dataReceiver: webId,
@@ -135,24 +136,24 @@ function RouteComponent() {
         onError: (error) => toast.error(handleError(error)),
         onSuccess: (data) =>
           setAccesses({ failed: data.failed, successful: data.successful }),
-      },
-    )
-  }
+      }
+    );
+  };
 
   const isValidWebId = (id: string) => {
     try {
-      new URL(id)
-      return true
+      new URL(id);
+      return true;
     } catch {
-      return false
+      return false;
     }
-  }
+  };
 
   const getAmountOfItems = (result: { owner: Member; urls: string[] }[]) => {
-    let total = 0
-    result.map((item) => (total += item.urls.length))
-    return total
-  }
+    let total = 0;
+    result.map((item) => (total += item.urls.length));
+    return total;
+  };
 
   const showMembers = () => {
     if (members) {
@@ -173,13 +174,13 @@ function RouteComponent() {
             </label>
           </div>
         </div>
-      ))
+      ));
     } else if (membersPending) {
-      return <Loader2 className="size-4 animate-spin" />
+      return <Loader2 className="size-4 animate-spin" />;
     } else {
-      return <div>No members found</div>
+      return <div>No members found</div>;
     }
-  }
+  };
   return (
     <div className="flex flex-col gap-4">
       {accesses && (
@@ -236,101 +237,109 @@ function RouteComponent() {
             </Card>
 
             <div className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Select Data Types</CardTitle>
-                  <CardDescription>
-                    Choose which types of data to share
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid gap-4">
-                    {dataTypes.map((dataType) => (
-                      <div
-                        key={dataType.id}
-                        className="flex items-start space-x-2"
-                      >
-                        <Checkbox
-                          id={`data-${dataType.id}`}
-                          checked={selectedDataTypes.includes(dataType.path)}
-                          onCheckedChange={() =>
-                            handleDataTypeToggle(dataType.path)
-                          }
-                          className="mt-1"
-                        />
-                        <div className="grid gap-1.5">
-                          <label
-                            htmlFor={`data-${dataType.id}`}
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                          >
-                            {dataType.label}
-                          </label>
-                          <p className="text-xs text-muted-foreground">
-                            {dataType.description}
-                          </p>
+              <DisableWhen isDisabled={selectedMembers.length === 0}>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Select Data Types</CardTitle>
+                    <CardDescription>
+                      Choose which types of data to share
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid gap-4">
+                      {dataTypes.map((dataType) => (
+                        <div
+                          key={dataType.id}
+                          className="flex items-start space-x-2"
+                        >
+                          <Checkbox
+                            id={`data-${dataType.id}`}
+                            checked={selectedDataTypes.includes(dataType.path)}
+                            onCheckedChange={() =>
+                              handleDataTypeToggle(dataType.path)
+                            }
+                            className="mt-1"
+                          />
+                          <div className="grid gap-1.5">
+                            <label
+                              htmlFor={`data-${dataType.id}`}
+                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                              {dataType.label}
+                            </label>
+                            <p className="text-xs text-muted-foreground">
+                              {dataType.description}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </DisableWhen>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Sharing Details</CardTitle>
-                  <CardDescription>
-                    Provide additional information about this data sharing
-                    request
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium" htmlFor="webid">
-                        WebID to Share With
-                      </label>
-                      <Input
-                        id="webid"
-                        type="url"
-                        placeholder="https://example.com/profile#me"
-                        value={webId}
-                        onChange={(e) => setWebId(e.target.value)}
-                        required
-                      />
+              <DisableWhen
+                isDisabled={
+                  selectedMembers.length === 0 || selectedDataTypes.length === 0
+                }
+              >
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Sharing Details</CardTitle>
+                    <CardDescription>
+                      Provide additional information about this data sharing
+                      request
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium" htmlFor="webid">
+                          WebID to Share With
+                        </label>
+                        <Input
+                          id="webid"
+                          type="url"
+                          placeholder="https://example.com/profile#me"
+                          value={webId}
+                          onChange={(e) => setWebId(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium" htmlFor="reason">
+                          Legal basis for sharing
+                        </label>
+                        <Textarea
+                          id="reason"
+                          placeholder="Explain why you need to share this data..."
+                          value={reason}
+                          onChange={(e) => setReason(e.target.value)}
+                          required={selectedMembers.length > 0}
+                        />
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium" htmlFor="reason">
-                        Legal basis for sharing
-                      </label>
-                      <Textarea
-                        id="reason"
-                        placeholder="Explain why you need to share this data..."
-                        value={reason}
-                        onChange={(e) => setReason(e.target.value)}
-                        required={selectedMembers.length > 0}
-                      />
+                  </CardContent>
+                  <CardFooter className="flex justify-between">
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Info className="h-4 w-4 mr-1" />
+                      <span>All data sharing is logged and audited</span>
                     </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between">
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <Info className="h-4 w-4 mr-1" />
-                    <span>All data sharing is logged and audited</span>
-                  </div>
-                  <ButtonWithLoader
-                    isLoading={outsourceMutation.isPending}
-                    type="submit"
-                    disabled={
-                      selectedMembers.length === 0 ||
-                      selectedDataTypes.length === 0 ||
-                      (selectedMembers.length > 0 && !reason) ||
-                      !isValidWebId(webId)
-                    }
-                  >
-                    Outsource
-                  </ButtonWithLoader>
-                </CardFooter>
-              </Card>
+                    <ButtonWithLoader
+                      isLoading={outsourceMutation.isPending}
+                      type="submit"
+                      disabled={
+                        selectedMembers.length === 0 ||
+                        selectedDataTypes.length === 0 ||
+                        (selectedMembers.length > 0 && !reason) ||
+                        !isValidWebId(webId)
+                      }
+                    >
+                      Outsource
+                    </ButtonWithLoader>
+                  </CardFooter>
+                </Card>
+              </DisableWhen>
             </div>
           </div>
         </form>
@@ -405,5 +414,5 @@ function RouteComponent() {
         </div>
       )}
     </div>
-  )
+  );
 }

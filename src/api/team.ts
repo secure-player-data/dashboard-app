@@ -7,6 +7,7 @@ import {
   createSolidDataset,
   createThing,
   deleteFile,
+  deleteSolidDataset,
   getSolidDataset,
   getStringNoLocale,
   getThing,
@@ -31,6 +32,7 @@ import { PROFILE_SCHEMA } from '@/schemas/profile';
 import { TEAM_MEMBER_SCHEMA, TEAM_SCHEMA } from '@/schemas/team';
 import { fetchMember, fetchMembersWithPermissions } from './member';
 import { deleteInboxItem, sendLeaveTeamNotification } from './inbox';
+import { purgeContainer } from './utils';
 
 /**
  * Returns team details from the team specified by the teamUrl
@@ -157,12 +159,6 @@ export async function createTeam({
 }) {
   if (!session || !session.info.webId || !pod) {
     throw new SessionNotSetException('No session or pod');
-  }
-
-  const [_, teamUrl] = await safeCall(fetchTeamUrl(session, pod));
-
-  if (teamUrl && teamUrl.length > 0) {
-    throw new TeamCreationConflictException('User is already in a team');
   }
 
   // Create and add team details to dataset
@@ -432,9 +428,18 @@ export async function leaveTeam(session: Session | null, pod: string | null) {
   });
 }
 
-// TODO: Implement delete team
+/**
+ * Delete the team
+ * @param session user requesting the deletion
+ * @param pod of the owner of the team
+ */
 export async function deleteTeam(session: Session | null, pod: string | null) {
-  throw new Error('Not implemented');
+  if (!session || !pod) {
+    throw new SessionNotSetException('Session or pod not available');
+  }
+
+  await purgeContainer(paths.team.root(pod), session);
+  await deleteSolidDataset(`${paths.root(pod)}/Team`, { fetch: session.fetch });
 }
 
 function mapThingToTeam(thing: any): Team {

@@ -33,6 +33,7 @@ import { PROFILE_SCHEMA } from '@/schemas/profile';
 import { uploadFile } from './data';
 import { logResourceAccess } from './access-history';
 import { log } from '@/lib/log';
+import { purgeContainer } from './utils';
 
 function isEmptyOrSpaces(str: string | null) {
   return str === null || str.match(/^ *$/) !== null;
@@ -326,16 +327,4 @@ export async function deleteAppAccount(
     throw new Error('No session found');
   }
   await purgeContainer(paths.root(pod), session);
-}
-
-async function purgeContainer(container: string, session: Session) {
-  const parent = await getSolidDataset(container, { fetch: session.fetch });
-  const things = getThingAll(parent);
-  for (const thing of things) {
-    if (isContainer(thing.url) && thing.url !== container) {
-      await purgeContainer(thing.url, session);
-    } else {
-      await deleteSolidDataset(thing.url, { fetch: session.fetch });
-    }
-  }
 }

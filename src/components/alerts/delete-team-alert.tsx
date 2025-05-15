@@ -77,8 +77,8 @@ export default function DeleteTeamAlert() {
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <ButtonWithLoader
-            isLoading={false}
-            disabled={!enableDeletion}
+            isLoading={mutation.isPending}
+            disabled={!enableDeletion || mutation.isPending}
             onClick={handleDeleteTeam}
             variant="destructive"
           >

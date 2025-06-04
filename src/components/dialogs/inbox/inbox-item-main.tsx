@@ -18,6 +18,7 @@ import { InformationDialogBody } from './informationBody';
 import { AccessRequestDialogBody } from './accessRequestBody';
 import { InvitationDialogBody } from './invitationBody';
 import { DataDeletionRequestDialogBody } from './data-deletion-request-dialog-body';
+import LeaveTeamDialogBody from './leave-team-dialog-body';
 
 interface InboxTableRowDialog {
   session: Session;
@@ -66,13 +67,15 @@ export function InboxTableRowDialog({
         onEscapeKeyDown={() => setOpen(false)}
       >
         <DialogHeader>
-          <DialogTitle className="text-3xl font-bold mb-4 text-primary">
+          <DialogTitle className="text-3xl font-bold text-primary">
             {row.original.type === 'Invitation'
               ? 'Join Request'
-              : row.original.type}
+              : row.original.type === 'Leave Team Notification'
+                ? 'User Left Team'
+                : row.original.type}
           </DialogTitle>
           <DialogDescription asChild>
-            <div className="pb-8">
+            <div>
               {row.original.type === 'Access Request' && (
                 <div>
                   <div>
@@ -100,6 +103,9 @@ export function InboxTableRowDialog({
               )}
               {row.original.type === 'Data Deletion Notification' && (
                 <div>Player has demanded to have their data deleted.</div>
+              )}
+              {row.original.type === 'Leave Team Notification' && (
+                <div>Player has left the team</div>
               )}
             </div>
           </DialogDescription>{' '}
@@ -133,6 +139,14 @@ export function InboxTableRowDialog({
         {row.original.type === 'Data Deletion Notification' && (
           <DataDeletionRequestDialogBody
             request={row.original}
+            closeDialog={closeDialog}
+          />
+        )}
+        {row.original.type === 'Leave Team Notification' && (
+          <LeaveTeamDialogBody
+            webId={row.original.webId}
+            date={row.original.date}
+            body={row.original.body}
             closeDialog={closeDialog}
           />
         )}

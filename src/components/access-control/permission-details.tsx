@@ -31,6 +31,7 @@ import { toast } from 'sonner';
 import { AutoComplete } from '../ui/auto-complete';
 import { useGetMembers } from '@/use-cases/use-get-members';
 import { Option } from '../ui/auto-complete';
+import { capitalizeFirstLetter } from '@/utils';
 
 interface PermissionDetailsProps {
   resourcePath: string;
@@ -140,7 +141,9 @@ export default function PermissionDetails({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-medium">
-          {resourcePath.replace('-', ' ').replace('/', '')}
+          {capitalizeFirstLetter(
+            resourcePath.replace('-', ' ').replace('/', '')
+          )}
         </h3>
         <Dialog
           open={showDialog == 'add'}
@@ -170,6 +173,9 @@ export default function PermissionDetails({
                   onValueChange={(value) => setActiveAgent(value)}
                   value={activeAgent}
                 />
+                <p className="text-muted-foreground text-xs">
+                  Start typing a name to search for members in team
+                </p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center space-x-2">
@@ -267,6 +273,7 @@ export default function PermissionDetails({
                 Cancel
               </Button>
               <ButtonWithLoader
+                variant="destructive"
                 onClick={() => handleDialogSubmission('delete')}
                 isLoading={updatePending}
               >
@@ -385,103 +392,99 @@ export default function PermissionDetails({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {permissions!.map((permission: permissionDetail) => (
-            <TableRow key={permission.agent}>
-              <TableCell className="font-medium">
-                <div>
-                  <div className="truncate max-w-[250px]">
-                    {handleAgentName(permission.agent)}
-                  </div>
-                </div>
-              </TableCell>
-              <TableCell className="text-center">
-                {permission.read ? (
-                  <Check className="h-5 w-5 text-green-500 mx-auto" />
-                ) : (
-                  <X className="h-5 w-5 text-red-500 mx-auto" />
-                )}
-              </TableCell>
-              <TableCell className="text-center">
-                {permission.write ? (
-                  <Check className="h-5 w-5 text-green-500 mx-auto" />
-                ) : (
-                  <X className="h-5 w-5 text-red-500 mx-auto" />
-                )}
-              </TableCell>
-              <TableCell className="text-center">
-                {permission.append ? (
-                  <Check className="h-5 w-5 text-green-500 mx-auto" />
-                ) : (
-                  <X className="h-5 w-5 text-red-500 mx-auto" />
-                )}
-              </TableCell>
-              <TableCell className="text-center">
-                {permission.control ? (
-                  <Check className="h-5 w-5 text-green-500 mx-auto" />
-                ) : (
-                  <X className="h-5 w-5 text-red-500 mx-auto" />
-                )}
-              </TableCell>
-              <TableCell className="text-right">
-                <div className="flex justify-end gap-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    disabled={permission.agent === session?.info.webId!}
-                    onClick={() => {
-                      setShowDialog('edit');
-                      setActiveAgent({
-                        value: permission.agent,
-                        label: 'non team member',
-                      });
-                      setActivePermissions({
-                        read: permission.read,
-                        write: permission.write,
-                        append: permission.append,
-                        control: permission.control,
-                      });
-                    }}
-                  >
-                    <Edit className="h-4 w-4" />
-                    <span className="sr-only">Edit</span>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    disabled={permission.agent === session?.info.webId!}
-                    onClick={() => {
-                      setShowDialog('delete');
-                      setActiveAgent({
-                        value: permission.agent,
-                        label: 'non team member',
-                      });
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    <span className="sr-only">Delete</span>
-                  </Button>
-                </div>
+          {permissions!.length === 0 ? (
+            <TableRow>
+              <TableCell
+                colSpan={6}
+                className="text-center text-muted-foreground"
+              >
+                No agents have been granted access to this resource category
               </TableCell>
             </TableRow>
-          ))}
+          ) : (
+            permissions!.map((permission: permissionDetail) => (
+              <TableRow key={permission.agent}>
+                <TableCell className="font-medium">
+                  <div>
+                    <div className="truncate max-w-[250px]">
+                      {handleAgentName(permission.agent)}
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell className="text-center">
+                  {permission.read ? (
+                    <Check className="h-5 w-5 text-green-500 mx-auto" />
+                  ) : (
+                    <X className="h-5 w-5 text-red-500 mx-auto" />
+                  )}
+                </TableCell>
+                <TableCell className="text-center">
+                  {permission.write ? (
+                    <Check className="h-5 w-5 text-green-500 mx-auto" />
+                  ) : (
+                    <X className="h-5 w-5 text-red-500 mx-auto" />
+                  )}
+                </TableCell>
+                <TableCell className="text-center">
+                  {permission.append ? (
+                    <Check className="h-5 w-5 text-green-500 mx-auto" />
+                  ) : (
+                    <X className="h-5 w-5 text-red-500 mx-auto" />
+                  )}
+                </TableCell>
+                <TableCell className="text-center">
+                  {permission.control ? (
+                    <Check className="h-5 w-5 text-green-500 mx-auto" />
+                  ) : (
+                    <X className="h-5 w-5 text-red-500 mx-auto" />
+                  )}
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      disabled={permission.agent === session?.info.webId!}
+                      onClick={() => {
+                        setShowDialog('edit');
+                        setActiveAgent({
+                          value: permission.agent,
+                          label: '',
+                        });
+                        setActivePermissions({
+                          read: permission.read,
+                          write: permission.write,
+                          append: permission.append,
+                          control: permission.control,
+                        });
+                      }}
+                    >
+                      <Edit className="h-4 w-4" />
+                      <span className="sr-only">Edit</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="text-red-500"
+                      size="icon"
+                      disabled={permission.agent === session?.info.webId!}
+                      onClick={() => {
+                        setShowDialog('delete');
+                        setActiveAgent({
+                          value: permission.agent,
+                          label: '',
+                        });
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      <span className="sr-only">Delete</span>
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
-
-      <div className="text-sm text-muted-foreground mt-4">
-        <p>
-          <strong>Read:</strong> View the resource
-        </p>
-        <p>
-          <strong>Write:</strong> Modify or delete the resource
-        </p>
-        <p>
-          <strong>Append:</strong> Add data to the resource but not modify
-          existing data
-        </p>
-        <p>
-          <strong>Control:</strong> Change access permissions for the resource
-        </p>
-      </div>
     </div>
   );
 }

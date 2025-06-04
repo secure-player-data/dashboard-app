@@ -70,9 +70,9 @@ export function DataTable<TData, TValue>({
     <div className="grid gap-4">
       <div className="flex justify-between w-full">
         <div>
-          <h1 className="font-bold text-2xl">Request Overview</h1>
+          <h1 className="font-bold text-2xl">Deletion Requests</h1>
           <p className="text-muted-foreground">
-            Overview with status for all sent data deletion requests.
+            Overview of all data deletion requests with their current status.
           </p>
         </div>
         <Button
@@ -153,27 +153,19 @@ function TableContent<TData, TValue>({
     return (
       <TableRow>
         <TableCell colSpan={columns.length} className="h-24 text-center">
-          No results.
+          No results found. Refresh data using the button at the top right.
         </TableCell>
       </TableRow>
     );
   }
 
-  return table.getRowModel().rows?.length ? (
-    table.getRowModel().rows.map((row) => (
-      <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-        {row.getVisibleCells().map((cell) => (
-          <TableCell key={cell.id}>
-            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-          </TableCell>
-        ))}
-      </TableRow>
-    ))
-  ) : (
-    <TableRow>
-      <TableCell colSpan={columns.length} className="h-24 text-center">
-        No results.
-      </TableCell>
+  return table.getRowModel().rows.map((row) => (
+    <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+      {row.getVisibleCells().map((cell) => (
+        <TableCell key={cell.id}>
+          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+        </TableCell>
+      ))}
     </TableRow>
-  );
+  ));
 }

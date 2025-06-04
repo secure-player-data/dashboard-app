@@ -1,4 +1,3 @@
-import { seedDb } from '@/db/seed';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import type { Profile } from '@/entities/data/profile';
 import {
@@ -7,12 +6,15 @@ import {
   getStringNoLocale,
   setThing,
   getThing,
+  getThingAll,
   buildThing,
   createSolidDataset,
   saveSolidDatasetAt,
   setStringNoLocale,
   createContainerAt,
   deleteSolidDataset,
+  deleteContainer,
+  isContainer,
 } from '@inrupt/solid-client';
 import { RDF } from '@inrupt/vocab-common-rdf';
 import { BASE_APP_CONTAINER, paths } from './paths';
@@ -31,6 +33,7 @@ import { PROFILE_SCHEMA } from '@/schemas/profile';
 import { uploadFile } from './data';
 import { logResourceAccess } from './access-history';
 import { log } from '@/lib/log';
+import { purgeContainer } from './utils';
 
 function isEmptyOrSpaces(str: string | null) {
   return str === null || str.match(/^ *$/) !== null;
@@ -194,10 +197,15 @@ export async function updateAppProfile(
 export async function initAppProfile(
   session: Session | null,
   pod: string | null,
-  profile: Omit<Profile, 'webId' | 'team' | 'picture'>
+  profile: Omit<Profile, 'webId' | 'team' | 'picture'>,
+  options?: { setLoadingMessage?: (message: string) => void }
 ) {
   if (!session || !pod) {
     throw new Error('No session or pod found');
+  }
+
+  if (options?.setLoadingMessage) {
+    options.setLoadingMessage('1/3 Initializing profile structure...');
   }
 
   // Create folders
@@ -226,8 +234,16 @@ export async function initAppProfile(
     if (err) continue;
   }
 
+  if (options?.setLoadingMessage) {
+    options.setLoadingMessage('2/3 Creating profile...');
+  }
+
   // Create profile
   await createAppProfile(session, pod, profile);
+
+  if (options?.setLoadingMessage) {
+    options.setLoadingMessage('3/3 Setting up access control...');
+  }
 
   // Init access control
   await updateAgentAccess({
@@ -301,4 +317,14 @@ export async function createAppProfile(
     url: profileUrl,
     modes: ['Read'],
   });
+}
+
+export async function deleteAppAccount(
+  session: Session | null,
+  pod: string | null
+) {
+  if (!session || !pod) {
+    throw new Error('No session found');
+  }
+  await purgeContainer(paths.root(pod), session);
 }

@@ -26,6 +26,7 @@ import {
   Information,
   AccessRequest,
   DataDeletionNotification,
+  LeaveTeamNotification,
 } from '@/entities/inboxItem';
 import {
   ACCESS_REQUEST_SCHEMA,
@@ -33,6 +34,7 @@ import {
   INVITATION_SCHEMA,
   INFORMATION_SCHEMA,
   DELETE_DATA_NOTIFICATION_SCHEMA,
+  LEAVE_TEAM_NOTIFICATION_SCHEMA,
 } from '@/schemas/InboxItems';
 import { fetchProfileData, updateAppProfile } from './profile';
 import { addMemberToTeam, fetchTeamOwner, fetchTeamUrl } from './team';
@@ -111,6 +113,8 @@ export async function fetchInbox(
             return mapThingToInformation(item, baseInboxItem);
           case 'Data Deletion Notification':
             return mapThingToDeletionRequest(item, baseInboxItem);
+          case 'Leave Team Notification':
+            return mapThingToLeaveTeamNotification(item, baseInboxItem);
           default:
             return baseInboxItem;
         }
@@ -322,7 +326,7 @@ export async function createInbox(session: Session, pod: string) {
  * @param pod of the user to delete the item from
  * @param date of the item to delete
  */
-async function deleteInboxItem(
+export async function deleteInboxItem(
   session: Session | null,
   pod: string | null,
   date: string
@@ -697,6 +701,44 @@ export async function sendDataDeletionConfirmation(
   await deleteInboxItem(session, pod, notification.date);
 }
 
+export async function sendLeaveTeamNotification({
+  sender,
+  receiver,
+}: {
+  sender: {
+    session: Session | null;
+    pod: string | null;
+    name: string;
+    webId: string;
+  };
+  receiver: { pod: string };
+}) {
+  if (!sender.session || !sender.pod) {
+    throw new SessionNotSetException('Session not available');
+  }
+
+  const requestThing = buildThing(createThing({ name: 'leave-team-request' }))
+    .addUrl(RDF.type, LEAVE_TEAM_NOTIFICATION_SCHEMA.inboxItem)
+    .addStringNoLocale(
+      LEAVE_TEAM_NOTIFICATION_SCHEMA.type,
+      'Leave Team Notification'
+    )
+    .addStringNoLocale(LEAVE_TEAM_NOTIFICATION_SCHEMA.name, sender.name)
+    .addStringNoLocale(LEAVE_TEAM_NOTIFICATION_SCHEMA.webId, sender.webId)
+    .addStringNoLocale(LEAVE_TEAM_NOTIFICATION_SCHEMA.podUrl, sender.pod)
+    .addStringNoLocale(
+      LEAVE_TEAM_NOTIFICATION_SCHEMA.time,
+      new Date().toISOString()
+    )
+    .addStringNoLocale(
+      LEAVE_TEAM_NOTIFICATION_SCHEMA.body,
+      `User ${sender.name} has left the team`
+    )
+    .build();
+
+  await sendToInbox(sender.session, receiver.pod, requestThing);
+}
+
 /**
  * Calculates the amount of unseen messages in a users pod
  * @param session of the logged in player
@@ -824,5 +866,17 @@ function mapThingToDeletionRequest(
         thing,
         DELETE_DATA_NOTIFICATION_SCHEMA.deletionRequestUrl
       ) ?? '',
+  };
+}
+
+function mapThingToLeaveTeamNotification(
+  thing: any,
+  baseInboxItem: InboxItem
+): LeaveTeamNotification {
+  const body = getStringNoLocale(thing, LEAVE_TEAM_NOTIFICATION_SCHEMA.body);
+
+  return {
+    ...baseInboxItem,
+    body: body ?? '',
   };
 }

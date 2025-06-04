@@ -1,3 +1,4 @@
+import DeleteTeamAlert from '@/components/alerts/delete-team-alert';
 import EditTeamDialog from '@/components/dialogs/edit-team-dialog';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAuth } from '@/context/auth-context';
@@ -25,8 +26,9 @@ export default function Header() {
       )}
       <CardContent>
         {member?.role === 'Owner' && (
-          <div className="absolute top-4 right-4">
+          <div className="absolute top-4 right-4 flex items-center gap-2">
             <EditTeamDialog />
+            <DeleteTeamAlert />
           </div>
         )}
         <div className="flex flex-col gap-4">

@@ -8,21 +8,14 @@ import {
 import { ModeToggle } from '@/components/ui/mode-toggle';
 import { createFileRoute } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
-import { LogOut, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import LeaveTeamDialog from '@/components/alerts/leave-team-alert';
 import { Separator } from '@/components/ui/separator';
+import DeleteAccountDialog from '@/components/alerts/delete-account-alert';
 
 export const Route = createFileRoute('/__dashboard/settings')({
   component: RouteComponent,
 });
-
-const handleLeaveTeam = () => {
-  console.log('Tried to leave team');
-};
-const handleDeleteAccount = () => {
-  console.log('Tried to delete account');
-};
-
 function RouteComponent() {
   return (
     <div className="max-w-[80ch] space-y-4">
@@ -63,9 +56,7 @@ function RouteComponent() {
                 Deletes all information used by this application from your pod
               </p>
             </div>
-            <Button variant="destructive" onClick={handleDeleteAccount}>
-              <Trash2 className="mr-2 size-4" /> Delete Account
-            </Button>
+            <DeleteAccountDialog />
           </div>
         </CardContent>
       </Card>

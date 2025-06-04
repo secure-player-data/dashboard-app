@@ -19,16 +19,16 @@ import { Route as AuthConfirmationImport } from './routes/auth/confirmation'
 import { Route as AuthCallbackImport } from './routes/auth/callback'
 import { Route as AuthSetupImport } from './routes/auth/_setup'
 import { Route as dashboardSettingsImport } from './routes/__dashboard/settings'
-import { Route as dashboardRequestOverviewImport } from './routes/__dashboard/request-overview'
 import { Route as dashboardProfileImport } from './routes/__dashboard/profile'
+import { Route as dashboardManageAccessImport } from './routes/__dashboard/manage-access'
 import { Route as dashboardInboxImport } from './routes/__dashboard/inbox'
+import { Route as dashboardDeletionRequestsImport } from './routes/__dashboard/deletion-requests'
 import { Route as dashboardAccessHistoryImport } from './routes/__dashboard/access-history'
-import { Route as dashboardAccessControlImport } from './routes/__dashboard/access-control'
 import { Route as AuthSetupTeamImport } from './routes/auth/_setup.team'
 import { Route as AuthSetupProfileImport } from './routes/auth/_setup.profile'
 import { Route as dashboardTeamUploadDataImport } from './routes/__dashboard/team/upload-data'
-import { Route as dashboardTeamOutsourcingImport } from './routes/__dashboard/team/outsourcing'
 import { Route as dashboardTeamDetailsImport } from './routes/__dashboard/team/details'
+import { Route as dashboardTeamDataSharingImport } from './routes/__dashboard/team/data-sharing'
 import { Route as dashboardFileUrlImport } from './routes/__dashboard/file/$url'
 import { Route as dashboardPlayerPodCategoryImport } from './routes/__dashboard/player/$pod/$category'
 
@@ -80,15 +80,15 @@ const dashboardSettingsRoute = dashboardSettingsImport.update({
   getParentRoute: () => dashboardRoute,
 } as any)
 
-const dashboardRequestOverviewRoute = dashboardRequestOverviewImport.update({
-  id: '/request-overview',
-  path: '/request-overview',
-  getParentRoute: () => dashboardRoute,
-} as any)
-
 const dashboardProfileRoute = dashboardProfileImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => dashboardRoute,
+} as any)
+
+const dashboardManageAccessRoute = dashboardManageAccessImport.update({
+  id: '/manage-access',
+  path: '/manage-access',
   getParentRoute: () => dashboardRoute,
 } as any)
 
@@ -98,15 +98,15 @@ const dashboardInboxRoute = dashboardInboxImport.update({
   getParentRoute: () => dashboardRoute,
 } as any)
 
-const dashboardAccessHistoryRoute = dashboardAccessHistoryImport.update({
-  id: '/access-history',
-  path: '/access-history',
+const dashboardDeletionRequestsRoute = dashboardDeletionRequestsImport.update({
+  id: '/deletion-requests',
+  path: '/deletion-requests',
   getParentRoute: () => dashboardRoute,
 } as any)
 
-const dashboardAccessControlRoute = dashboardAccessControlImport.update({
-  id: '/access-control',
-  path: '/access-control',
+const dashboardAccessHistoryRoute = dashboardAccessHistoryImport.update({
+  id: '/access-history',
+  path: '/access-history',
   getParentRoute: () => dashboardRoute,
 } as any)
 
@@ -128,15 +128,15 @@ const dashboardTeamUploadDataRoute = dashboardTeamUploadDataImport.update({
   getParentRoute: () => dashboardRoute,
 } as any)
 
-const dashboardTeamOutsourcingRoute = dashboardTeamOutsourcingImport.update({
-  id: '/team/outsourcing',
-  path: '/team/outsourcing',
-  getParentRoute: () => dashboardRoute,
-} as any)
-
 const dashboardTeamDetailsRoute = dashboardTeamDetailsImport.update({
   id: '/team/details',
   path: '/team/details',
+  getParentRoute: () => dashboardRoute,
+} as any)
+
+const dashboardTeamDataSharingRoute = dashboardTeamDataSharingImport.update({
+  id: '/team/data-sharing',
+  path: '/team/data-sharing',
   getParentRoute: () => dashboardRoute,
 } as any)
 
@@ -172,18 +172,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboardImport
       parentRoute: typeof rootRoute
     }
-    '/__dashboard/access-control': {
-      id: '/__dashboard/access-control'
-      path: '/access-control'
-      fullPath: '/access-control'
-      preLoaderRoute: typeof dashboardAccessControlImport
-      parentRoute: typeof dashboardImport
-    }
     '/__dashboard/access-history': {
       id: '/__dashboard/access-history'
       path: '/access-history'
       fullPath: '/access-history'
       preLoaderRoute: typeof dashboardAccessHistoryImport
+      parentRoute: typeof dashboardImport
+    }
+    '/__dashboard/deletion-requests': {
+      id: '/__dashboard/deletion-requests'
+      path: '/deletion-requests'
+      fullPath: '/deletion-requests'
+      preLoaderRoute: typeof dashboardDeletionRequestsImport
       parentRoute: typeof dashboardImport
     }
     '/__dashboard/inbox': {
@@ -193,18 +193,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboardInboxImport
       parentRoute: typeof dashboardImport
     }
+    '/__dashboard/manage-access': {
+      id: '/__dashboard/manage-access'
+      path: '/manage-access'
+      fullPath: '/manage-access'
+      preLoaderRoute: typeof dashboardManageAccessImport
+      parentRoute: typeof dashboardImport
+    }
     '/__dashboard/profile': {
       id: '/__dashboard/profile'
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof dashboardProfileImport
-      parentRoute: typeof dashboardImport
-    }
-    '/__dashboard/request-overview': {
-      id: '/__dashboard/request-overview'
-      path: '/request-overview'
-      fullPath: '/request-overview'
-      preLoaderRoute: typeof dashboardRequestOverviewImport
       parentRoute: typeof dashboardImport
     }
     '/__dashboard/settings': {
@@ -256,18 +256,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboardFileUrlImport
       parentRoute: typeof dashboardImport
     }
+    '/__dashboard/team/data-sharing': {
+      id: '/__dashboard/team/data-sharing'
+      path: '/team/data-sharing'
+      fullPath: '/team/data-sharing'
+      preLoaderRoute: typeof dashboardTeamDataSharingImport
+      parentRoute: typeof dashboardImport
+    }
     '/__dashboard/team/details': {
       id: '/__dashboard/team/details'
       path: '/team/details'
       fullPath: '/team/details'
       preLoaderRoute: typeof dashboardTeamDetailsImport
-      parentRoute: typeof dashboardImport
-    }
-    '/__dashboard/team/outsourcing': {
-      id: '/__dashboard/team/outsourcing'
-      path: '/team/outsourcing'
-      fullPath: '/team/outsourcing'
-      preLoaderRoute: typeof dashboardTeamOutsourcingImport
       parentRoute: typeof dashboardImport
     }
     '/__dashboard/team/upload-data': {
@@ -336,31 +336,31 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 )
 
 interface dashboardRouteChildren {
-  dashboardAccessControlRoute: typeof dashboardAccessControlRoute
   dashboardAccessHistoryRoute: typeof dashboardAccessHistoryRoute
+  dashboardDeletionRequestsRoute: typeof dashboardDeletionRequestsRoute
   dashboardInboxRoute: typeof dashboardInboxRoute
+  dashboardManageAccessRoute: typeof dashboardManageAccessRoute
   dashboardProfileRoute: typeof dashboardProfileRoute
-  dashboardRequestOverviewRoute: typeof dashboardRequestOverviewRoute
   dashboardSettingsRoute: typeof dashboardSettingsRoute
   dashboardIndexRoute: typeof dashboardIndexRoute
   dashboardFileUrlRoute: typeof dashboardFileUrlRoute
+  dashboardTeamDataSharingRoute: typeof dashboardTeamDataSharingRoute
   dashboardTeamDetailsRoute: typeof dashboardTeamDetailsRoute
-  dashboardTeamOutsourcingRoute: typeof dashboardTeamOutsourcingRoute
   dashboardTeamUploadDataRoute: typeof dashboardTeamUploadDataRoute
   dashboardPlayerPodCategoryRoute: typeof dashboardPlayerPodCategoryRoute
 }
 
 const dashboardRouteChildren: dashboardRouteChildren = {
-  dashboardAccessControlRoute: dashboardAccessControlRoute,
   dashboardAccessHistoryRoute: dashboardAccessHistoryRoute,
+  dashboardDeletionRequestsRoute: dashboardDeletionRequestsRoute,
   dashboardInboxRoute: dashboardInboxRoute,
+  dashboardManageAccessRoute: dashboardManageAccessRoute,
   dashboardProfileRoute: dashboardProfileRoute,
-  dashboardRequestOverviewRoute: dashboardRequestOverviewRoute,
   dashboardSettingsRoute: dashboardSettingsRoute,
   dashboardIndexRoute: dashboardIndexRoute,
   dashboardFileUrlRoute: dashboardFileUrlRoute,
+  dashboardTeamDataSharingRoute: dashboardTeamDataSharingRoute,
   dashboardTeamDetailsRoute: dashboardTeamDetailsRoute,
-  dashboardTeamOutsourcingRoute: dashboardTeamOutsourcingRoute,
   dashboardTeamUploadDataRoute: dashboardTeamUploadDataRoute,
   dashboardPlayerPodCategoryRoute: dashboardPlayerPodCategoryRoute,
 }
@@ -372,19 +372,19 @@ const dashboardRouteWithChildren = dashboardRoute._addFileChildren(
 export interface FileRoutesByFullPath {
   '/auth': typeof AuthSetupRouteWithChildren
   '': typeof dashboardRouteWithChildren
-  '/access-control': typeof dashboardAccessControlRoute
   '/access-history': typeof dashboardAccessHistoryRoute
+  '/deletion-requests': typeof dashboardDeletionRequestsRoute
   '/inbox': typeof dashboardInboxRoute
+  '/manage-access': typeof dashboardManageAccessRoute
   '/profile': typeof dashboardProfileRoute
-  '/request-overview': typeof dashboardRequestOverviewRoute
   '/settings': typeof dashboardSettingsRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/confirmation': typeof AuthConfirmationRoute
   '/auth/login': typeof AuthLoginRoute
   '/': typeof dashboardIndexRoute
   '/file/$url': typeof dashboardFileUrlRoute
+  '/team/data-sharing': typeof dashboardTeamDataSharingRoute
   '/team/details': typeof dashboardTeamDetailsRoute
-  '/team/outsourcing': typeof dashboardTeamOutsourcingRoute
   '/team/upload-data': typeof dashboardTeamUploadDataRoute
   '/auth/profile': typeof AuthSetupProfileRoute
   '/auth/team': typeof AuthSetupTeamRoute
@@ -393,19 +393,19 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/auth': typeof AuthSetupRouteWithChildren
-  '/access-control': typeof dashboardAccessControlRoute
   '/access-history': typeof dashboardAccessHistoryRoute
+  '/deletion-requests': typeof dashboardDeletionRequestsRoute
   '/inbox': typeof dashboardInboxRoute
+  '/manage-access': typeof dashboardManageAccessRoute
   '/profile': typeof dashboardProfileRoute
-  '/request-overview': typeof dashboardRequestOverviewRoute
   '/settings': typeof dashboardSettingsRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/confirmation': typeof AuthConfirmationRoute
   '/auth/login': typeof AuthLoginRoute
   '/': typeof dashboardIndexRoute
   '/file/$url': typeof dashboardFileUrlRoute
+  '/team/data-sharing': typeof dashboardTeamDataSharingRoute
   '/team/details': typeof dashboardTeamDetailsRoute
-  '/team/outsourcing': typeof dashboardTeamOutsourcingRoute
   '/team/upload-data': typeof dashboardTeamUploadDataRoute
   '/auth/profile': typeof AuthSetupProfileRoute
   '/auth/team': typeof AuthSetupTeamRoute
@@ -416,11 +416,11 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/auth': typeof AuthRouteRouteWithChildren
   '/__dashboard': typeof dashboardRouteWithChildren
-  '/__dashboard/access-control': typeof dashboardAccessControlRoute
   '/__dashboard/access-history': typeof dashboardAccessHistoryRoute
+  '/__dashboard/deletion-requests': typeof dashboardDeletionRequestsRoute
   '/__dashboard/inbox': typeof dashboardInboxRoute
+  '/__dashboard/manage-access': typeof dashboardManageAccessRoute
   '/__dashboard/profile': typeof dashboardProfileRoute
-  '/__dashboard/request-overview': typeof dashboardRequestOverviewRoute
   '/__dashboard/settings': typeof dashboardSettingsRoute
   '/auth/_setup': typeof AuthSetupRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
@@ -428,8 +428,8 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/__dashboard/': typeof dashboardIndexRoute
   '/__dashboard/file/$url': typeof dashboardFileUrlRoute
+  '/__dashboard/team/data-sharing': typeof dashboardTeamDataSharingRoute
   '/__dashboard/team/details': typeof dashboardTeamDetailsRoute
-  '/__dashboard/team/outsourcing': typeof dashboardTeamOutsourcingRoute
   '/__dashboard/team/upload-data': typeof dashboardTeamUploadDataRoute
   '/auth/_setup/profile': typeof AuthSetupProfileRoute
   '/auth/_setup/team': typeof AuthSetupTeamRoute
@@ -441,19 +441,19 @@ export interface FileRouteTypes {
   fullPaths:
     | '/auth'
     | ''
-    | '/access-control'
     | '/access-history'
+    | '/deletion-requests'
     | '/inbox'
+    | '/manage-access'
     | '/profile'
-    | '/request-overview'
     | '/settings'
     | '/auth/callback'
     | '/auth/confirmation'
     | '/auth/login'
     | '/'
     | '/file/$url'
+    | '/team/data-sharing'
     | '/team/details'
-    | '/team/outsourcing'
     | '/team/upload-data'
     | '/auth/profile'
     | '/auth/team'
@@ -461,19 +461,19 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
-    | '/access-control'
     | '/access-history'
+    | '/deletion-requests'
     | '/inbox'
+    | '/manage-access'
     | '/profile'
-    | '/request-overview'
     | '/settings'
     | '/auth/callback'
     | '/auth/confirmation'
     | '/auth/login'
     | '/'
     | '/file/$url'
+    | '/team/data-sharing'
     | '/team/details'
-    | '/team/outsourcing'
     | '/team/upload-data'
     | '/auth/profile'
     | '/auth/team'
@@ -482,11 +482,11 @@ export interface FileRouteTypes {
     | '__root__'
     | '/auth'
     | '/__dashboard'
-    | '/__dashboard/access-control'
     | '/__dashboard/access-history'
+    | '/__dashboard/deletion-requests'
     | '/__dashboard/inbox'
+    | '/__dashboard/manage-access'
     | '/__dashboard/profile'
-    | '/__dashboard/request-overview'
     | '/__dashboard/settings'
     | '/auth/_setup'
     | '/auth/callback'
@@ -494,8 +494,8 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/__dashboard/'
     | '/__dashboard/file/$url'
+    | '/__dashboard/team/data-sharing'
     | '/__dashboard/team/details'
-    | '/__dashboard/team/outsourcing'
     | '/__dashboard/team/upload-data'
     | '/auth/_setup/profile'
     | '/auth/_setup/team'
@@ -539,38 +539,38 @@ export const routeTree = rootRoute
     "/__dashboard": {
       "filePath": "__dashboard.tsx",
       "children": [
-        "/__dashboard/access-control",
         "/__dashboard/access-history",
+        "/__dashboard/deletion-requests",
         "/__dashboard/inbox",
+        "/__dashboard/manage-access",
         "/__dashboard/profile",
-        "/__dashboard/request-overview",
         "/__dashboard/settings",
         "/__dashboard/",
         "/__dashboard/file/$url",
+        "/__dashboard/team/data-sharing",
         "/__dashboard/team/details",
-        "/__dashboard/team/outsourcing",
         "/__dashboard/team/upload-data",
         "/__dashboard/player/$pod/$category"
       ]
     },
-    "/__dashboard/access-control": {
-      "filePath": "__dashboard/access-control.tsx",
-      "parent": "/__dashboard"
-    },
     "/__dashboard/access-history": {
       "filePath": "__dashboard/access-history.tsx",
+      "parent": "/__dashboard"
+    },
+    "/__dashboard/deletion-requests": {
+      "filePath": "__dashboard/deletion-requests.tsx",
       "parent": "/__dashboard"
     },
     "/__dashboard/inbox": {
       "filePath": "__dashboard/inbox.tsx",
       "parent": "/__dashboard"
     },
-    "/__dashboard/profile": {
-      "filePath": "__dashboard/profile.tsx",
+    "/__dashboard/manage-access": {
+      "filePath": "__dashboard/manage-access.tsx",
       "parent": "/__dashboard"
     },
-    "/__dashboard/request-overview": {
-      "filePath": "__dashboard/request-overview.tsx",
+    "/__dashboard/profile": {
+      "filePath": "__dashboard/profile.tsx",
       "parent": "/__dashboard"
     },
     "/__dashboard/settings": {
@@ -605,12 +605,12 @@ export const routeTree = rootRoute
       "filePath": "__dashboard/file/$url.tsx",
       "parent": "/__dashboard"
     },
-    "/__dashboard/team/details": {
-      "filePath": "__dashboard/team/details.tsx",
+    "/__dashboard/team/data-sharing": {
+      "filePath": "__dashboard/team/data-sharing.tsx",
       "parent": "/__dashboard"
     },
-    "/__dashboard/team/outsourcing": {
-      "filePath": "__dashboard/team/outsourcing.tsx",
+    "/__dashboard/team/details": {
+      "filePath": "__dashboard/team/details.tsx",
       "parent": "/__dashboard"
     },
     "/__dashboard/team/upload-data": {

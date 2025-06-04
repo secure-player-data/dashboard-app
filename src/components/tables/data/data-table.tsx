@@ -17,7 +17,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import React from 'react';
-import { Loader2, RefreshCcw, Upload } from 'lucide-react';
+import { EyeOff, Loader2, RefreshCcw, Upload } from 'lucide-react';
 import { convertKebabCaseToString, handleError } from '@/utils';
 import { DeleteDataDialog } from '@/components/dialogs/delete-data-dialog';
 import { DataInfo } from '@/entities/data-info';
@@ -94,6 +94,12 @@ export function DataTable<TData, TValue>({
             onClick={refreshData}
           >
             <RefreshCcw />
+          </Button>
+          <Button variant="outline" asChild>
+            <Link to="/manage-access">
+              <EyeOff className="size-4" />
+              Manage Access
+            </Link>
           </Button>
           <Button asChild variant="outline">
             <Link to="/team/upload-data" search={{ dataType: `${category}/` }}>
@@ -182,27 +188,19 @@ function TableContent<TData, TValue>({
     return (
       <TableRow>
         <TableCell colSpan={columns.length} className="h-24 text-center">
-          No results.
+          No results found. Refresh data using the button at the top right.
         </TableCell>
       </TableRow>
     );
   }
 
-  return table.getRowModel().rows?.length ? (
-    table.getRowModel().rows.map((row) => (
-      <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-        {row.getVisibleCells().map((cell) => (
-          <TableCell key={cell.id}>
-            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-          </TableCell>
-        ))}
-      </TableRow>
-    ))
-  ) : (
-    <TableRow>
-      <TableCell colSpan={columns.length} className="h-24 text-center">
-        No results.
-      </TableCell>
+  return table.getRowModel().rows.map((row) => (
+    <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+      {row.getVisibleCells().map((cell) => (
+        <TableCell key={cell.id}>
+          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+        </TableCell>
+      ))}
     </TableRow>
-  );
+  ));
 }

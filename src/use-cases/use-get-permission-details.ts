@@ -12,7 +12,7 @@ export function useGetPermissionDetails(
       session?.info.webId ?? '',
       resourcePath ?? ''
     ),
-    queryFn: () => getPermissionDetails(session, resourcePath),
+    queryFn: async () => await getPermissionDetails(session, resourcePath),
     enabled: !!session && !!resourcePath,
   });
 }

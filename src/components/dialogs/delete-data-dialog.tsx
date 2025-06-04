@@ -69,7 +69,10 @@ export function DeleteDataDialog({
         },
       },
       {
-        onSuccess: () => handleSuccess('Deletion request sent'),
+        onSuccess: () =>
+          handleSuccess(
+            'Deletion request sent. Visit "Deletion Requests" to see status of your request.'
+          ),
         onError: handleError,
       }
     );
@@ -86,7 +89,9 @@ export function DeleteDataDialog({
       },
       {
         onSuccess: () =>
-          handleSuccess('Deletion request sent and data deleted'),
+          handleSuccess(
+            'Deletion request sent and data has been deleted from your pod. Visit "Deletion Requests" to see status of your request.'
+          ),
         onError: handleError,
       }
     );
@@ -110,7 +115,7 @@ export function DeleteDataDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="destructive" disabled={numberOfSelected === 0}>
-          <Trash /> Delete selected
+          <Trash /> Delete options
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-[900px]">

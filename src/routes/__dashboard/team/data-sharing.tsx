@@ -32,6 +32,13 @@ import {
 } from '@/api/paths';
 import { useGetProfile } from '@/use-cases/profile';
 import { handleError } from '@/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { DisableWhen } from '@/components/disable-when';
 
 const dataTypes = [
   {
@@ -73,7 +80,7 @@ const dataTypes = [
   },
 ];
 
-export const Route = createFileRoute('/__dashboard/team/outsourcing')({
+export const Route = createFileRoute('/__dashboard/team/data-sharing')({
   component: RouteComponent,
 });
 
@@ -176,6 +183,44 @@ function RouteComponent() {
   };
   return (
     <div className="flex flex-col gap-4">
+      {accesses && (
+        <TooltipProvider>
+          <div className="flex flex-row gap-2 items-center ">
+            {accesses.successful.length > 0 && (
+              <Tooltip>
+                <TooltipTrigger>
+                  <div className="bg-green-50 border-green-500 border rounded-md p-1 min-w-6 flex justify-center items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    {accesses.successful.length}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>
+                    Successful resources outsourced, more information at the
+                    bottom of the page
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+            {accesses.failed.length > 0 && (
+              <Tooltip>
+                <TooltipTrigger>
+                  <div className="bg-red-50 border-red-500 border rounded-md p-1 min-w-6 flex justify-center gap-2 items-center ">
+                    <AlertCircle className="h-4 w-4 text-red-600" />
+                    {accesses.failed.length}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>
+                    Failed resources outsourced, more information at the bottom
+                    of the page
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </div>
+        </TooltipProvider>
+      )}
       <div className="flex-grow grid content-center @container ">
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 md:grid-cols-2">
@@ -192,101 +237,109 @@ function RouteComponent() {
             </Card>
 
             <div className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Select Data Types</CardTitle>
-                  <CardDescription>
-                    Choose which types of data to share
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid gap-4">
-                    {dataTypes.map((dataType) => (
-                      <div
-                        key={dataType.id}
-                        className="flex items-start space-x-2"
-                      >
-                        <Checkbox
-                          id={`data-${dataType.id}`}
-                          checked={selectedDataTypes.includes(dataType.path)}
-                          onCheckedChange={() =>
-                            handleDataTypeToggle(dataType.path)
-                          }
-                          className="mt-1"
-                        />
-                        <div className="grid gap-1.5">
-                          <label
-                            htmlFor={`data-${dataType.id}`}
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                          >
-                            {dataType.label}
-                          </label>
-                          <p className="text-xs text-muted-foreground">
-                            {dataType.description}
-                          </p>
+              <DisableWhen isDisabled={selectedMembers.length === 0}>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Select Data Types</CardTitle>
+                    <CardDescription>
+                      Choose which types of data to share
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid gap-4">
+                      {dataTypes.map((dataType) => (
+                        <div
+                          key={dataType.id}
+                          className="flex items-start space-x-2"
+                        >
+                          <Checkbox
+                            id={`data-${dataType.id}`}
+                            checked={selectedDataTypes.includes(dataType.path)}
+                            onCheckedChange={() =>
+                              handleDataTypeToggle(dataType.path)
+                            }
+                            className="mt-1"
+                          />
+                          <div className="grid gap-1.5">
+                            <label
+                              htmlFor={`data-${dataType.id}`}
+                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                              {dataType.label}
+                            </label>
+                            <p className="text-xs text-muted-foreground">
+                              {dataType.description}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </DisableWhen>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Sharing Details</CardTitle>
-                  <CardDescription>
-                    Provide additional information about this data sharing
-                    request
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium" htmlFor="webid">
-                        WebID to Share With
-                      </label>
-                      <Input
-                        id="webid"
-                        type="url"
-                        placeholder="https://example.com/profile#me"
-                        value={webId}
-                        onChange={(e) => setWebId(e.target.value)}
-                        required
-                      />
+              <DisableWhen
+                isDisabled={
+                  selectedMembers.length === 0 || selectedDataTypes.length === 0
+                }
+              >
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Sharing Details</CardTitle>
+                    <CardDescription>
+                      Provide additional information about this data sharing
+                      request
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium" htmlFor="webid">
+                          WebID to Share With
+                        </label>
+                        <Input
+                          id="webid"
+                          type="url"
+                          placeholder="https://example.com/profile#me"
+                          value={webId}
+                          onChange={(e) => setWebId(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium" htmlFor="reason">
+                          Legal basis for sharing
+                        </label>
+                        <Textarea
+                          id="reason"
+                          placeholder="Explain why you need to share this data..."
+                          value={reason}
+                          onChange={(e) => setReason(e.target.value)}
+                          required={selectedMembers.length > 0}
+                        />
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium" htmlFor="reason">
-                        Legal basis for sharing
-                      </label>
-                      <Textarea
-                        id="reason"
-                        placeholder="Explain why you need to share this data..."
-                        value={reason}
-                        onChange={(e) => setReason(e.target.value)}
-                        required={selectedMembers.length > 0}
-                      />
+                  </CardContent>
+                  <CardFooter className="flex justify-between">
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Info className="h-4 w-4 mr-1" />
+                      <span>All data sharing is logged and audited</span>
                     </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between">
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <Info className="h-4 w-4 mr-1" />
-                    <span>All data sharing is logged and audited</span>
-                  </div>
-                  <ButtonWithLoader
-                    isLoading={outsourceMutation.isPending}
-                    type="submit"
-                    disabled={
-                      selectedMembers.length === 0 ||
-                      selectedDataTypes.length === 0 ||
-                      (selectedMembers.length > 0 && !reason) ||
-                      !isValidWebId(webId)
-                    }
-                  >
-                    Outsource
-                  </ButtonWithLoader>
-                </CardFooter>
-              </Card>
+                    <ButtonWithLoader
+                      isLoading={outsourceMutation.isPending}
+                      type="submit"
+                      disabled={
+                        selectedMembers.length === 0 ||
+                        selectedDataTypes.length === 0 ||
+                        (selectedMembers.length > 0 && !reason) ||
+                        !isValidWebId(webId)
+                      }
+                    >
+                      Outsource
+                    </ButtonWithLoader>
+                  </CardFooter>
+                </Card>
+              </DisableWhen>
             </div>
           </div>
         </form>

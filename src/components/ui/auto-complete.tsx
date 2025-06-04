@@ -37,6 +37,11 @@ export const AutoComplete = ({
   const [selected, setSelected] = useState<Option>(value as Option);
   const [inputValue, setInputValue] = useState<string>(value?.label || '');
 
+  function handleValueChange(value: string) {
+    setInputValue(value);
+    onValueChange?.({ value, label: value });
+  }
+
   const handleKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
       const input = inputRef.current;
@@ -55,8 +60,7 @@ export const AutoComplete = ({
           (option) => option.label === input.value
         );
         if (optionToSelect) {
-          setSelected(optionToSelect);
-          onValueChange?.(optionToSelect);
+          handleSelectOption(optionToSelect);
         }
       }
 
@@ -67,10 +71,9 @@ export const AutoComplete = ({
     [isOpen, options, onValueChange]
   );
 
-  const handleBlur = useCallback(() => {
+  function handleBlur() {
     setOpen(false);
-    setInputValue(selected?.label);
-  }, [selected]);
+  }
 
   const handleSelectOption = useCallback(
     (selectedOption: Option) => {
@@ -94,12 +97,11 @@ export const AutoComplete = ({
         <CommandInput
           ref={inputRef}
           value={inputValue}
-          onValueChange={isLoading ? undefined : setInputValue}
+          onValueChange={isLoading ? undefined : handleValueChange}
           onBlur={handleBlur}
           onFocus={() => setOpen(false)}
           placeholder={placeholder}
           disabled={disabled}
-          className="text-base"
         />
       </div>
       <div className="relative mt-1">

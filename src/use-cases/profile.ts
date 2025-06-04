@@ -1,10 +1,12 @@
 import {
+  deleteAppAccount,
   fetchProfileData,
   initAppProfile,
   updateAppProfile,
 } from '@/api/profile';
 import { Session } from '@inrupt/solid-client-authn-browser';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 
 export const queryKeys = {
   profile: (pod: string) => ['profile', pod],
@@ -20,10 +22,19 @@ export function useGetProfile(session: Session | null, pod: string | null) {
 
 export function useInitProfile(session: Session | null, pod: string | null) {
   const queryClient = useQueryClient();
+  const [loadingMessage, setLoadingMessage] = useState<string | null>(null);
 
-  return useMutation({
+  const mutation = useMutation({
     mutationFn: ({ name, email }: { name: string; email: string }) => {
-      return initAppProfile(session, pod, { name, email });
+      return initAppProfile(
+        session,
+        pod,
+        { name, email },
+        { setLoadingMessage }
+      );
+    },
+    onSettled: () => {
+      setLoadingMessage(null);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -31,6 +42,11 @@ export function useInitProfile(session: Session | null, pod: string | null) {
       });
     },
   });
+
+  return {
+    ...mutation,
+    loadingMessage,
+  };
 }
 
 export function useUpdateAppProfile(
@@ -51,6 +67,22 @@ export function useUpdateAppProfile(
       teamUrl?: string;
       picture?: File;
     }) => updateAppProfile(session, pod, { name, email, teamUrl, picture }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.profile(session!.info.webId!),
+      });
+    },
+  });
+}
+
+export function useDeleteAppAccount(
+  session: Session | null,
+  pod: string | null
+) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({}: {}) => deleteAppAccount(session, pod),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.profile(session!.info.webId!),

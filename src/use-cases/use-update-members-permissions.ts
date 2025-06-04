@@ -14,12 +14,12 @@ export function useUpdateActorPermissions(
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (
+    mutationFn: async (
       data:
         | MemberWithPermissions
         | ActorWithPermissions
         | MemberWithPermissions[]
-    ) => updateActorPermissions(data, session, pod),
+    ) => await updateActorPermissions(data, session, pod),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.accessControl.permissionDetails(

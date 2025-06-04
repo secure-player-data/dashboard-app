@@ -29,7 +29,6 @@ import {
 } from '@/components/ui/table';
 import { Info, PlusCircle, Trash2, Upload } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
-import { useGetMembers } from '@/use-cases/use-get-members';
 import { useGetResourceList } from '@/use-cases/use-get-resource-list';
 import { toast } from 'sonner';
 import { useGetProfile } from '@/use-cases/profile';
@@ -86,13 +85,12 @@ type FormSchema = z.infer<typeof formSchema>;
 
 type ErrorState = Partial<Record<keyof FormSchema, string>>;
 
-export default function UploadDataForm({
+export default function UploadMyDataForm({
   selectedDataType,
 }: {
   selectedDataType?: string;
 }) {
   const [dataType, setDataType] = useState<string>(selectedDataType || '');
-  const [playerPod, setPlayerPod] = useState<string>('');
   const [reason, setReason] = useState<string>('');
   const [location, setLocation] = useState<string>('');
 
@@ -107,8 +105,6 @@ export default function UploadDataForm({
 
   const { session, pod } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const { data: members } = useGetMembers(session, pod);
 
   const { data: resourceList } = useGetResourceList(session, pod);
 
@@ -125,7 +121,6 @@ export default function UploadDataForm({
     setDataType('');
     setReason('');
     setLocation('');
-    setPlayerPod('');
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -197,17 +192,12 @@ export default function UploadDataForm({
       return;
     }
 
-    if (!members) {
-      toast.error('No members available');
-      return;
-    }
-
     const validation = formSchema.safeParse({
       dataType,
-      playerPod,
       reason,
       location,
       files: dataEntries,
+      playerPod: pod,
       hasTextEntry,
       textName,
       textContent,
@@ -239,7 +229,7 @@ export default function UploadDataForm({
         reason: reason,
         location: location,
         category: dataType,
-        receiverPod: playerPod,
+        receiverPod: pod,
       },
       {
         onError: (error) => {
@@ -254,22 +244,6 @@ export default function UploadDataForm({
           toast('Form submitted successfully!');
         },
       }
-    );
-  };
-
-  const showMemberList = () => {
-    if (!members) {
-      return <div>Could not fetch members</div>;
-    }
-
-    return (
-      <SelectContent>
-        {members.map((member) => (
-          <SelectItem key={member.webId} value={member.pod}>
-            {member.name}
-          </SelectItem>
-        ))}
-      </SelectContent>
     );
   };
 
@@ -297,8 +271,8 @@ export default function UploadDataForm({
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
-        <CardTitle>Player Data Collection Report</CardTitle>
-        <CardDescription>Submit data recorded of a player</CardDescription>
+        <CardTitle>Upload data</CardTitle>
+        <CardDescription>Upload data to your own pod</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit}>
@@ -322,21 +296,12 @@ export default function UploadDataForm({
             </div>
 
             <div>
-              <Label htmlFor="player">
-                Player <span className="text-destructive">*</span>
-              </Label>
-              <Select value={playerPod} onValueChange={setPlayerPod} required>
-                <SelectTrigger
-                  id="player"
-                  className={errors.player && 'border-destructive'}
-                >
-                  <SelectValue placeholder="Select player" />
+              <Label htmlFor="player">Player</Label>
+              <Select disabled>
+                <SelectTrigger id="player">
+                  <SelectValue placeholder={profile?.name} />
                 </SelectTrigger>
-                {showMemberList()}
               </Select>
-              {errors.player && (
-                <p className="text-sm text-destructive">{errors.player}</p>
-              )}
             </div>
           </div>
 

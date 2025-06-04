@@ -25,3 +25,7 @@ export type DataDeletionNotification = InboxItem & {
   data: DataInfo[];
   deletionRequestUrl: string;
 };
+
+export type LeaveTeamNotification = InboxItem & {
+  body: string;
+};

@@ -7,9 +7,12 @@ import {
   createSolidDataset,
   createThing,
   deleteFile,
+  deleteSolidDataset,
   getSolidDataset,
   getStringNoLocale,
   getThing,
+  getThingAll,
+  removeThing,
   saveFileInContainer,
   saveSolidDatasetAt,
   setStringNoLocale,
@@ -28,6 +31,8 @@ import { setPublicAccess, updateAgentAccess } from './access-control';
 import { PROFILE_SCHEMA } from '@/schemas/profile';
 import { TEAM_MEMBER_SCHEMA, TEAM_SCHEMA } from '@/schemas/team';
 import { fetchMember, fetchMembersWithPermissions } from './member';
+import { deleteInboxItem, sendLeaveTeamNotification } from './inbox';
+import { purgeContainer } from './utils';
 
 /**
  * Returns team details from the team specified by the teamUrl
@@ -154,12 +159,6 @@ export async function createTeam({
 }) {
   if (!session || !session.info.webId || !pod) {
     throw new SessionNotSetException('No session or pod');
-  }
-
-  const [_, teamUrl] = await safeCall(fetchTeamUrl(session, pod));
-
-  if (teamUrl && teamUrl.length > 0) {
-    throw new TeamCreationConflictException('User is already in a team');
   }
 
   // Create and add team details to dataset
@@ -353,6 +352,43 @@ export async function addMemberToTeam(
 }
 
 /**
+ * Removes a member from the team
+ * @param session of the user removing the member
+ * @param pod of the user removing the member
+ * @param memberWebId id of the member to remove
+ * @param date of the leave team notification
+ */
+export async function removeMemberFromTeam(
+  session: Session | null,
+  pod: string | null,
+  memberWebId: string,
+  date: string
+) {
+  if (!session || !pod) {
+    throw new SessionNotSetException('session was not found');
+  }
+
+  const teamUrl = await fetchTeamUrl(session, pod);
+  let teamDataset = await getSolidDataset(teamUrl, { fetch: session.fetch });
+
+  const things = getThingAll(teamDataset);
+
+  const thingToRemove = things.find((thing) => {
+    const webId = getStringNoLocale(thing, TEAM_MEMBER_SCHEMA.webId);
+    return webId === memberWebId;
+  });
+
+  if (!thingToRemove) {
+    throw new Error('Member not found');
+  }
+
+  teamDataset = removeThing(teamDataset, thingToRemove.url);
+  await saveSolidDatasetAt(teamUrl, teamDataset, { fetch: session.fetch });
+
+  await deleteInboxItem(session, pod, date);
+}
+
+/**
  * Leaves the team the user is in
  * @param session of the user leaving the team
  * @param pod of the user leaving the team
@@ -369,35 +405,41 @@ export async function leaveTeam(session: Session | null, pod: string | null) {
     );
   }
 
-  const containers = [
-    paths.personalData(pod),
-    paths.footballData(pod),
-    paths.eventData(pod),
-    paths.trackingData(pod),
-    paths.biometricData(pod),
-    paths.healthData(pod),
-  ];
+  const teamOwner = await fetchTeamOwner(session, pod);
 
-  await Promise.all(
-    containers.map(async (container) => {
-      const members = (
-        await fetchMembersWithPermissions(session, pod, container)
-      ).filter((member) => member.webId !== session.info.webId);
-
-      await Promise.all(
-        members.map(async (member) => {
-          await updateAgentAccess({
-            session,
-            containerUrl: container,
-            agentWebId: member.webId,
-            modes: [],
-          });
-        })
-      );
-    })
-  );
+  await updateAgentAccess({
+    session,
+    containerUrl: paths.profile(pod),
+    agentWebId: teamOwner.webId,
+    modes: [],
+  });
 
   await updateAppProfile(session, pod, { teamUrl: '' });
+  await sendLeaveTeamNotification({
+    sender: {
+      session,
+      pod,
+      name: user.name,
+      webId: user.webId,
+    },
+    receiver: {
+      pod: teamOwner.pod,
+    },
+  });
+}
+
+/**
+ * Delete the team
+ * @param session user requesting the deletion
+ * @param pod of the owner of the team
+ */
+export async function deleteTeam(session: Session | null, pod: string | null) {
+  if (!session || !pod) {
+    throw new SessionNotSetException('Session or pod not available');
+  }
+
+  await purgeContainer(paths.team.root(pod), session);
+  await deleteSolidDataset(`${paths.root(pod)}/Team`, { fetch: session.fetch });
 }
 
 function mapThingToTeam(thing: any): Team {

@@ -328,14 +328,14 @@ export default function UploadDataForm({
               <Select value={playerPod} onValueChange={setPlayerPod} required>
                 <SelectTrigger
                   id="player"
-                  className={errors.player && 'border-destructive'}
+                  className={errors.playerPod && 'border-destructive'}
                 >
                   <SelectValue placeholder="Select player" />
                 </SelectTrigger>
                 {showMemberList()}
               </Select>
-              {errors.player && (
-                <p className="text-sm text-destructive">{errors.player}</p>
+              {errors.playerPod && (
+                <p className="text-sm text-destructive">{errors.playerPod}</p>
               )}
             </div>
           </div>

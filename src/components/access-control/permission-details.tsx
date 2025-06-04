@@ -164,12 +164,12 @@ export default function PermissionDetails({
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
-              <div className="grid mb-4">
-                <Label htmlFor="agent">WebID</Label>
+              <div className="grid gap-2">
+                <Label htmlFor="agent">Name or WebId</Label>
                 <AutoComplete
                   options={autoCompleteMembers()}
                   emptyMessage="No results."
-                  placeholder="https://example.org/profile/card#me"
+                  placeholder="John Doe"
                   onValueChange={(value) => setActiveAgent(value)}
                   value={activeAgent}
                 />

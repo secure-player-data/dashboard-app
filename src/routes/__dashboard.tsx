@@ -49,7 +49,8 @@ function RouteComponent() {
       };
       sortContainer();
     }
-  }, []);
+  }, [session, pod]);
+
   const paths = useMemo(() => {
     const path = location.pathname;
     const pathParts = path.split('/').filter((part) => part !== '');

@@ -107,11 +107,11 @@ export const AutoComplete = ({
       <div className="relative mt-1">
         <div
           className={cn(
-            'animate-in fade-in-0 zoom-in-95 absolute top-0 z-10 w-full rounded-xl bg-white outline-none',
+            'animate-in fade-in-0 zoom-in-95 absolute top-0 z-10 w-full rounded-xl bg-background outline-none',
             isOpen ? 'block' : 'hidden'
           )}
         >
-          <CommandList className="rounded-lg ring-1 ring-slate-200">
+          <CommandList>
             {isLoading ? (
               <CommandPrimitive.Loading>
                 <div className="p-1">

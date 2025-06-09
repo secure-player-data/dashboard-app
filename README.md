@@ -33,6 +33,10 @@ Use [.env.example](./.env.example) for reference.
 pnpm dev
 ```
 
+## License
+
+MIT License — see [LICENSE](LICENSE)
+
 ## Contact
 
 Have any questions or want to reach out? Take contact with us using the information below:

@@ -1,6 +1,6 @@
 # Secure Player Data
 
-A web app utilizing decentralized storage with SOLID to manage football data
+A web app utilizing decentralized storage with SOLID to enhance privacy and secutiry of football players and their player data.
 
 ## Stack
 
@@ -32,3 +32,11 @@ Use [.env.example](./.env.example) for reference.
 ```
 pnpm dev
 ```
+
+## Contact
+
+Have any questions or want to reach out? Take contact with us using the information below:
+
+| Joakim Edvardsen              | Torstein Eide             |
+| ----------------------------- | ------------------------- |
+| joakimedvardsen2000@gmail.com | torstein_eide@hotmail.com |

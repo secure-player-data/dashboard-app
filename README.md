@@ -10,6 +10,29 @@ A web app utilizing decentralized storage with SOLID to enhance privacy and secu
 - Tanstack Router (Routing)
 - Tanstack Query (Data fetching)
 
+## Repo Structure
+
+This project contains a React-based single-page application. The code is organized for clarity, with components grouped into the following sub-directories:
+
+```
+├── public/              # Static assets (images, fonts)
+└── src/
+    ├── main.tsx         # Application entry point
+    ├── api/	         # Solid pod communication logic
+    ├── components/
+    │   ├── ui/	         # Shadcn UI components
+    │   └── ...rest/     # Custom UI components
+    ├── context/         # Global state providers
+    ├── db/	         # Dev-only pod data seeding
+    ├── entities/        # Data model types
+    ├── exceptions/      # Custom error classes
+    ├── hooks/           # Reusable React logic
+    ├── lib/             # Third-party library integrations
+    ├── routes/          # Application pages
+    ├── schemas/         # RDF schema definitions
+    └── use-cases/       # Application actions (e.g., useGetProfile)
+```
+
 ## Getting Started
 
 ### Prerequisite
